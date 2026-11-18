@@ -25,6 +25,7 @@ import {
   inspectPathRequestSchema,
   inspectPathResponseSchema,
 } from './inspect-path'
+import { type GitActivityResponse, gitActivityResponseSchema } from './git-activity'
 
 export interface ProjectsRoutesService {
   listProjects(userId: string): Promise<{ projects: Project[] }>
@@ -38,6 +39,7 @@ export interface ProjectsRoutesService {
   pickFiles(): Promise<{ paths: string[] }>
   expandRefs(userId: string, input: ExpandRefsRequest): Promise<ExpandRefsResponse>
   openProjectDirectory(userId: string, id: string): Promise<{ opened: true }>
+  gitActivity(userId: string, id: string): Promise<GitActivityResponse>
 }
 
 export function createProjectsRoutes(service: ProjectsRoutesService) {
@@ -79,6 +81,11 @@ export function createProjectsRoutes(service: ProjectsRoutesService) {
       const { id } = c.req.valid('param')
       const response = await service.openProjectDirectory(c.get('userId'), id)
       return c.json(response, 200)
+    })
+    .get('/:id/git-activity', zValidator('param', projectParamsSchema), async (c) => {
+      const { id } = c.req.valid('param')
+      const response = await service.gitActivity(c.get('userId'), id)
+      return c.json(gitActivityResponseSchema.parse(response), 200)
     })
     .get('/:id', zValidator('param', projectParamsSchema), async (c) => {
       const { id } = c.req.valid('param')

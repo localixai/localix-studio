@@ -27,6 +27,7 @@ import { NotificationCenterLauncher } from '@/shared/ui/notification-center/Noti
 import { cn } from '@localixai/mini-app-sdk/ui/classes'
 import { chromeAction, chromeActionActive } from '@localixai/kit/chrome-action'
 import { fitStatusStrip } from '@localixai/kit/workbench-statusbar'
+import { DesktopWindowControls } from './WindowControls'
 
 /**
  * The workspace quick-access cluster in the titlebar, next to the unified navigation breadcrumb
@@ -216,6 +217,8 @@ export function BreadcrumbTrailingActions({
         <UpdateActionButton />
         {/* …and announces a newly found version once, in a dialog. */}
         <UpdateAnnouncement />
+        {/* Windows has no system title bar: its window buttons sit here, beside the bell. */}
+        <DesktopWindowControls />
       </div>
     </div>
   )

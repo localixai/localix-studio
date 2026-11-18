@@ -159,4 +159,9 @@ export interface LocalModelsStatus {
   /** Bytes the installed models take on disk. */
   diskBytes: number
   machine: MachineSummary | null
+  /**
+   * Chat models a model server already running on this computer serves (Ollama), listed by the
+   * `local` provider beside the installed ones. Empty when none runs.
+   */
+  external?: { id: string; name: string; server: string }[]
 }

@@ -102,7 +102,7 @@ export async function createInfraPhase(
   const db = createDatabase({ filename: env.LOCALIX_DB_FILE })
   await migrateToLatest(db, { defaultUserId: env.LOCALIX_DEFAULT_USER_ID })
   const changes = createChangeFeeds(db, logger)
-  const { localModels, engine } = buildAgentEngine({
+  const { localModels, ollama, engine } = buildAgentEngine({
     logger,
     env,
     // A local model's id is its key: route repair rebinds routes that can run on it now.
@@ -215,6 +215,11 @@ export async function createInfraPhase(
   })
   // A download finished or a model was removed: the `local` provider lists something else now.
   localModels.onListChanged(() => {
+    engine.invalidateCatalog?.()
+    catalogService.invalidate()
+  })
+  // …and so does a model pulled into, or removed from, an Ollama running here.
+  ollama.onListChanged(() => {
     engine.invalidateCatalog?.()
     catalogService.invalidate()
   })

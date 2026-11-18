@@ -22,6 +22,8 @@ import {
 import { assertAbsolutePath, inspectPath } from './inspect-path'
 import { forgetProjectIfFolderGone } from './folder-gone'
 import type { ProjectsServiceDeps } from './service-deps'
+import { gitIn } from '../../lib/git-in'
+import { readGitActivity, type GitActivityResponse } from './git-activity'
 
 export type { ProjectsServiceDeps } from './service-deps'
 
@@ -267,6 +269,15 @@ export function createProjectsService(deps: ProjectsServiceDeps) {
         )
       }
       return openPath(project.workingDir)
+    },
+
+    /** The last year of commits in the project's folder, from its local git history alone. */
+    async gitActivity(userId: string, id: string): Promise<GitActivityResponse> {
+      const project = await requireProject(userId, id)
+      return readGitActivity(gitIn(project.workingDir, { timeoutMs: 20_000 }), {
+        now: Date.now(),
+        days: 371,
+      })
     },
   }
 }

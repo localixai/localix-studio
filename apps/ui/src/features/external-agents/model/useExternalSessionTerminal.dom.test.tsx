@@ -1,9 +1,9 @@
 import { afterAll, beforeAll, expect, mock, spyOn, test } from 'bun:test'
+import { onAgentChatOpen } from './onAgentChatOpen.test-utils'
 import { registerDom } from '@localixai/kit/testing/dom'
 import { act } from 'react'
 import { useChatStore } from '@/entities/chat/model/store'
 import type { UiSession } from '@/shared/api/contracts'
-import { terminal as terminalBus } from '@/shared/lib/terminalBus'
 import { externalAgentsApi } from '../api'
 import { useExternalSessionTerminal } from './useExternalSessionTerminal'
 
@@ -34,7 +34,7 @@ test('opening a persisted external chat through any navigation opens its own ter
     providerName: 'Codex',
   })
   const reveal = mock((_sessionId: string, _terminalId: string, _title: string) => {})
-  const unregister = terminalBus.setOwnedOpener(reveal)
+  const unregister = onAgentChatOpen(reveal)
   const { createRoot } = await import('react-dom/client')
   const host = document.createElement('div')
   document.body.append(host)

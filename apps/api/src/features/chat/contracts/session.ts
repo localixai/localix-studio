@@ -138,6 +138,8 @@ export const updateSessionRequestSchema = z
     route: sessionRouteRequestSchema.optional(),
     /** The conversation's permission mode; accepted on a root conversation only (children inherit). */
     permissionMode: z.enum(PERMISSION_MODES).optional(),
+    /** Deferred tools to load for this chat from its next run on (as `ToolSearch` would). */
+    activateTools: z.array(z.string().min(1).max(200)).max(16).optional(),
     isPinned: z.boolean().optional(),
     isArchived: z.boolean().optional(),
     projectId: z.string().nullable().optional(),

@@ -181,3 +181,61 @@ test('an uncorrelated closed terminal never silently starts a different native c
   expect((await open()).status).toBe(409)
   expect(spawns).toEqual([])
 })
+
+test('Claude Code starts connected to the chat’s MCP servers, told to keep the task board', async () => {
+  const asked: string[] = []
+  const spawns: { userId: string; sessionId: string; command: string }[] = []
+  // The fixture's agents list knows Codex only; Claude Code is listed for this test.
+  const app = new Hono<HostRouteContext>()
+    .use('*', async (c, next) => {
+      c.set('userId', 'user')
+      await next()
+    })
+    .route(
+      '/',
+      createOwnedAgentRoutes(
+        {
+          session: async () => ({ externalAgentProvider: 'claude-code' }),
+          cwd: async () => '/work',
+          terminals: () => [],
+          spawn: async (userId, sessionId, command) => {
+            spawns.push({ userId, sessionId, command })
+            return { id: 'pty' }
+          },
+          remember: async () => {},
+          mcpServers: async (userId, sessionId, origin) => {
+            asked.push(`${userId}/${sessionId}@${origin}`)
+            return {
+              'localix-board': {
+                type: 'http',
+                url: `${origin}/rpc/board/mcp?sessionId=${sessionId}`,
+              },
+            }
+          },
+        },
+        undefined,
+        async () => [{ id: 'claude-code', name: 'Claude Code', command: 'claude' }],
+      ),
+    )
+  const response = await app.request('http://127.0.0.1:5051/open-owned', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ sessionId: 'our-chat' }),
+  })
+  expect(response.status).toBe(200)
+  expect(asked).toEqual(['user/our-chat@http://127.0.0.1:5051'])
+  const command = spawns[0]?.command ?? ''
+  expect(command.startsWith('claude --mcp-config ')).toBe(true)
+  expect(command).toContain(
+    '"localix-board":{"type":"http","url":"http://127.0.0.1:5051/rpc/board/mcp?sessionId=our-chat"}',
+  )
+  expect(command).toContain('--append-system-prompt')
+})
+
+test('other agents start unchanged, and Claude Code without MCP servers gets no flags', async () => {
+  const { open, spawns } = fixture({
+    mcpServers: async () => ({ 'localix-board': { type: 'http', url: 'http://x/mcp' } }),
+  })
+  await open()
+  expect(spawns[0]?.command).toBe('codex')
+})

@@ -1,11 +1,11 @@
 import { afterAll, beforeAll, expect, mock, spyOn, test } from 'bun:test'
+import { onAgentChatOpen } from '../model/onAgentChatOpen.test-utils'
 import { act } from 'react'
 import { registerDom } from '@localixai/kit/testing/dom'
 import { LinkedAgentTerminalPill } from './LinkedAgentTerminalPill'
 import { useChatStore } from '@/entities/chat/model/store'
 import { nativeHistoryRows } from '@/features/external-agents/model/unifiedHistory'
 import { externalAgentsApi } from '@/features/external-agents/api'
-import { terminal as terminalBus } from '@/shared/lib/terminalBus'
 import { backendClient } from '@/shared/api/client'
 import * as installed from '../model/useInstalledAgents'
 
@@ -60,7 +60,7 @@ test('choosing a CLI in the unlinked pill binds the current chat and opens its t
     providerName: 'Codex',
   })
   const terminal = mock((_sessionId: string, _terminalId: string, _title: string) => {})
-  const unregister = terminalBus.setOwnedOpener(terminal)
+  const unregister = onAgentChatOpen(terminal)
   const create = spyOn(backendClient, 'createSession')
   const imported = spyOn(backendClient, 'importSession')
   const { createRoot } = await import('react-dom/client')
@@ -137,7 +137,7 @@ test('the linked agent pill reopens its owned terminal without creating or impor
     providerName: 'Codex',
   })
   const terminal = mock((_sessionId: string, _terminalId: string, _title: string) => {})
-  const unregister = terminalBus.setOwnedOpener(terminal)
+  const unregister = onAgentChatOpen(terminal)
   const create = spyOn(backendClient, 'createSession')
   const imported = spyOn(backendClient, 'importSession')
   const providers = spyOn(installed, 'useInstalledAgents').mockReturnValue({

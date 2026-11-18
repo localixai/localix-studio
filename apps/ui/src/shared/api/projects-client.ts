@@ -93,6 +93,16 @@ export const projectsApi = {
     return json.paths
   },
 
+  /** The project's last year of commits, read from its local git history (no account, no key). */
+  async gitActivity(id: string, signal?: AbortSignal) {
+    return unwrap(
+      await client.rpc.projects[':id']['git-activity'].$get(
+        { param: { id } },
+        { init: { signal } },
+      ),
+    )
+  },
+
   async openProjectDirectory(id: string): Promise<void> {
     await unwrap(await client.rpc.projects[':id'].open.$post({ param: { id } }))
   },

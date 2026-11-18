@@ -111,6 +111,8 @@ export const sessionsApi = {
       }
       /** The conversation's permission mode; a delegated child refuses it (409). */
       permissionMode?: PermissionMode
+      /** Deferred tools to load for this chat from its next run on (as `ToolSearch` would). */
+      activateTools?: string[]
       isPinned?: boolean
       isArchived?: boolean
       projectId?: string | null

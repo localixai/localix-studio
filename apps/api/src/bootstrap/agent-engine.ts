@@ -12,6 +12,7 @@ import { createDeviceIdGetter } from '../features/provider-connections/device-id
 import type { loadEnv } from '../lib/env'
 import type { createLogger } from '../lib/logger'
 import { buildLocalModels, localProviderHost } from './local-models'
+import { createOllamaModels } from '../features/local-models/ollama'
 
 export function buildAgentEngine(deps: {
   logger: ReturnType<typeof createLogger>
@@ -19,15 +20,20 @@ export function buildAgentEngine(deps: {
   announceLocalModel?: Parameters<typeof buildLocalModels>[0]['announce']
 }) {
   const { logger, env } = deps
+  // An Ollama already running on this computer: its chat models are local models too.
+  const ollama = createOllamaModels()
+  ollama.start()
   const localModels = buildLocalModels({
     logger,
     root: env.LOCALIX_MODELS_DIR,
     hfToken: env.HF_TOKEN,
     announce: deps.announceLocalModel,
+    external: () =>
+      ollama.list().map((model) => ({ id: model.id, name: model.name, server: 'Ollama' })),
   })
   const scripts = bundledScriptSandboxOptions(dirname(fileURLToPath(import.meta.url)))
   const engine = createEngine({
-    localProvider: localProviderHost(localModels),
+    localProvider: localProviderHost(localModels, ollama),
     getDeviceId: createDeviceIdGetter(),
     catalogStore: createModelCatalogStore(),
     onCatalogEntryDropped: (providerId, reason) =>
@@ -36,5 +42,5 @@ export function buildAgentEngine(deps: {
     // they come from the installed package and nothing is passed.
     ...(scripts ? { scripts } : {}),
   })
-  return { localModels, engine }
+  return { localModels, ollama, engine }
 }

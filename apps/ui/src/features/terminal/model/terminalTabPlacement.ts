@@ -31,3 +31,12 @@ export function placeTerminal(item: WorkItem): void {
   const group = already ? already.id : grid.resolveRoleGroup('terminal')
   grid.openItem(item, { group, activate: true })
 }
+
+/** Open a linked coding agent's CLI (Claude Code, Codex…) where its chat is: a tab beside the chat
+ *  in the chat's own group, so the agent takes the chat's place instead of a split beside it. */
+export function placeAgentTerminal(item: WorkItem): void {
+  const grid = useGridStore.getState()
+  const already = groupOfTab(grid.root, item.id)
+  const group = already ? already.id : grid.resolveRoleGroup('chat')
+  grid.openItem(item, { group, activate: true })
+}

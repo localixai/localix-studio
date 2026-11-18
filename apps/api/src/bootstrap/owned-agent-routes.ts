@@ -3,6 +3,7 @@ import { createOwnedAgentRoutes } from '../features/external-agents/backend/owne
 import { recordTerminalWork } from '../features/terminal/terminal-work'
 import { createAttachAgentRoutes } from '../features/external-agents/backend/attach-session-routes'
 import { createLinkAgentRoutes } from '../features/external-agents/backend/link-session-routes'
+import { agentMcpServers } from './agent-mcp-servers'
 
 export function ownedAgentRoutes(
   deps: Pick<
@@ -28,6 +29,7 @@ export function ownedAgentRoutes(
         deps.logger.warn({ event: 'external_agents.identity_save_failed', error: String(error) }),
       remember: (userId, id, key) =>
         deps.chatService.updateSession(userId, id, { externalAgentSessionKey: key }),
+      mcpServers: (_userId, sessionId, origin) => agentMcpServers(origin, sessionId),
     },
     deps.externalAgents,
   )

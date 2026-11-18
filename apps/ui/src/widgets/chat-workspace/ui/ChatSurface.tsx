@@ -12,7 +12,8 @@ import { logCurrentChatMessages } from '@/entities/chat/model/sessionBodyActivat
 import { WorkItemSessionProvider } from '@localixai/mini-app-sdk/ui/work-item-session'
 import { useJobTerminal } from '@/entities/chat/model/useJobTerminal'
 import { AWAITING_ANSWER_LABEL } from '@/entities/chat/model/messageActivity'
-import { EmptyState } from '@/entities/chat/ui/EmptyState'
+import { ChatEmptyState } from './ChatEmptyState'
+import { useComposerSendGate } from '../model/useComposerSendGate'
 import { PromptInput } from '@/entities/chat/ui/prompt-input'
 import { RuntimeSessionsPanel } from '@/entities/chat/ui/RuntimeSessionsPanel'
 import { ComposerContextBar } from './ComposerContextBar'
@@ -45,7 +46,6 @@ import {
 import { findCatalogModelForConnection } from '@localixai/agent/catalog'
 import { sessionRoute } from '@/shared/api/contracts'
 import { activeConversationDraft } from '@/entities/chat/model/conversationStartStrategy'
-import type { MessageBinding } from '@/shared/api/contracts'
 import { withoutQueuedUserMessages } from '@/entities/chat/model/queuedUserMessages'
 import { useSystemContextManifest } from '../model/useSystemContextManifest'
 
@@ -279,12 +279,11 @@ export function ChatSurface({ sessionId, isFocused, isVisible, resolvedTheme }: 
     forceScrollToBottom,
     goToSession: nav.goToSession,
   })
-  const onSendWithSystemContext = useCallback(
-    (text?: string, bindings?: MessageBinding[], internal?: boolean) => {
-      const selection = systemContext.selectionBinding
-      onSend(text, selection ? [...(bindings ?? []), selection] : bindings, internal)
-    },
-    [onSend, systemContext.selectionBinding],
+  const composerSend = useComposerSendGate(
+    onSend,
+    systemContext.selectionBinding,
+    sessionId,
+    activeMessages.length > 0,
   )
 
   // Below onSend on purpose: a `submit` insert from a contributed analysis surface
@@ -294,7 +293,7 @@ export function ChatSurface({ sessionId, isFocused, isVisible, resolvedTheme }: 
     setPrompt,
     addFiles,
     sessionId,
-    send: (text, internal) => onSendWithSystemContext(text, undefined, internal),
+    send: (text, internal) => composerSend.send(text, undefined, internal),
   })
 
   const onRegenerate = activeSessionIsReadOnly ? undefined : regenerate
@@ -431,7 +430,7 @@ export function ChatSurface({ sessionId, isFocused, isVisible, resolvedTheme }: 
                     : undefined
                 }
               >
-                <EmptyState />
+                <ChatEmptyState sessionId={hasMessages ? null : sessionId} />
               </div>
             )}
           </div>
@@ -516,17 +515,17 @@ export function ChatSurface({ sessionId, isFocused, isVisible, resolvedTheme }: 
             }
             tipContext={tipContext}
             runtimePanel={
-              <>
-                <RuntimeSessionsPanel
-                  scopeRootId={runtimeScopeRootId}
-                  activeSessionId={activeSessionId}
-                  onSelect={revealRuntimeWorker}
-                />
-              </>
+              <RuntimeSessionsPanel
+                scopeRootId={runtimeScopeRootId}
+                activeSessionId={activeSessionId}
+                onSelect={revealRuntimeWorker}
+              />
             }
-            hasInteraction={Boolean(agentRuntime.pendingInteraction)}
+            hasInteraction={Boolean(agentRuntime.pendingInteraction ?? composerSend.planStep)}
             interactionOverlay={
-              agentRuntime.pendingInteraction ? (
+              !agentRuntime.pendingInteraction ? (
+                composerSend.planStep
+              ) : (
                 <Suspense fallback={<LoadingHint className="min-h-14 text-xs" />}>
                   <LazyChatInteractionOverlay
                     interaction={agentRuntime.pendingInteraction}
@@ -537,9 +536,9 @@ export function ChatSurface({ sessionId, isFocused, isVisible, resolvedTheme }: 
                     onDismiss={agentRuntime.dismissInteraction}
                   />
                 </Suspense>
-              ) : null
+              )
             }
-            onSend={onSendWithSystemContext}
+            onSend={composerSend.send}
             onStop={agentRuntime.stopGeneration}
             onRollback={onRollback}
             serverQueue={activeSession?.queuedMessages}
@@ -563,6 +562,7 @@ export function ChatSurface({ sessionId, isFocused, isVisible, resolvedTheme }: 
           />
         </div>
       </div>
+      {composerSend.dialog}
     </WorkItemSessionProvider>
   )
 }

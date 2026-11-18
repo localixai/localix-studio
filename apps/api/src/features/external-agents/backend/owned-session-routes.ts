@@ -26,6 +26,42 @@ export interface OwnedSessionHost {
   ): Promise<{ id: string; onExit?: (listener: (code: number) => void) => unknown }>
   reportError?: (error: unknown) => void
   remember(userId: string, sessionId: string, key: string): Promise<unknown>
+  /**
+   * MCP servers this chat offers the agent it starts (its task board, for one), by name. `origin`
+   * is the address this API answered the request on, so a URL can point back at it.
+   */
+  mcpServers?(
+    userId: string,
+    sessionId: string,
+    origin: string,
+  ): Promise<Record<string, McpServerConfig>>
+}
+
+export interface McpServerConfig {
+  type: 'http'
+  url: string
+}
+
+/** What Claude Code is told about the board it is connected to. */
+const BOARD_INSTRUCTION =
+  'This Localix chat has a task board, reached through the MCP tools of the localix-board server. Keep it current as you work: put multi-part work on it as epics (milestones) and tasks with checklists, take a card before working it, tick its checklist items as they are done, and complete or block it. List the board before you plan or report progress.'
+
+/** Claude Code reads MCP servers from `--mcp-config`; other agents start unchanged. */
+function withMcpServers(
+  provider: string,
+  command: string,
+  servers: Record<string, McpServerConfig>,
+): string {
+  if (provider !== 'claude-code' || Object.keys(servers).length === 0) return command
+  const [program, ...rest] = command.split(' ')
+  return [
+    program,
+    '--mcp-config',
+    shellQuote(JSON.stringify({ mcpServers: servers })),
+    '--append-system-prompt',
+    shellQuote(BOARD_INSTRUCTION),
+    ...rest,
+  ].join(' ')
 }
 
 /** Only a persisted Localix session can own this action; machine-wide history is never the roster. */
@@ -35,7 +71,7 @@ export function createOwnedAgentRoutes(
   installed = installedExternalAgents,
 ) {
   const opening = new Map<string, Promise<{ terminalId: string; providerName: string }>>()
-  const open = async (userId: string, sessionId: string) => {
+  const open = async (userId: string, sessionId: string, origin: string) => {
     const session = await host.session(userId, sessionId)
     const provider = session.externalAgentProvider
     if (!provider)
@@ -82,6 +118,8 @@ export function createOwnedAgentRoutes(
         command = resolved.resume.command
       }
     }
+    const servers = (await host.mcpServers?.(userId, sessionId, origin)) ?? {}
+    command = withMcpServers(provider, command, servers)
     const cwd = await host.cwd(userId, sessionId)
     const terminal = await host.spawn(userId, sessionId, command)
     if (!session.externalAgentSessionKey)
@@ -129,7 +167,8 @@ export function createOwnedAgentRoutes(
       const key = JSON.stringify([userId, sessionId])
       let pending = opening.get(key)
       if (!pending) {
-        pending = open(userId, sessionId).finally(() => opening.delete(key))
+        const origin = new URL(c.req.url).origin
+        pending = open(userId, sessionId, origin).finally(() => opening.delete(key))
         opening.set(key, pending)
       }
       return c.json(await pending)

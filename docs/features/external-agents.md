@@ -48,8 +48,18 @@ header has no duplicate creation button.
 
 Above the composer, the agent pill shows **Localix** while no CLI is linked. Open it and choose an
 installed coding agent. This links the selected CLI to the current chat and launches its terminal in
-that chat's working directory. It keeps the same chat, messages and draft; it creates no second chat
-and imports no external transcript. The Localix composer remains available alongside the terminal.
+that chat's working directory. The agent then opens where the chat is, as a chat of its own: its
+turns read as messages, from its own session history, and a message box under them types into its
+terminal and presses Enter. The terminal keeps running behind this view; **Show terminal** opens it
+as a tab beside the chat when its full screen is wanted. Linking keeps the same chat, messages and
+draft; it creates no second chat and imports no external transcript. The Localix composer remains
+available in the chat's tab.
+
+Claude Code starts connected to the chat's task board over MCP when the Kanban board mini app is
+installed: Localix passes the board's endpoint for that chat in `--mcp-config` (as the
+`localix-board` server, one `kanban` tool) and asks Claude, in `--append-system-prompt`, to keep the
+board current as it works. The board records its writes as **Claude Code**. Other agents start
+unchanged.
 
 Opening an existing external session opens its Localix chat and requests its agent terminal. A live
 terminal is reused. After Localix identifies the CLI's native session, it saves that identity; an

@@ -24,6 +24,10 @@ export interface LocalProviderHost {
    * with a sentence a person can act on when it is not coming (paused, failed, never asked).
    */
   whenReady(modelId: string, signal?: AbortSignal): Promise<void>
-  /** The running server (started when needed). Rejects with a sentence a person can act on. */
-  endpoint(signal: AbortSignal): Promise<{ baseUrl: string; apiKey: string }>
+  /**
+   * The server that runs `modelId` (started when needed). Rejects with a sentence a person can act
+   * on. One host can serve models from more than one server — its own, and one already running on
+   * this computer — so the model picks the address.
+   */
+  endpoint(signal: AbortSignal, modelId: string): Promise<{ baseUrl: string; apiKey: string }>
 }
