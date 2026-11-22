@@ -14,6 +14,7 @@ import { ensureDemoAgents } from './demo-agents.mjs'
 import { seedFixtureChat } from './fixture-chat.mjs'
 import { seedUnfinishedReply } from './unfinished-reply.mjs'
 import { seedToolSections } from './tool-sections.mjs'
+import { seedFormulas } from './formulas.mjs'
 import { seedAgentChildren } from './agent-children.mjs'
 
 await verifyDemoRuntime()
@@ -143,6 +144,7 @@ await seedExternal(fixture)
 await seedFixtureChat(fixture)
 await seedUnfinishedReply(fixture)
 await seedToolSections(fixture)
+await seedFormulas(fixture)
 await seedAgentChildren(fixture)
 await fs.writeFile(fixtureFile, `${JSON.stringify(fixture, null, 2)}\n`)
 console.log('Demo seeded without credentials or model calls.')

@@ -96,6 +96,13 @@ export const capturePlan = {
     scenario: 'tool-sections',
     start: 'project',
   },
+  'chat/formulas': {
+    guide: 'extending/markdown.md',
+    purpose:
+      'A reply explaining cross-entropy, its inline and displayed formulas typeset in the math font',
+    scenario: 'formulas',
+    start: 'project',
+  },
   'chat/agent-card-live': {
     guide: 'features/delegation.md',
     purpose:
