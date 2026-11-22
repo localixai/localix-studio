@@ -9,6 +9,9 @@ Localix is in beta: versions before 1.0 may change behavior between releases.
 - **Formulas in a reply** are laid out by the app itself, in one math font on every system, and what
   they need loads in a fraction of the size the first time a reply holds one. A formula cut off
   while the reply arrives, or with a command the app does not know, is drawn as far as it goes.
+- **Formulas are set closer to TeX**: sub- and superscripts sit where TeX puts them, a function such
+  as log keeps its thin space, a brace under or over a term is drawn as a real brace, and the label
+  on an arrow sits close to it.
 
 ## v0.1.0-beta.29 — 2026-11-17
 

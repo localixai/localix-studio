@@ -21,6 +21,7 @@ export async function verifyEvidence(page, scenario) {
     return (await import('./settings-strip.mjs')).verifySettingsStrip(page)
   if (scenario === 'tool-sections')
     return (await import('./tool-sections.mjs')).verifyToolSections(page)
+  if (scenario === 'formulas') return (await import('./formulas.mjs')).verifyFormulas(page)
   if (scenario === 'agent-children')
     return (await import('./agent-children.mjs')).verifyAgentChildren(page)
   if (['status-line', 'mcp-prompts', 'plugin-waiting'].includes(scenario))

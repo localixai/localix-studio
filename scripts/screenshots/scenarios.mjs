@@ -60,6 +60,7 @@ export async function compose(page, scenario) {
     return (await import('./settings-strip.mjs')).composeSettingsStrip(page)
   if (scenario === 'tool-sections')
     return (await import('./tool-sections.mjs')).composeToolSections(page)
+  if (scenario === 'formulas') return (await import('./formulas.mjs')).composeFormulas(page)
   if (scenario === 'agent-children')
     return (await import('./agent-children.mjs')).composeAgentChildren(page)
   if (['status-line', 'mcp-prompts', 'plugin-waiting'].includes(scenario))

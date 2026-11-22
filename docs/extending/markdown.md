@@ -140,6 +140,8 @@ Math loads asynchronously on first use. Until it arrives, and if its chunk fails
 stay readable as source; a failed load is tried again a few times. Rendering a formula is not a
 synchronous guarantee of the standalone component.
 
+![A reply explaining cross-entropy with a softmax output: inline formulas in the text, and displayed ones with a sum, fractions, a brace under a term, labelled arrows and a cases block](../assets/screenshots/chat/formulas--2026-11-22.png)
+
 A quote's closing `— Author` line becomes its attribution:
 
 > Keep one grammar and let each host own its behavior.
