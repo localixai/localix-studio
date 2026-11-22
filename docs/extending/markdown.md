@@ -134,7 +134,7 @@ $$
 $$
 
 Prices such as $5 and $10, shell variables such as `$HOME`, and fenced code stay literal. Formulas
-share a bounded KaTeX cache, including when the workspace streams a reply.
+share a bounded cache, including when the workspace streams a reply.
 
 Math loads asynchronously on first use. Until it arrives, and if its chunk fails to load, formulas
 stay readable as source; a failed load is tried again a few times. Rendering a formula is not a
