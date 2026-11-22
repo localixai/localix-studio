@@ -4,6 +4,12 @@ Localix is in beta: versions before 1.0 may change behavior between releases.
 
 ## Unreleased
 
+### Changed
+
+- **Formulas in a reply** are laid out by the app itself, in one math font on every system, and what
+  they need loads in a fraction of the size the first time a reply holds one. A formula cut off
+  while the reply arrives, or with a command the app does not know, is drawn as far as it goes.
+
 ## v0.1.0-beta.29 — 2026-11-17
 
 Replies are drawn faster and closer to what the model meant, a project whose folder is gone no
