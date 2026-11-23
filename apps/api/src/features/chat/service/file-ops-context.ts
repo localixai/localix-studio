@@ -1,5 +1,9 @@
 import { createHash } from 'node:crypto'
+import { homedir } from 'node:os'
 import path from 'node:path'
+
+import { expandHome } from '../../../lib/home-path'
+import type { FileReadLog } from './file-read-failure'
 
 import { localEnvironment } from '../../agent-core/tools/environments/local'
 import { assertWorkspaceFolder } from '../../projects/workspace-folder'
@@ -17,6 +21,12 @@ export interface FileOpsContext {
   resolveSessionWorkingDir: (userId: string, session: SessionRecord) => Promise<string>
   /** The wall clock a snapshot is judged against; tests move it forward. */
   now?: () => number
+  /** The home directory `~` names; the process's own unless a test gives one. */
+  homeDir?: string
+  /** Byte caps of a read (viewer, editor); the production ones unless a test gives small ones. */
+  readCaps?: { view: number; edit: number }
+  /** Where a read that failed for no reason the person can act on is recorded (`api.log`). */
+  logger?: FileReadLog
 }
 
 /**
@@ -34,9 +44,15 @@ export const openSessionEnv = async (ctx: FileOpsContext, userId: string, sessio
   return { session, env, dir }
 }
 
-/** Resolve a possibly-relative path against the session's working dir. */
-export const resolveAgainst = (dir: string, p: string): string =>
-  path.isAbsolute(p) ? p : path.resolve(dir, p)
+/**
+ * Resolve a possibly-relative path against the session's working dir. `~` and `~/…` are the home
+ * directory, as a shell reads them: a reply that names `~/Desktop/logs.zip` means that file, and
+ * joining it to the project folder pointed at `<project>/~/Desktop/logs.zip`, which never exists.
+ */
+export const resolveAgainst = (dir: string, p: string, home: string = homedir()): string => {
+  const expanded = expandHome(p, home)
+  return path.isAbsolute(expanded) ? expanded : path.resolve(dir, expanded)
+}
 
 /** sha256 hex of a UTF-8 string — the optimistic-concurrency token for edits. */
 export const contentHash = (content: string): string =>

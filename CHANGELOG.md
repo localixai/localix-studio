@@ -15,6 +15,12 @@ Localix is in beta: versions before 1.0 may change behavior between releases.
 
 ### Fixed
 
+- **Paths in a reply open what they name**: `~/Desktop/logs.zip` opens from your home folder instead
+  of failing inside the project. A path with nothing at it says "There is no file at" with the full
+  path, quietly in its tab, instead of an error with Send to agent and Retry that came back on every
+  click. A folder or a file Localix cannot show, such as a .zip, offers Reveal in Finder, however
+  large it is: a file of several gigabytes no longer fails to open, and a large log reads only the
+  part the editor shows.
 - **A reply that fails says why**: an expired ChatGPT or GitHub Copilot sign-in says so and offers
   Sign in again, where it used to say "The run stopped on an unexpected error." A provider that
   cannot be reached names the cause (no internet, a server that is not running, a certificate, a

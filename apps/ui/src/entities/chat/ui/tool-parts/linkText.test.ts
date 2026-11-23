@@ -30,6 +30,18 @@ describe('splitLinkedPaths', () => {
     expect(segs.find((s) => s.path)?.line).toBeUndefined()
   })
 
+  // `~/Desktop/logs.zip` linked only its tail, `/Desktop/logs.zip`: a click opened a folder at the
+  // filesystem root that does not exist, instead of the file in the home directory.
+  it('keeps the home-directory tilde in the linked path', () => {
+    const segs = splitLinkedPaths('saved to ~/Desktop/localix-logs.zip.')
+    expect(segs.find((s) => s.path)).toEqual({
+      text: '~/Desktop/localix-logs.zip',
+      start: 9,
+      path: '~/Desktop/localix-logs.zip',
+      line: undefined,
+    })
+  })
+
   it('does not link prose without a slash', () => {
     const segs = splitLinkedPaths('e.g. version v1.2 is fine')
     expect(segs.every((s) => !s.path)).toBe(true)

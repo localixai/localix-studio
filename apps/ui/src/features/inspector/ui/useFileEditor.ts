@@ -96,7 +96,7 @@ export function useFileEditor(
     if (!sessionId || !workItemVisible) return
     if (state.status === 'ready' && state.editable && editPath) {
       workItemTransferReady.success(fileTransferReadyKey(sessionId, editPath))
-    } else if (state.status === 'error') {
+    } else if (state.status === 'error' || state.status === 'missing') {
       workItemTransferReady.failure(fileTransferReadyKey(sessionId, path), state.message)
     }
   }, [sessionId, path, workItemVisible, state, editPath])

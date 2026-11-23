@@ -244,5 +244,5 @@ export async function revealEntry(
   targetPath: string,
 ): Promise<{ opened: true }> {
   const { dir } = await openSessionEnv(ctx, userId, sessionId)
-  return revealPath(resolveAgainst(dir, targetPath))
+  return revealPath(resolveAgainst(dir, targetPath, ctx.homeDir))
 }
