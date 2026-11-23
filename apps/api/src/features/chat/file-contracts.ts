@@ -31,6 +31,16 @@ export interface FileContentResponse {
    * truncated read, which has no hash to compare against.
    */
   unchanged?: true
+  /**
+   * The path is a folder: `content` is its listing, and there is no `hash`, so it can never be
+   * edited and saved. A viewer shows it as a folder (reveal it in the file manager).
+   */
+  directory?: true
+  /**
+   * The path is neither a regular file nor a folder (a FIFO, a socket, a device). It is never
+   * opened, so `content` is empty and there is no `hash`; a viewer offers the file manager instead.
+   */
+  special?: true
 }
 
 export interface FileWriteResponse {

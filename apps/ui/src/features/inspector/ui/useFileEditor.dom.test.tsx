@@ -14,6 +14,7 @@ import { registerDom } from '@localixai/kit/testing/dom'
 import { setSaveCleanupPrefs } from '@/shared/ui/code-editor/saveCleanup'
 import { useFileEditor, type FormatOnSaveRunner } from './useFileEditor'
 import { WorkItemVisibilityProvider } from '@localixai/mini-app-sdk/ui/visibility'
+import { turns } from '@/testing/settle'
 
 let teardown: () => Promise<void>
 beforeAll(() => {
@@ -140,6 +141,93 @@ describe('useFileEditor save ownership', () => {
       await editor.unmount()
       backend.restore()
       observer.mockRestore()
+    }
+  })
+
+  // A reply named `logs/desktop.log`; a click opened it and the Event Center filed "This file could
+  // not be read." with Send to agent and Retry, raised again on every click. Nothing there is a
+  // routine answer: the tab says so in one sentence and reports nothing.
+  test('a path with nothing at it is a quiet notice, never a problem report', async () => {
+    const backend = mockEditorBackend()
+    backend.get.mockRejectedValue(
+      new ApiError('There is no file at /workspace/shared.ts', 404, 'file_not_found'),
+    )
+    const editor = await mountEditor()
+    try {
+      expect(editor.current.state).toEqual({
+        status: 'missing',
+        message: 'There is no file at /workspace/shared.ts',
+      })
+      expect(editor.current.problem).toBeNull()
+    } finally {
+      await editor.unmount()
+      backend.restore()
+    }
+  })
+
+  // A view of one file treats the server's "not found" as gone: a tab reopened over a cached copy
+  // of a file deleted since kept showing that copy, because a cache hit swallowed every failure.
+  test('a deleted file shows as missing, never as its cached copy', async () => {
+    fileContentCache.put('session-a', 'shared.ts', {
+      path: '/workspace/shared.ts',
+      content: 'cached',
+      bytes: 6,
+      truncated: false,
+      hash: 'hash-cached',
+    })
+    const backend = mockEditorBackend()
+    backend.get.mockRejectedValue(
+      new ApiError('There is no file at /workspace/shared.ts', 404, 'file_not_found'),
+    )
+    const editor = await mountEditor()
+    try {
+      expect(editor.current.state).toEqual({
+        status: 'missing',
+        message: 'There is no file at /workspace/shared.ts',
+      })
+      expect(fileContentCache.get('session-a', 'shared.ts')).toBeUndefined()
+    } finally {
+      await editor.unmount()
+      backend.restore()
+    }
+  })
+
+  // The server's sentence is the whole answer here ("not allowed to read" is the fix: grant
+  // access), and it was hidden in the Event Center behind "This file could not be read.".
+  test('a file the app may not read says so in the server words', async () => {
+    const backend = mockEditorBackend()
+    backend.get.mockRejectedValue(
+      new ApiError('Localix is not allowed to read /workspace/shared.ts', 403, 'file_not_readable'),
+    )
+    const editor = await mountEditor()
+    try {
+      expect(editor.current.state).toMatchObject({
+        status: 'error',
+        message: 'Localix is not allowed to read /workspace/shared.ts',
+      })
+    } finally {
+      await editor.unmount()
+      backend.restore()
+    }
+  })
+
+  test('a file that appears after the missing notice opens on the next check', async () => {
+    const backend = mockEditorBackend()
+    backend.get.mockRejectedValueOnce(
+      new ApiError('There is no file at /workspace/shared.ts', 404, 'file_not_found'),
+    )
+    const editor = await mountEditor()
+    try {
+      expect(editor.current.state.status).toBe('missing')
+      await editor.act(async () => {
+        editor.current.retry()
+        await turns()
+      })
+      expect(editor.current.state.status).toBe('ready')
+      expect(editor.current.buffer).toBe('base')
+    } finally {
+      await editor.unmount()
+      backend.restore()
     }
   })
 

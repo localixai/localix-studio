@@ -1,6 +1,7 @@
 import { useEffect, type Dispatch, type RefObject, type SetStateAction } from 'react'
 import { backendClient } from '@/shared/api/client'
 import { isRecoverableReadError } from '@/shared/api/readRecovery'
+import { ApiError } from '@/shared/api/failure'
 import type { FileContentResponse } from '@/shared/api/contracts'
 import { errorMessage } from '@localixai/mini-app-sdk/ui/utilities'
 import type { Problem } from '@localixai/mini-app-sdk/ui/problems'
@@ -8,6 +9,9 @@ import { fileContentCache } from '../model/fileContentCache'
 import { classifyDiskChange } from '../lib/conflict-reconcile'
 import type { FileLoadState } from './fileLoadState'
 import type { FileConflict } from './fileEditorContracts'
+
+/** Failures the server already words for the person, path included (`file-read-failure.ts`). */
+const SERVER_WORDED = new Set(['file_not_readable', 'file_unreadable'])
 
 interface FileEditorLoadOptions {
   workItemVisible: boolean
@@ -100,23 +104,36 @@ export function useFileEditorLoad({
         }
       })
       .catch((err) => {
+        if (cancelled || loadController.signal.aborted) return
+        // Nothing at the path is an answer, not a failure: a reply often names a file that was
+        // never made, or one outside the project. Say so in the server's words (they name the
+        // resolved path), with nothing to retry and nothing to send anywhere. It also outranks a
+        // cached copy: a file deleted since is gone, and its last text must not stay on screen.
+        if (err instanceof ApiError && err.code === 'file_not_found') {
+          if (cached) fileContentCache.invalidateFiles(new Set([cached.path]))
+          setState({ status: 'missing', message: err.message })
+          return
+        }
         // A cache hit is still useful while offline. Keep it visible and retry on
         // the next remount instead of replacing good text with a transient error.
-        if (!cancelled && !loadController.signal.aborted && !cached) {
-          failedConnectionRef.current = isRecoverableReadError(err)
-          if (failedConnectionRef.current) {
-            setState({ status: 'loading', reconnecting: true })
-            return
-          }
-          setState({
-            status: 'error',
-            // The backend answers `Cannot read /very/long/absolute/path` for every failure mode
-            // it cannot tell apart — deleted, unreadable, or the environment gone. That path wall
-            // was the whole sentence a person got; it is now the detail behind a readable one.
-            message: 'This file could not be read.',
-            detail: errorMessage(err, '') || undefined,
-          })
+        if (cached) return
+        failedConnectionRef.current = isRecoverableReadError(err)
+        if (failedConnectionRef.current) {
+          setState({ status: 'loading', reconnecting: true })
+          return
         }
+        setState({
+          status: 'error',
+          // A refusal or a classified fault is a sentence the server wrote for the person
+          // ("Localix is not allowed to read …"): it is the message. Anything else keeps the
+          // readable line here, with the server's own words as the detail behind it.
+          ...(err instanceof ApiError && SERVER_WORDED.has(err.code ?? '')
+            ? { message: err.message, detail: err.detail }
+            : {
+                message: 'This file could not be read.',
+                detail: errorMessage(err, '') || undefined,
+              }),
+        })
       })
     return () => {
       cancelled = true

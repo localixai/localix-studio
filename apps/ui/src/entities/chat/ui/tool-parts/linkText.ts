@@ -19,9 +19,11 @@ export interface TextSegment {
 // One pass over the text, matching EITHER an http(s) URL OR a file path. The URL
 // alternative is first so `https://host/a.ts` is treated as a link, not a path.
 // Path: require at least one `/` so prose like "e.g." / "v1.2" never matches —
-// a dir segment, a filename with an extension, then an optional `:line[:col]`.
+// an optional root (`/` or the home directory's `~/`), a dir segment, a filename with an
+// extension, then an optional `:line[:col]`. The `~` is part of the path: dropped, the link
+// pointed at the filesystem root instead of the home directory.
 const URL_RE = String.raw`https?:\/\/[^\s<>()\[\]"']+`
-const PATH_RE = String.raw`\/?(?:[\w.\-]+\/)+[\w.\-]+\.\w+(?::\d+(?::\d+)?)?`
+const PATH_RE = String.raw`(?:~\/|\/)?(?:[\w.\-]+\/)+[\w.\-]+\.\w+(?::\d+(?::\d+)?)?`
 const LINK_RE = new RegExp(`(${URL_RE})|(${PATH_RE})`, 'g')
 
 // Trailing punctuation that almost always belongs to the surrounding prose, not

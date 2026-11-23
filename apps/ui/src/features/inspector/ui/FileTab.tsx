@@ -1,11 +1,9 @@
 import { useMemo, useRef, useState } from 'react'
-import { FileX2, TriangleAlert } from 'lucide-react'
+import { TriangleAlert } from 'lucide-react'
 import { FileEditorEnhancements } from './FileEditorEnhancements'
 import type { EditorCursorStatus, EditorTextSelection } from '@/shared/ui/code-editor/CodeEditor'
 import { openPreviewFromClick } from '../model/openPreview'
 import { STREAM_MARKDOWN_REPARSE_MS, useStreamingThrottle } from '@/shared/ui/useStreamingThrottle'
-import { LoadingHint } from '@localixai/kit/empty-hint'
-import { StateNotice } from '@localixai/kit/state-notice'
 import { Button } from '@localixai/kit/button'
 import { WorkbenchNoticeBar } from '@localixai/kit/workbench-notice-bar'
 import { ProblemLine } from '@/shared/ui/problem-report'
@@ -37,6 +35,7 @@ import { WorkbenchStatusContribution } from '@localixai/kit/workbench-statusbar'
 import { FileCodeEditor } from './FileCodeEditor'
 import { FileEditorBody } from './FileEditorBody'
 import { FileDocumentNotice, FileStaticView } from './FileStaticView'
+import { FileLoadNotice } from './FileLoadNotice'
 import { useEditorViewStateBridge } from './useEditorViewStateBridge'
 import type { FileTabProps, SessionFileTabProps } from './fileTabProps'
 import { useFileTabEditing } from './useFileTabEditing'
@@ -118,6 +117,7 @@ function SessionFileTab({
     dirty,
     saving,
     problem,
+    retry,
     conflict,
     externalChanges,
     overwrite,
@@ -221,19 +221,14 @@ function SessionFileTab({
     useFileTabNavigation(sessionId)
   const docContentType = useDocumentContentType(path)
 
-  if (state.status === 'loading') {
+  if (state.status !== 'ready') {
     return (
-      <LoadingHint className="min-h-0 flex-1 text-xs">
-        {state.reconnecting ? 'Reconnecting to the local service…' : `Loading ${baseName(path)}…`}
-      </LoadingHint>
-    )
-  }
-  if (state.status === 'error') {
-    return (
-      <StateNotice
-        icon={FileX2}
-        title={baseName(path)}
-        body={problem && <ProblemLine {...problem} className="items-center" />}
+      <FileLoadNotice
+        path={path}
+        state={state}
+        problem={problem}
+        revealAt={revealAt}
+        onRecheck={retry}
       />
     )
   }
@@ -399,5 +394,5 @@ function SessionFileTab({
     )
   }
 
-  return <FileStaticView path={path} state={state} line={line} />
+  return <FileStaticView sessionId={sessionId} path={path} state={state} line={line} />
 }

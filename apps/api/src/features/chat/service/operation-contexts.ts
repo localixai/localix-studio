@@ -213,6 +213,7 @@ export function createOperationContexts(
   const fileOpsCtx: FileOpsContext = {
     requireSession,
     resolveSessionWorkingDir,
+    ...(deps.logger ? { logger: deps.logger } : {}),
   }
 
   const skillOpsCtx: SkillOpsContext = { now, resolveProjectWorkingDir, scopeSkills: scopeSkillsOf }

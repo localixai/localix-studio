@@ -102,8 +102,14 @@ export interface ChatServiceDeps {
   ports: ChatFeaturePorts
   /** Immutable frontend-published UI catalogs, selected by id for each workbench run. */
   uiLocationCatalog?: UiLocationCatalogService
-  /** Structured diagnostic sink; feature code must never write straight to a host's stdout. */
-  logger?: { warn: (message: string, meta?: unknown) => void }
+  /**
+   * Structured diagnostic sink; feature code must never write straight to a host's stdout. `error`
+   * takes a record (pino's object form): a file read that failed for no reason the person can act
+   * on is one such line (`service/file-read-failure.ts`).
+   */
+  logger?: { warn: (message: string, meta?: unknown) => void } & {
+    error?: (record: Record<string, unknown>) => void
+  }
   lspManager?: LspManager
   /** One kit plugin session per chat (`features/plugins/kit/sessions.ts`). */
   pluginSessions?: ChatPluginSessions

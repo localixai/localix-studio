@@ -16,6 +16,21 @@ Pick a file in the file tree, press **Cmd/Ctrl+P** to go to a file by name, or c
 terminal or in the agent's reply. Press **Cmd/Ctrl+Shift+P** for the command palette. The
 [workspace](workspace.md) guide covers tabs, preview tabs and the editor grid.
 
+A path in a reply opens the way a shell would read it: `~/…` is in your home folder, an absolute
+path is that path, and any other path is in the chat's folder.
+
+| What is at the path      | What the tab shows                                                                                                           |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| A text file              | The editor. Past 5 MB, its first 5 MB read-only, marked "File truncated for display."                                        |
+| An image                 | The image.                                                                                                                   |
+| A folder                 | "This is a folder." with **Reveal in Finder** (**Reveal in File Explorer** on Windows, **Open containing folder** on Linux). |
+| A pipe, socket or device | "This is not a regular file." with the same reveal button. It is never opened.                                               |
+| Another binary file      | "Binary file — preview not supported." with the same reveal button.                                                          |
+| Nothing                  | "There is no file at" and the full path it looked at. Clicking the link again looks again.                                   |
+
+Nothing at the path is a note in the tab, not an error: it adds nothing to the notification centre.
+A file Localix is not allowed to read is an error, and says so.
+
 ## Write with completion and hints
 
 - **Completion:** the list opens as you type, after `.`, quotes and `/`. Press **Ctrl+Space** to ask
