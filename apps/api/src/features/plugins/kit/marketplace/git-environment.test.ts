@@ -13,7 +13,7 @@ describe('the environment git reaches a plugin or marketplace repository with', 
     expect(env).toMatchObject({ PATH: '/usr/bin', GIT_TERMINAL_PROMPT: '0', GIT_ASKPASS: '' })
   })
 
-  test.each([
+  test.each<[NodeJS.ProcessEnv, string | undefined]>([
     [{ GIT_SSH_COMMAND: 'ssh -i ~/.ssh/deploy' }, undefined],
     [{ GIT_SSH: '/usr/local/bin/my-ssh' }, undefined],
     [{}, 'ssh -F ~/.ssh/work_config'],

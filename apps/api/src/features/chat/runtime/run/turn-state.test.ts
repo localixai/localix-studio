@@ -111,7 +111,7 @@ describe('runTokenCounts — the cache write by lifetime', () => {
     accumulateTurnUsage(s, { inputTokens: 130, cacheWriteTokens: 10 })
     const counts = runTokenCounts(s)
     expect(counts).toMatchObject({ inputTokens: 230, cacheWriteTokens: 50 })
-    expect(counts.cacheWrite1hTokens).toBeUndefined()
+    expect('cacheWrite1hTokens' in counts).toBe(false)
   })
 })
 
