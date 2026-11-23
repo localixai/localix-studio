@@ -7,10 +7,12 @@
  * is believed; a window longer than an in-request wait may last is not waited out here but
  * handed to the host, whose cooldown can honour it.
  */
-import { APICallError } from '@ai-sdk/provider'
+import { APICallError, JSONParseError, TypeValidationError } from '@ai-sdk/provider'
 import { backoffMs } from '@localixai/agent/backoff'
 import { PROVIDER_HTTP_ERROR_NAME, providerHttpErrorMessage } from '@localixai/agent'
 import { attachProviderResponse, statesRetryWindow } from '@localixai/agent/agents'
+
+import { ProviderMalformedResponseError, ProviderUnexpectedShapeError } from './wire/endings'
 
 export interface RetryPolicy {
   maxRetries: number
@@ -50,7 +52,21 @@ function headersOf(error: unknown): Record<string, string> | undefined {
 }
 
 /** Ends of a response that carried nothing and say nothing about the request: worth resending. */
-const RESENDABLE_ENDINGS = new Set(['StreamIdleTimeoutError', 'ProviderPrematureCloseError'])
+const RESENDABLE_ENDINGS = new Set([
+  'StreamIdleTimeoutError',
+  'ProviderPrematureCloseError',
+  'ProviderMalformedResponseError',
+])
+
+/**
+ * A chunk the provider's SDK could not read, as the named ending the host classifies: one that does
+ * not parse (resendable), or one of a shape the reader does not know (not resendable).
+ */
+export function asMalformedResponse(error: unknown): unknown {
+  if (JSONParseError.isInstance(error)) return new ProviderMalformedResponseError(error)
+  if (TypeValidationError.isInstance(error)) return new ProviderUnexpectedShapeError(error)
+  return error
+}
 
 /** A connection that never completed: refused, reset, cut off by the network. */
 function isNetworkFailure(error: Error): boolean {

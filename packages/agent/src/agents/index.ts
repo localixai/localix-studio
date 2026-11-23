@@ -14,7 +14,17 @@ export {
 export type { ProviderResponseFacts } from '../utils/provider-http-error'
 export { createGateRefusalTracker, DEFAULT_GATE_REFUSAL_POLICY } from './gate-refusal-tracker'
 export type { GateRefusalPolicy, GateRefusalTracker, GateRefusalTrip } from './gate-refusal-tracker'
-export { AgentRunError, isAgentRunError, MODEL_NOT_DOWNLOADED } from './errors'
+export {
+  AgentRunError,
+  isAgentRunError,
+  isSignInExpiredError,
+  isSignInServerError,
+  MODEL_NOT_DOWNLOADED,
+  SignInExpiredError,
+  SignInServerError,
+} from './errors'
+export { networkFailureOf } from './network-failure'
+export type { NetworkFailure } from './network-failure'
 export type { AgentRunErrorCode, ModelUnavailableReason } from './errors'
 export * from './human-in-loop'
 export * from './toolset'

@@ -73,9 +73,13 @@ export interface RunnerDeps {
   /** Engine-neutral factory for buffered auxiliary model calls. */
   languageModelFactory: LanguageModelFactory
   uiLocationCatalog?: UiLocationCatalogService
-  /** The API's structured log; `info` carries records worth reading back (`bun run logs`). */
+  /**
+   * The API's structured log; `info` carries records worth reading back (`bun run logs`), `error`
+   * a failed run's one line (`run/failure-log.ts`).
+   */
   logger?: { warn: (message: string, meta?: unknown) => void } & {
     info?: (record: Record<string, unknown>) => void
+    error?: (record: Record<string, unknown>) => void
   }
   lspManager?: LspManager
   /**
@@ -154,10 +158,9 @@ export interface RunnerDeps {
     rule: { action: string; resource: string },
   ) => Promise<void>
   /**
-   * Same boundary for a bare STRING. Its one caller is `classifyRunError`: a provider rejection's
-   * `userMessage` is often the response body verbatim, and that string is persisted as the assistant
-   * row's content, published as `run.failed`, and logged with
-   * `console.error` — which the pino redaction sink never sees.
+   * Same boundary for a bare STRING. Its callers are `classifyRunError` and the failed run's log
+   * line (`run/failure-log.ts`): a provider rejection's text may echo the credential it refused,
+   * and it is persisted in the run's notice, published as `run.failed` and written to the log.
    */
   sanitizeText?: (userId: string, text: string) => string
   /**

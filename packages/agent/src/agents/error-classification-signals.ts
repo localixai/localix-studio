@@ -91,47 +91,6 @@ export function isRetryableProviderMessage(message: string): boolean {
   return !isLimitCappedMessage(message) && RETRYABLE_PROVIDER_MESSAGE.test(message)
 }
 
-// Raw network-fault codes/names (and a tight set of message phrases) that mean a
-// transient connection drop, NOT a provider rejection — these have no HTTP status to
-// classify, so without this they fall through to a non-retryable `fatal` and kill the
-// turn. Bun/undici surface several as `UND_ERR_*`. Walked through `error.cause`.
-const TRANSIENT_NETWORK_CODES = new Set([
-  'ECONNRESET',
-  'ECONNREFUSED',
-  'ECONNABORTED',
-  'ETIMEDOUT',
-  'EPIPE',
-  'EHOSTUNREACH',
-  'ENETUNREACH',
-  'ENETDOWN',
-  'EAI_AGAIN',
-  'ENOTFOUND',
-  'UND_ERR_CONNECT_TIMEOUT',
-  'UND_ERR_HEADERS_TIMEOUT',
-  'UND_ERR_BODY_TIMEOUT',
-  'UND_ERR_SOCKET',
-  'ERR_STREAM_PREMATURE_CLOSE',
-])
-
-export function isTransientNetworkError(error: unknown): boolean {
-  let cur: unknown = error
-  for (let depth = 0; cur && typeof cur === 'object' && depth < 5; depth++) {
-    const o = cur as { code?: unknown; message?: unknown; cause?: unknown }
-    if (typeof o.code === 'string' && TRANSIENT_NETWORK_CODES.has(o.code)) return true
-    const msg = typeof o.message === 'string' ? o.message.toLowerCase() : ''
-    if (
-      msg.includes('fetch failed') ||
-      msg.includes('socket hang up') ||
-      msg.includes('premature close') ||
-      msg.includes('network connection was lost') ||
-      msg.includes('connection closed')
-    )
-      return true
-    cur = o.cause
-  }
-  return false
-}
-
 const PROVIDER_STATUS_IN_MESSAGE = /^[^\n]*?(?:^|\s)([1-5]\d{2}):(?:\s|$)/
 
 /**
@@ -173,8 +132,15 @@ export const HTTP_STATUS_SENTENCES: Partial<Record<number, string>> = {
   500: 'Provider error (500). The AI provider had an internal error.',
   502: 'Provider unavailable (502). Try again in a moment.',
   503: 'Provider overloaded (503). Try again in a moment.',
+  504: 'Provider timed out (504). Try again in a moment.',
+  529: 'Provider overloaded (529). Try again in a moment.',
 }
 
-export function httpStatusToUserMessage(status: number, raw: string): string {
-  return HTTP_STATUS_SENTENCES[status] ?? (raw.length > 200 ? raw.slice(0, 200) + '…' : raw)
-}
+// A provider that does not serve the caller's location: OpenAI's
+// `unsupported_country_region_territory`, Gemini's "User location is not supported". No retry and
+// no key fixes it; only another provider does.
+const REGION_BLOCKED =
+  /unsupported_country|country, region,? or territory not supported|user location is not supported|not available in your (country|region)/i
+
+/** True when the provider refused the request because of where it came from. */
+export const isRegionBlockedMessage = (message: string): boolean => REGION_BLOCKED.test(message)

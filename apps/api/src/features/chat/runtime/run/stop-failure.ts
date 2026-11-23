@@ -46,7 +46,13 @@ export function fireStopFailure(
   void ccHooks
     .runStopFailure({
       error: stopFailureType(info, error),
-      ...(info.verbatim ? { details: info.userMessage } : {}),
+      // The error's own text: kept beside the classifier's sentence, or the sentence itself when
+      // the classifier had none of its own.
+      ...(info.detail !== undefined
+        ? { details: info.detail }
+        : info.verbatim
+          ? { details: info.userMessage }
+          : {}),
       // CC's field holds the rendered error text here, not a reply.
       message: info.userMessage,
     })

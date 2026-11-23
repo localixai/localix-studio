@@ -104,7 +104,17 @@ Within one connection, the runtime selects the enabled key with the lowest numer
 Disabling the last enabled key and removing the only remaining key are separate guards. Removing an
 enabled key while disabled keys remain can leave the connection with no runnable key; enable its
 replacement before removing it. OAuth refresh runs through a connection-scoped credential store;
-refresh updates for one key are serialized so concurrent runs do not overwrite rotating tokens.
+refresh updates for one key are serialized so concurrent runs do not overwrite rotating tokens. When
+the provider refuses to renew a sign-in (Sign in with ChatGPT answering `invalid_grant`, a GitHub
+token that was revoked), the run fails with "Your sign-in to <provider> has expired or was revoked.
+Sign in again." and a **Sign in again** button, and the Event Center keeps one standing problem for
+the connection until a sign-in or a refresh works. Only a refusal of the sign-in itself counts: an
+OAuth `invalid_grant`, `invalid_client` or `unauthorized_client`, or GitHub's 401. Any other answer
+of the sign-in server is said as the sign-in server's ("The sign-in server of GitHub refused to
+renew the sign-in (403): …", or a temporary error for a 5xx or 429, which holds no model back). A
+renewal that never reached the server is not a sign-in problem: offline, the run says what it could
+not reach; a certificate or a proxy that refused raises a warning for the connection naming that
+cause, settled by the next renewal that gets through.
 
 Every model list shows the newest models first: the picker's per-connection lists, its search and
 filter results, and the `/model` command's Model step. Release dates come from models.dev; models

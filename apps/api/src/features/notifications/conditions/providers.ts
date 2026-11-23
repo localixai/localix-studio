@@ -1,3 +1,5 @@
+import { networkFailureOf } from '@localixai/agent/agents'
+
 import { errorMessage } from '../../../lib/errors'
 import { recoveryAction } from '../recovery'
 import { createConditions, type ConditionJournal } from './condition'
@@ -23,6 +25,11 @@ export interface ProviderCredentialEvent {
   label: string
   ok: boolean
   error?: string
+  /**
+   * The renewal never reached the sign-in server, for a reason that will not clear on its own (a
+   * certificate or a proxy that refused): the network's cause, said as such. Not a sign-in to redo.
+   */
+  unreachable?: string
 }
 
 /**
@@ -43,7 +50,13 @@ export interface ConnectionRunEnded {
    * how a provider's raw response reached the Event Center under a heading that already said
    * what was wrong; the body below says it in a sentence this module owns.
    */
-  failure?: { rateLimited?: boolean; retryable?: boolean; authFailed?: boolean }
+  failure?: {
+    rateLimited?: boolean
+    retryable?: boolean
+    authFailed?: boolean
+    /** The refused credential is a sign-in its provider would not renew. */
+    signInExpired?: boolean
+  }
 }
 
 /** The subject of a connection whose account sign-in is gone: one row per connection. */
@@ -65,6 +78,19 @@ export function createProviderConditions(
       const failure = run.outcome === 'failed' ? run.failure : undefined
       if (!failure?.authFailed && !failure?.rateLimited) return
       const label = await labelOf(run.userId, run.connectionId)
+      // The same problem the failed renewal raised (`credentialRefreshed`): while that row is open
+      // this raise leaves it as it is, with the provider's reason, instead of replacing it with
+      // the vaguer "could not sign in".
+      if (failure.signInExpired)
+        return conditions.raise(run.userId, {
+          subject,
+          problem: 'sign-in-expired',
+          severity: 'error',
+          title: `Could not renew the sign-in for ${label}`,
+          body: 'Runs on this connection fail until you sign in again.',
+          origin: { kind: 'application', label },
+          actions: [recoveryAction(`sign-in:${run.connectionId}`)],
+        })
       conditions.raise(run.userId, {
         subject,
         problem: failure.authFailed
@@ -130,6 +156,18 @@ export function createProviderConditions(
     credentialRefreshed(event: ProviderCredentialEvent): void {
       const subject = ['provider', event.connectionId]
       if (event.ok) return conditions.clear(event.userId, subject)
+      if (event.unreachable)
+        return conditions.raise(event.userId, {
+          subject,
+          problem: 'sign-in-unreachable',
+          severity: 'warning',
+          title: `Could not reach the sign-in server of ${event.label}`,
+          body: event.unreachable,
+          origin: { kind: 'application', label: event.label },
+          // Where the connection lives; the fix itself is outside the app (the proxy, the
+          // certificate store), and the row settles on the next renewal that gets through.
+          actions: [recoveryAction('open-settings:providers')],
+        })
       conditions.raise(event.userId, {
         subject,
         // One problem per connection: a refresh fails with a different message every time.
@@ -152,10 +190,21 @@ export function createProviderConditions(
 export type ProviderConditions = ReturnType<typeof createProviderConditions>
 
 /**
- * Why a refresh threw, unwrapped through `cause`; null when it was only cancelled or timed out —
- * a stopped run or a slow network is not a sign-in that stopped working.
+ * Why a refresh threw, unwrapped through `cause`; null when it was only cancelled or timed out, or
+ * never reached the provider (offline, a proxy, a certificate) — a stopped run or a network that
+ * is down is not a sign-in that stopped working, and the run's own failure says what it is.
  */
+/**
+ * The network cause of a renewal that a certificate or a proxy refused, which no retry clears;
+ * null for any other failure (offline clears by itself and the run says so).
+ */
+export function refreshUnreachable(error: unknown): string | null {
+  const network = networkFailureOf(error)
+  return network && !network.retryable ? network.userMessage : null
+}
+
 export function refreshFailureReason(error: unknown): string | null {
+  if (networkFailureOf(error)) return null
   const messages: string[] = []
   for (let current = error, depth = 0; current && depth < 4; depth++) {
     if (current instanceof Error) {

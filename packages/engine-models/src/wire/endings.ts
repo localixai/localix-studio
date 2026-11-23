@@ -40,12 +40,37 @@ export class ProviderFinishError extends Error {
   }
 }
 
+/**
+ * A part of the response could not be read: a chunk that is not JSON, usually one a connection or
+ * a proxy cut short, so sending the request again may help. The parser's error (with the half chunk
+ * in it) stays on `cause`, which nothing shows or logs beyond its name.
+ */
+export class ProviderMalformedResponseError extends Error {
+  constructor(cause: unknown) {
+    super('The provider sent a response that could not be read.', { cause })
+    this.name = 'ProviderMalformedResponseError'
+  }
+}
+
+/**
+ * A part of the response was JSON of a shape the provider's reader does not know. Unlike a cut
+ * chunk it repeats on every attempt, so it is never resent: each resend bills the whole prompt.
+ */
+export class ProviderUnexpectedShapeError extends Error {
+  constructor(cause: unknown) {
+    super('The provider answered in a shape Localix does not read.', { cause })
+    this.name = 'ProviderUnexpectedShapeError'
+  }
+}
+
 /** Names that already say what happened: passed to the host as they are. */
 export const NAMED_ENDINGS: ReadonlySet<string> = new Set([
   'StreamIdleTimeoutError',
   'ProviderPrematureCloseError',
   'ContentFilterError',
   'ProviderFinishError',
+  'ProviderMalformedResponseError',
+  'ProviderUnexpectedShapeError',
 ])
 
 /**

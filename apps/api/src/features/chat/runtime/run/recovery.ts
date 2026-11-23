@@ -18,11 +18,13 @@
 import type { CheckpointReason } from '@localixai/agent'
 
 import { backoffMs, sleep } from '@localixai/agent/backoff'
+import { errorMessage } from '../../../../lib/errors'
 import type { SessionRecord } from '../../repository'
 import type { RuntimeState } from '../agent-runner-state'
 import { LocalContextBudgetExceededError } from '../context-budget'
 import { sessionAgent } from '../message-envelope'
 import { classifyRunError } from './classify-run-error'
+import { warnOnRunPath } from './failure-log'
 import { reenterRun } from './reenter-run'
 import {
   persistRetryCheckpoint,
@@ -126,9 +128,9 @@ async function checkpointAndRerun(args: RecoveryArgs, reason: CheckpointReason):
     })
   } catch (recoveryError) {
     if (!abort.signal.aborted)
-      console.warn(
-        `[agent-runner] ${reason} recovery failed for session ${session.id}:`,
-        recoveryError instanceof Error ? recoveryError.message : recoveryError,
+      warnOnRunPath(
+        env.deps,
+        `[agent-runner] ${reason} recovery failed for session ${session.id}: ${errorMessage(recoveryError)}`,
       )
     return false
   }
@@ -193,7 +195,8 @@ export async function attemptTransientRetry({
   if (!shouldTransientRetry(info, retryCount, rest.abort.signal.aborted)) return false
 
   const backoff = transientRetryDelayMs(info.retryAfterMs, retryCount)
-  console.warn(
+  warnOnRunPath(
+    rest.env.deps,
     `[agent-runner] transient provider failure in session ${rest.session.id} — retrying in ${backoff}ms (attempt ${retryCount + 1}/${MAX_TRANSIENT_RETRIES}): ${info.userMessage}`,
   )
   await wait(backoff, rest.abort.signal)
@@ -223,7 +226,10 @@ export async function attemptTransientRetry({
     })
   } catch (recoveryError) {
     if (!abort.signal.aborted)
-      console.warn('[agent-runner] transient recovery preparation failed:', recoveryError)
+      warnOnRunPath(
+        env.deps,
+        `[agent-runner] transient recovery preparation failed for session ${session.id}: ${errorMessage(recoveryError)}`,
+      )
     return false
   }
 }

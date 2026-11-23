@@ -5,6 +5,7 @@
  * fresh for the whole run (`oauth-access`); without a store, the run's own snapshot is refreshed
  * in memory.
  */
+import { AgentRunError } from '@localixai/agent/agents'
 import type {
   AgentRuntimeAuth,
   RuntimeAuthInteraction,
@@ -100,8 +101,14 @@ export async function accessFor(
     }
   }
   const flow = flowFor(entry.provider.id)
+  // A sign-in that left with the vendored runtime (the Event Center's "<name> needs an API key"):
+  // the credential cannot be used, and connecting the provider with a key is the one fix.
   if (!flow)
-    throw new Error(`${entry.provider.name} has no OAuth sign-in; reconnect it with an API key`)
+    throw new AgentRunError(
+      'NO_PROVIDER_CONNECTION',
+      `Localix no longer signs in to ${entry.provider.name} with an account. Connect it again with an API key.`,
+      { reason: 'credential_unavailable' },
+    )
   const providerId = entry.provider.id
   const fresh = await freshOAuth(providerId, credential, flow, options.store)
   const request = options.sessionId ? { sessionId: options.sessionId } : {}

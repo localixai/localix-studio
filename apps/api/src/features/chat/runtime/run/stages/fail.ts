@@ -82,6 +82,7 @@ export async function failRun(frame: RunFrame, error: unknown): Promise<RunExecu
       rateLimited: failure.rateLimited,
       retryable: failure.retryable,
       authFailed: failure.authFailed,
+      signInExpired: failure.signInExpired,
     },
   })
   return failedRun(failure)

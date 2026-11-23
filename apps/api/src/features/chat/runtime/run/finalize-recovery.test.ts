@@ -82,13 +82,13 @@ describe('a failed run says what happened, as the system', () => {
     expect(notice.tone).toBe('warning')
   })
 
-  test('a raw provider body never becomes the reason; it is detail only', async () => {
+  test('a raw provider body never becomes the reason: its words do, the body is detail', async () => {
     const h = setup()
     spyOn(console, 'error').mockImplementation(() => {})
     await h.run(new Error('418: {"error":{"message":"I am a teapot"}}'))
     const notice = h.notices()[0] as { text: string; detail?: string; tone: string }
-    expect(notice.text).toBe('The run stopped on an unexpected error.')
-    expect(notice.detail).toContain('teapot')
+    expect(notice.text).toBe('The run stopped on an unexpected error: I am a teapot.')
+    expect(notice.detail).toContain('{"error"')
     // Trying again cannot help: the same tone the Event Center row has.
     expect(notice.tone).toBe('error')
   })

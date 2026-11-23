@@ -1,6 +1,6 @@
 import type { PresentedError } from '@localixai/agent/agents'
 
-import type { ProviderConditions } from '../conditions/providers'
+import type { ConnectionRunEnded, ProviderConditions } from '../conditions/providers'
 import type { NotificationJournal } from '../journal'
 import type { InboxAction } from '../contracts'
 import { recoveryAction } from '../recovery'
@@ -54,7 +54,7 @@ export interface RunEnded {
   /** The provider connection the run went out on (`null`: none resolved). */
   connectionId?: string | null
   /** How the classifier read the failure — what makes it the connection's problem. */
-  failure?: { rateLimited?: boolean; retryable?: boolean; authFailed?: boolean }
+  failure?: ConnectionRunEnded['failure']
 }
 
 export interface RunNotifications {
@@ -127,6 +127,14 @@ function failureActions(
   ]
 }
 
+/**
+ * A failure's reason as a journal row says it. A row can become a system notification banner,
+ * shown outside the app and on a locked screen, so it never quotes the provider's own words (they
+ * can echo the request it refused); the transcript's notice keeps them.
+ */
+const rowReason = (presented: PresentedError | undefined) =>
+  presented?.plainReason ?? presented?.reason
+
 export function createRunNotifications(deps: {
   journal: NotificationJournal
   lane: OrderedLane
@@ -164,7 +172,7 @@ export function createRunNotifications(deps: {
       category: 'agent',
       severity: shape.severity,
       title: shape.title,
-      body: [run.session.title, run.outcome === 'failed' && run.presented?.reason]
+      body: [run.session.title, run.outcome === 'failed' && rowReason(run.presented)]
         .filter(Boolean)
         .join('\n'),
       origin: resourceOrigin(run.session, 'run', run.runId, 'Sub-agent'),
@@ -188,7 +196,7 @@ export function createRunNotifications(deps: {
         category: 'agent',
         severity: 'error',
         title: failureTitle(session),
-        body: run.presented?.reason ?? 'The run stopped on an unexpected error.',
+        body: rowReason(run.presented) ?? 'The run stopped on an unexpected error.',
         origin: resourceOrigin(session, 'run', runId, 'Agent run'),
         actions: failureActions(session, runId, run.presented),
       })

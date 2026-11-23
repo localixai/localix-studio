@@ -10,9 +10,12 @@ import {
 import { buildMcpResourceTools } from '../../../mcp/mcp-resource-tools'
 import { claudeCodeMcpServers } from '../../../mcp/claude-code-servers'
 import type { AgentMcpServers } from '../../../mcp/agent-servers'
+import type { McpServerRecord } from '../../../mcp/repository'
 import { hydrateMcpRecords } from '../../../mcp/store-secrets'
 import type { SessionRecord } from '../../repository'
+import { errorMessage } from '../../../../lib/errors'
 import { prefixedWarnLogger } from '../plugin-hook-logger'
+import { warnOnRunPath } from './failure-log'
 import type { RunEnv } from './types'
 
 type McpServerList = Awaited<ReturnType<RunEnv['mcpRepo']['listForScope']>>
@@ -52,6 +55,26 @@ export interface ResolvedMcpTools {
  * onto the run. An optional server that's down
  * degrades gracefully; a server marked `required:true` fails startup.
  */
+/**
+ * A required-server failure with each server's Store page, where it has one. A server of Claude
+ * Code's files, of a plugin or of an agent file has none of its own, so the person is sent to the
+ * MCP shelf instead of a page that does not exist.
+ */
+export function withStorePages(
+  error: RequiredMcpServersError,
+  own: readonly McpServerRecord[],
+): RequiredMcpServersError {
+  const pages = new Map(
+    own.map((server) => [server.name, server.projectId ? `project:${server.name}` : server.name]),
+  )
+  return new RequiredMcpServersError(
+    error.failures.map((failure) => {
+      const storeId = pages.get(failure.server)
+      return storeId ? { ...failure, storeId } : { ...failure }
+    }),
+  )
+}
+
 export async function resolveMcpTools(args: {
   env: RunEnv
   userId: string
@@ -86,8 +109,10 @@ export async function resolveMcpTools(args: {
   const release = inline.length ? () => mcpClientManager.releaseScope(scope) : undefined
   // Named outside the try so the catch can still say WHICH servers went missing.
   let enabledServers: McpServerList = []
+  // The servers the person added: the only ones with a Store page a failure can point at.
+  let mcpServers: McpServerRecord[] = []
   try {
-    const mcpServers = await hydrateMcpRecords(
+    mcpServers = await hydrateMcpRecords(
       userId,
       await env.mcpRepo.listForScope(userId, session.projectId ?? ''),
     )
@@ -114,7 +139,10 @@ export async function resolveMcpTools(args: {
     })
     for (const name of args.agentServers?.references ?? [])
       if (!servers.some((server) => server.name === name))
-        console.warn(`[mcp] the agent names the MCP server "${name}", which is not configured here`)
+        warnOnRunPath(
+          env.deps,
+          `[mcp] the agent names the MCP server "${name}", which is not configured here`,
+        )
     enabledServers = servers.filter(
       (server) => availability.effectFor('mcp', server.name) !== 'deny',
     )
@@ -182,8 +210,10 @@ export async function resolveMcpTools(args: {
   } catch (err) {
     // `required:true` is an explicit startup contract. Preserve the manager's
     // typed failure so the run cannot silently start without that server.
-    if (err instanceof RequiredMcpServersError) throw err
-    console.warn('[agent-runner] MCP tool gather failed', err)
+    if (err instanceof RequiredMcpServersError) throw withStorePages(err, mcpServers)
+    // A line of the API log with its message, never the Error object: Bun prints an object with
+    // the source lines around its throw site.
+    warnOnRunPath(env.deps, `[agent-runner] MCP tool gather failed: ${errorMessage(err)}`)
     // Tell the MODEL too. Logging alone leaves it with a silently shorter tool list and
     // no way to tell "this server is down this turn" from "this product cannot do that".
     return {

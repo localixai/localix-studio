@@ -105,6 +105,8 @@ describe('run outcomes', () => {
       }),
     })
     const [row] = await inbox()
+    // A row can become a system banner, shown outside the app: the provider's words (which may
+    // echo the request) stay in the transcript, the row says only what happened.
     expect(row!.body).toBe('The run stopped on an unexpected error.')
     expect(row!.actions?.map((a) => a.id)).toEqual(['open'])
   })

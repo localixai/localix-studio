@@ -13,6 +13,16 @@ Localix is in beta: versions before 1.0 may change behavior between releases.
   as log keeps its thin space, a brace under or over a term is drawn as a real brace, and the label
   on an arrow sits close to it.
 
+### Fixed
+
+- **A reply that fails says why**: an expired ChatGPT or GitHub Copilot sign-in says so and offers
+  Sign in again, where it used to say "The run stopped on an unexpected error." A provider that
+  cannot be reached names the cause (no internet, a server that is not running, a certificate, a
+  proxy), a required MCP server that did not start is named with a link to its page, and a provider
+  error with no sentence of its own shows the provider's words instead of a generic one.
+- **Failed replies are in the log**: each one is a single line in the app's log with the reason and
+  the error, so the log you send with a report has it.
+
 ## v0.1.0-beta.29 — 2026-11-17
 
 Replies are drawn faster and closer to what the model meant, a project whose folder is gone no

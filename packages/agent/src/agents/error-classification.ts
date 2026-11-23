@@ -10,13 +10,19 @@ import type { AgentErrorInfo } from './error-classification-contracts'
 import {
   isContextOverflowMessage,
   isRetryableProviderMessage,
-  isTransientNetworkError,
   extractProviderStatus,
-  httpStatusToUserMessage,
   isLimitCappedMessage,
+  isRegionBlockedMessage,
   RETRYABLE_PROVIDER_MESSAGE,
   HTTP_STATUS_SENTENCES,
 } from './error-classification-signals'
+import {
+  REGION_BLOCKED_MESSAGE,
+  namedEndingInfo,
+  networkInfo,
+  providerSentence,
+  signInInfo,
+} from './error-classification-sentences'
 
 export type { AgentErrorInfo } from './error-classification-contracts'
 export { extractProviderStatus } from './error-classification-signals'
@@ -74,6 +80,10 @@ function classifyErrorKind(error: unknown): AgentErrorInfo {
     return agentRunErrorToInfo(error)
   }
 
+  // A sign-in its provider would not renew, or a sign-in server that failed the renewal.
+  const signIn = signInInfo(error)
+  if (signIn) return signIn
+
   // A local model that is not on this computer yet: the provider's own sentence says what to do.
   if (error instanceof Error && error.message.includes(MODEL_NOT_DOWNLOADED)) {
     return {
@@ -124,12 +134,19 @@ function classifyErrorKind(error: unknown): AgentErrorInfo {
         status === 429 ||
         status === 408 ||
         (status === 0 && RETRYABLE_PROVIDER_MESSAGE.test(error.message)))
-    const userMessage = httpStatusToUserMessage(status, error.message)
+    const fixed = HTTP_STATUS_SENTENCES[status]
+    const sentence =
+      fixed !== undefined
+        ? { userMessage: fixed }
+        : isRegionBlockedMessage(error.message)
+          ? { userMessage: REGION_BLOCKED_MESSAGE }
+          : providerSentence(status, error.message, transient)
     return {
       kind: 'fatal',
-      userMessage,
+      ...sentence,
       retryable: transient,
-      ...(HTTP_STATUS_SENTENCES[status] === undefined ? { verbatim: true as const } : {}),
+      // The sentence above is this classifier's; the provider's whole answer stays as detail.
+      ...(fixed === undefined ? { detail: error.message } : {}),
       // No `retryAfterMs` here: `classifyAgentError` reads the stated delay ONCE, for every
       // branch. Setting it again here recomputed the same parse and left the key present with
       // an undefined value when the response said nothing.
@@ -172,18 +189,14 @@ function classifyErrorKind(error: unknown): AgentErrorInfo {
     return { kind: 'fatal', userMessage: `Error: ${error.message}`, retryable: false }
   }
 
-  // A raw transient network drop (no HTTP status to classify above) — a connection
-  // reset / premature close / undici timeout mid-request is the most common real
-  // stream failure and clears on a retry. Match it before the fatal fallthrough.
-  if (isTransientNetworkError(error)) {
-    return {
-      kind: 'fatal',
-      // No "Retrying…": this sentence is also the TERMINAL reason when every retry is spent,
-      // and a failed turn that says it is retrying is a promise nothing keeps.
-      userMessage: 'Network connection to the provider dropped.',
-      retryable: true,
-    }
-  }
+  // A response that ended without finishing, named by the model adapter.
+  const ending = namedEndingInfo(error)
+  if (ending) return ending
+
+  // A request that never got an answer (no HTTP status to classify above): the address did not
+  // resolve, the server refused, the connection dropped, a certificate or a proxy refused.
+  const network = networkInfo(error)
+  if (network) return network
 
   const msg = error instanceof Error ? error.message : String(error)
   // Message-only classification for errors that reach here without a usable class
@@ -202,9 +215,9 @@ function classifyErrorKind(error: unknown): AgentErrorInfo {
   if (isRetryableProviderMessage(msg)) {
     return {
       kind: 'fatal',
-      userMessage: `Transient provider error (${msg.length > 160 ? msg.slice(0, 160) + '…' : msg})`,
+      ...providerSentence(0, msg, true),
       retryable: true,
-      verbatim: true,
+      detail: msg,
     }
   }
   // A quota / usage-limit / plan cap that arrived WITHOUT a parseable status (proxy-

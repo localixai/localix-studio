@@ -59,6 +59,11 @@ describe('a provider connection whose sign-in cannot renew', () => {
     const timedOut = Object.assign(new Error('timed out'), { name: 'TimeoutError' })
     expect(refreshFailureReason(new Error('OAuth refresh failed', { cause: aborted }))).toBeNull()
     expect(refreshFailureReason(timedOut)).toBeNull()
+    // Offline is not a sign-in that stopped working: the run's own failure says "could not reach".
+    const offline = Object.assign(new TypeError('getaddrinfo ENOTFOUND auth.openai.com'), {
+      code: 'ENOTFOUND',
+    })
+    expect(refreshFailureReason(offline)).toBeNull()
     expect(
       refreshFailureReason(
         new Error('OAuth refresh failed for x', { cause: new Error('invalid_grant') }),
@@ -93,6 +98,46 @@ describe('the credential store reports each refresh', () => {
     expect(open).toHaveLength(1)
     expect(open[0]!.key.startsWith(`condition:provider:${connection.id}:`)).toBe(true)
     expect(open[0]!.body).toContain('invalid_grant')
+
+    await store.modify!('openai', async () => ({
+      type: 'oauth' as const,
+      accessToken: 'fresh',
+      refreshToken: 'r2',
+      expiresAt: Number.MAX_SAFE_INTEGER,
+    }))
+    expect(await openRows(test)).toEqual([])
+  })
+})
+
+describe('a renewal a certificate or a proxy refused', () => {
+  it('is a quiet row naming the cause, not a sign-in to redo, settled by the next renewal', async () => {
+    const { test, service, vault } = await setup()
+    const connection = await service.createConnection(U, {
+      providerId: 'openai',
+      providerName: 'OpenAI',
+      label: 'OpenAI',
+      authType: 'api-key',
+      apiKey: 'placeholder-key',
+    })
+    const keyId = (await service.requireConnection(U, connection.id)).keys[0]!.id
+    vault.set(
+      `${U}:provider.${keyId}`,
+      JSON.stringify({ type: 'oauth', accessToken: 'a', refreshToken: 'r', expiresAt: 0 }),
+    )
+    const store = await service.credentialStoreFor(U, connection.id, keyId)
+    const untrusted = Object.assign(new TypeError('certificate has expired'), {
+      code: 'CERT_HAS_EXPIRED',
+    })
+    await expect(
+      store.modify!('openai', async () => {
+        throw untrusted
+      }),
+    ).rejects.toThrow('certificate has expired')
+    const open = await openRows(test)
+    expect(open.map((row) => [row.title, row.severity])).toEqual([
+      ['Could not reach the sign-in server of openai', 'warning'],
+    ])
+    expect(open[0]!.body).toContain('certificate has expired')
 
     await store.modify!('openai', async () => ({
       type: 'oauth' as const,
@@ -140,6 +185,23 @@ describe('a connection that fails runs the same way', () => {
 
     await conditions.runEnded(ended({ outcome: 'completed' }))
     expect(await openRows(test)).toEqual([])
+  })
+
+  it('a run failed by the expired sign-in keeps the renewal’s row, with its reason', async () => {
+    const test = await createTestJournal()
+    journals.push(test)
+    const conditions = createProviderConditions(test.journal, async () => 'OpenAI')
+    conditions.credentialRefreshed({
+      userId: U,
+      connectionId: 'C1',
+      label: 'openai',
+      ok: false,
+      error: 'OpenAI token refresh failed (400): invalid_grant',
+    })
+    await conditions.runEnded(ended({ failure: { authFailed: true, signInExpired: true } }))
+    const open = await openRows(test)
+    expect(open.map((row) => row.title)).toEqual(['Could not renew the sign-in for openai'])
+    expect(open[0]!.body).toContain('invalid_grant')
   })
 
   it('an ordinary failure, a stop, or a run without a connection says nothing', async () => {

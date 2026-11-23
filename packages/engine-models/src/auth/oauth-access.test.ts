@@ -6,6 +6,8 @@ import type {
   RuntimeOAuthCredential,
 } from '@localixai/agent/runtime'
 
+import { SignInExpiredError } from '@localixai/agent/agents'
+
 import type { OAuthFlow } from './flows/types'
 import { freshOAuth, refreshingAccess } from './oauth-access'
 
@@ -107,6 +109,27 @@ describe('an OAuth credential kept fresh for the whole run', () => {
     )
     expect((await request(stubborn, 'T1')).status).toBe(401)
     expect(refusing.sent).toEqual(['T1', 'T9'])
+  })
+
+  test('a 401 whose refresh the provider refuses fails as the expired sign-in, not as the 401', async () => {
+    // A token revoked on the server before it lapsed here: the request is refused, and so is the
+    // renewal. Answering with the 401 told the person to check a key; the fix is to sign in again.
+    const cancelled: string[] = []
+    const fetch = (async () =>
+      new Response(new ReadableStream({ cancel: () => void cancelled.push('body') }), {
+        status: 401,
+      })) as unknown as typeof globalThis.fetch
+    const flow: OAuthFlow = {
+      login: async () => oauth('login'),
+      refresh: async () => {
+        throw new SignInExpiredError('OpenAI', 'OpenAI token refresh failed (400): invalid_grant')
+      },
+      access: (credential) => ({ apiKey: credential.accessToken, fetch }),
+    }
+    const access = refreshingAccess('openai', oauth('T1'), flow, undefined, {})
+    const failure = await request(access, 'T1').catch((error: unknown) => error)
+    expect(failure).toBeInstanceOf(SignInExpiredError)
+    expect(cancelled).toEqual(['body'])
   })
 
   test('after a 401, a token another run already refreshed is used without refreshing again', async () => {
