@@ -1,6 +1,8 @@
 import { describe, expect, test } from 'bun:test'
 import {
   APICallError,
+  JSONParseError,
+  TypeValidationError,
   type LanguageModelV4,
   type LanguageModelV4CallOptions,
   type LanguageModelV4StreamPart,
@@ -205,6 +207,47 @@ describe('when to send a request again', () => {
     expect((await turn.message).stopReason).toBe('error')
     expect(turn.failure?.name).toBe('ContentFilterError')
     expect(calls).toHaveLength(1)
+  })
+
+  test('a chunk that does not parse is a named failure, resent when nothing streamed yet', async () => {
+    // The provider's SDK reports an unreadable chunk as an error part; it reached the person as
+    // "an unexpected error" with the half chunk as the only explanation.
+    const unreadable = (): LanguageModelV4StreamPart => ({
+      type: 'error',
+      error: new JSONParseError({ text: '{"choices":[{"del', cause: new SyntaxError('bad') }),
+    })
+    const broken = recordingModel([parts([...text('half'), unreadable()])])
+    const turn = run(broken.model)
+    await turn.message
+    expect(turn.failure?.name).toBe('ProviderMalformedResponseError')
+    expect(classifyAgentError(turn.failure)).toMatchObject({
+      userMessage: 'The provider sent a response that could not be read.',
+      retryable: true,
+    })
+
+    const first = recordingModel([parts([unreadable()]), parts([...text('ok'), finish()])])
+    expect((await run(first.model).message).stopReason).toBe('end_turn')
+    expect(first.calls).toHaveLength(2)
+  })
+
+  test('a chunk of a shape the reader does not know is not resent, and its value is not shown', async () => {
+    // A shape mismatch repeats on every attempt: resending it bills the whole prompt again.
+    const misshapen = (): LanguageModelV4StreamPart => ({
+      type: 'error',
+      error: new TypeValidationError({ value: { private: 'model text' }, cause: new Error('x') }),
+    })
+    const { model, calls } = recordingModel([parts([misshapen()])])
+    const turn = run(model)
+    await turn.message
+    expect(calls).toHaveLength(1)
+    expect(turn.failure?.name).toBe('ProviderUnexpectedShapeError')
+    const info = classifyAgentError(turn.failure)
+    expect(info).toMatchObject({
+      userMessage: 'The provider answered in a shape Localix does not read.',
+      retryable: false,
+      detail: 'AI_TypeValidationError',
+    })
+    expect(JSON.stringify(info)).not.toContain('model text')
   })
 
   test('only a network TypeError is a connection worth retrying', () => {

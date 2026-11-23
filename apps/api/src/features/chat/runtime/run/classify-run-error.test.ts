@@ -65,3 +65,18 @@ describe('a refusal of the host itself', () => {
     expect(presented.actions).toEqual([])
   })
 })
+
+describe('what a provider echoed back', () => {
+  test('is redacted in the detail too, where its whole answer is kept', () => {
+    const error = Object.assign(new Error('openai 422: invalid key sk-vault-1 for this model'), {
+      name: 'FetchError',
+    })
+    const info = classifyRunError(
+      { sanitizeText: (_userId, text) => text.replaceAll('sk-vault-1', '[redacted]') },
+      'u1',
+      error,
+    )
+    expect(info.userMessage).not.toContain('sk-vault-1')
+    expect(info.detail).toBe('openai 422: invalid key [redacted] for this model')
+  })
+})

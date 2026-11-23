@@ -18,6 +18,7 @@ import type {
 } from '@localixai/agent/runtime'
 
 import {
+  asMalformedResponse,
   DEFAULT_RETRY_POLICY,
   describeFailure,
   isRetryable,
@@ -205,7 +206,7 @@ export function createModelSession(bound: BoundModel, options: SessionOptions): 
       assembler = new ResponseAssembler(bound.origin)
       partial = new PartialUsage(call.prompt, call.tools)
       // oxlint-disable-next-line react-doctor/async-await-in-loop -- an attempt follows the one before it
-      const error = (await attempt()) ?? unfinished(assembler)
+      const error = asMalformedResponse((await attempt()) ?? unfinished(assembler))
       if (signal.aborted) return settle(assembler, { aborted: true })
       if (error === undefined) break
       // Only a request that produced nothing may be sent again; a partial answer is final.

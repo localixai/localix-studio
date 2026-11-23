@@ -93,6 +93,11 @@ export interface McpProbeResult {
 export interface RequiredMcpServerFailure {
   server: string
   error: string
+  /**
+   * The server's page in the Store (`store-listing.ts` ids), when it has one: only a server the
+   * person added does. Set by the run that gathered it, which knows where each server came from.
+   */
+  storeId?: string
 }
 
 /** A required server is an initialization contract, not a best-effort tool source. */

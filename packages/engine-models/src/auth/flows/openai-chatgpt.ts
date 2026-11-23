@@ -3,6 +3,7 @@
  * to api.openai.com, billed to the person's ChatGPT plan. Every login registers its own client;
  * OpenAI returns the issued client id in the redirect and refreshes require it.
  */
+import { SignInExpiredError } from '@localixai/agent/agents'
 import type { RuntimeOAuthCredential } from '@localixai/agent/runtime'
 
 import { cancellableSleep } from '../device-code'
@@ -176,7 +177,7 @@ export const openAIChatGPTFlow: OAuthFlow = {
   async refresh(credential, signal) {
     const clientId = credential.extra?.clientId
     if (typeof clientId !== 'string' || !clientId.trim())
-      throw new Error('This ChatGPT sign-in has no client id; sign in again')
+      throw new SignInExpiredError('OpenAI', 'This ChatGPT sign-in has no client id; sign in again')
     const token = await requestToken(
       new URLSearchParams({
         grant_type: 'refresh_token',

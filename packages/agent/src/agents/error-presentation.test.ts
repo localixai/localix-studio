@@ -5,10 +5,10 @@ import { presentError, presentErrorInfo } from './error-presentation'
 import { MODEL_NOT_DOWNLOADED } from './errors'
 
 describe('presenting a failed run to a person', () => {
-  test('a raw provider body is never the reason; it is offered only as detail', () => {
+  test('a raw provider body is never the reason: its words are, and the body is detail', () => {
     const presented = presentError(new Error('418: {"error":{"message":"I am a teapot"}}'))
-    expect(presented.reason).toBe('The run stopped on an unexpected error.')
-    expect(presented.detail).toContain('teapot')
+    expect(presented.reason).toBe('The run stopped on an unexpected error: I am a teapot.')
+    expect(presented.detail).toContain('{"error"')
     expect(presented.severity).toBe('error')
     expect(presented.actions).toEqual([])
   })
@@ -46,6 +46,19 @@ describe('presenting a failed run to a person', () => {
       rateLimited: true,
     })
     expect(limited.actions).toEqual(['retry'])
+  })
+
+  test('a failure the host classified itself offers the recovery the host named', () => {
+    const presented = presentErrorInfo({
+      kind: 'fatal',
+      userMessage: 'The MCP server “github” this agent requires did not start: spawn npx ENOENT.',
+      retryable: false,
+      recovery: ['open-store:mcp-server/github'],
+    })
+    expect(presented.reason).toBe(
+      'The MCP server “github” this agent requires did not start: spawn npx ENOENT.',
+    )
+    expect(presented.actions).toEqual(['open-store:mcp-server/github'])
   })
 
   test('the headline follows the wording rule and names the conversation', () => {

@@ -96,6 +96,11 @@ ID. Each log keeps one rotated generation (`.old`). Desktop rotation checks a 2 
 writing; API rotation checks an 8 MiB threshold only at process startup, so a long-running API can
 exceed it. Rotation is best-effort, and older retained generations are replaced.
 
+Every chat run that fails writes one `run.failed` line to the API log (a stopped run writes
+`run.stopped`): the session, the run, the error's kind, the reason the chat showed, and the error's
+name, code, status, redacted message, stack and causes. `bun run logs --source api --level error`
+lists them.
+
 From a source checkout, use these commands:
 
 ```bash

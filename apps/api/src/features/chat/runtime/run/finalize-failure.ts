@@ -8,6 +8,7 @@ import type { StoredMessagePayload } from '../../../../db'
 import type { SessionRecord } from '../../repository'
 import type { RunEnv } from './types'
 import { classifyRunError } from './classify-run-error'
+import { logRunFailure } from './failure-log'
 import { announceRunFailure } from './finalize-notices'
 import {
   withTerminalContextDiagnostics,
@@ -52,30 +53,35 @@ export async function finalizeFailedRun(args: {
   // Redacted at the classification: `userMessage` reaches four sinks below and none of them
   // scrubs (see classify-run-error.ts).
   const info = classifyRunError(env.deps, userId, error)
-  const { kind, userMessage } = info
-  if (kind === 'fatal') {
-    // The ERROR object, not `userMessage` — so it needs its own pass. `console.error` writes straight
-    // to stdout without touching the pino redaction sink, and the raw object carries the provider's
-    // whole response body plus its stack.
-    console.error(
-      '[agent-runner] fatal error in session',
-      session.id,
-      env.deps.sanitizeToolError?.(userId, error) ?? error,
-    )
-  }
-  // A rate-limit / quota cap means the ROUTE has spent its allowance, not a bug. The cooldown
-  // is recorded against the route this run took — not the session — so a conversation's other
-  // agents on other routes keep firing (route-cooldowns.ts). A transient 429 holds this
-  // model; a spent plan (non-retryable) holds the whole connection.
-  if (info.rateLimited) {
-    env.state.routeCooldowns.hold(
-      args.route,
-      info.retryable ? 'route' : 'connection',
-      Date.now() + rateLimitBackoffMs(info),
-    )
-  }
-  const assistantRecord = await env.repo.getMessage(userId, session.id, assistantMessageId)
+  const { userMessage } = info
   const stopped = env.state.stoppedRuntimeSessionIds.has(session.id)
+  let assistantRecord: Awaited<ReturnType<RunEnv['repo']['getMessage']>> | undefined
+  try {
+    // A rate-limit / quota cap means the ROUTE has spent its allowance, not a bug. The cooldown
+    // is recorded against the route this run took — not the session — so a conversation's other
+    // agents on other routes keep firing (route-cooldowns.ts). A transient 429 holds this
+    // model; a spent plan (non-retryable) holds the whole connection.
+    if (info.rateLimited) {
+      env.state.routeCooldowns.hold(
+        args.route,
+        info.retryable ? 'route' : 'connection',
+        Date.now() + rateLimitBackoffMs(info),
+      )
+    }
+    assistantRecord = await env.repo.getMessage(userId, session.id, assistantMessageId)
+  } finally {
+    // One structured line in `api.log` for every failure, never the Error object on the console
+    // (`failure-log.ts` says why), and written even when the reads above fail.
+    logRunFailure(env.deps, {
+      userId,
+      sessionId: session.id,
+      runId: assistantMessageId,
+      info,
+      error,
+      stopped,
+      ...(assistantRecord === undefined ? {} : { output: Boolean(assistantRecord) }),
+    })
+  }
   if (assistantRecord) {
     // THE REASON IS NOT THE MODEL'S TO SAY. When a run died before writing anything, the
     // provider's own message was dropped into the assistant row, so a raw upstream body —
@@ -92,10 +98,6 @@ export async function finalizeFailedRun(args: {
       assistantMessageId,
       failedPayload,
       assistantRecord.createdAt,
-    )
-  } else if (!stopped) {
-    console.warn(
-      `[agent-runner] run in session ${session.id} (${session.sessionKind ?? 'chat'}) failed before producing any assistant output: ${userMessage}`,
     )
   }
   // WHAT HAPPENED, said by the system (`finalize-notices.ts`) — with or without an assistant

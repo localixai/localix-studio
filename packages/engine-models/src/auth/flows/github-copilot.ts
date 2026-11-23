@@ -6,7 +6,7 @@
 import type { RuntimeOAuthCredential } from '@localixai/agent/runtime'
 
 import { pollDeviceCode } from '../device-code'
-import { signInFetch, type OAuthFlow } from './types'
+import { signInFetch, tokenEndpointError, type OAuthFlow } from './types'
 
 /** One model of Copilot's `/models` listing, as far as availability reads it. */
 interface CopilotModelRow {
@@ -51,19 +51,32 @@ async function json(url: string, init: RequestInit): Promise<Record<string, unkn
   return (await response.json()) as Record<string, unknown>
 }
 
+/**
+ * The Copilot token for a GitHub token. `operation` says whether this is the sign-in's exchange or
+ * a renewal: a renewal GitHub refuses (the GitHub token was revoked) is a sign-in to redo.
+ */
 async function copilotToken(
   githubToken: string,
   enterprise: string | undefined,
   signal: AbortSignal,
+  operation: 'refresh' | 'exchange',
 ): Promise<RuntimeOAuthCredential> {
-  const body = await json(`https://api.${enterprise ?? 'github.com'}/copilot_internal/v2/token`, {
-    headers: {
-      accept: 'application/json',
-      authorization: `Bearer ${githubToken}`,
-      ...COPILOT_HEADERS,
+  const response = await signInFetch(
+    `https://api.${enterprise ?? 'github.com'}/copilot_internal/v2/token`,
+    {
+      headers: {
+        accept: 'application/json',
+        authorization: `Bearer ${githubToken}`,
+        ...COPILOT_HEADERS,
+      },
+      signal,
     },
-    signal,
-  })
+  )
+  // GitHub refuses a revoked token with 401. Its 403 (a seat removed, an organization policy, a
+  // secondary rate limit) is not fixed by signing in again, so it keeps its own words.
+  if (!response.ok)
+    throw await tokenEndpointError(response, 'GitHub', operation, (status) => status === 401)
+  const body = (await response.json()) as Record<string, unknown>
   if (typeof body.token !== 'string' || typeof body.expires_at !== 'number')
     throw new Error('GitHub sent no Copilot token')
   return {
@@ -226,7 +239,7 @@ export const gitHubCopilotFlow: OAuthFlow = {
         }
       },
     })
-    const credential = await copilotToken(githubToken, enterprise, signal)
+    const credential = await copilotToken(githubToken, enterprise, signal, 'exchange')
     const models = await accountModels(credential.accessToken, enterprise, signal).catch(
       () => undefined,
     )
@@ -250,7 +263,7 @@ export const gitHubCopilotFlow: OAuthFlow = {
 
   async refresh(credential, signal) {
     const enterprise = enterpriseOf(credential)
-    const fresh = await copilotToken(credential.refreshToken, enterprise, signal)
+    const fresh = await copilotToken(credential.refreshToken, enterprise, signal, 'refresh')
     const models = await accountModels(fresh.accessToken, enterprise, signal).catch(() => undefined)
     return {
       ...fresh,

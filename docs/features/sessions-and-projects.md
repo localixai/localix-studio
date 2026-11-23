@@ -103,6 +103,17 @@ refusal. When a tool was still running at the moment of the cut, the line names 
 check before retrying: a command that was dispatched and never reported back may have taken effect
 already.
 
+The reason names the cause in plain words. A provider that could not be reached says why ("Could not
+reach api.openai.com: its address could not be found. Check the internet connection."), and a
+refused connection, a timeout, an untrusted certificate or a proxy that refused each say so. An
+expired or revoked sign-in says "Your sign-in to OpenAI has expired or was revoked. Sign in again."
+with a **Sign in again** button. A required MCP server that did not start is named, with a button to
+its page in the Store, or to the Store's MCP servers for one a file or a plugin defines. A provider
+status with no sentence of its own shows the status and the provider's own words, never its raw
+response or an HTML error page; "The run stopped on an unexpected error." appears alone only when
+the error carried no text at all. The Event Center entry, which can also appear as a system
+notification, leaves the provider's words out: a provider may echo the request it refused.
+
 The tile and name are one link: selecting them opens that agent's **profile** as a workspace tab —
 the same page a mention chip and the row in the Store (Agents) open, in the scope the record lives
 in. The profile is where the agent is read and edited, so it can sit beside the conversation it is

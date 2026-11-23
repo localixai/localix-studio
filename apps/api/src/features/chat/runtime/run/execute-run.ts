@@ -12,8 +12,10 @@
  * stays concurrent (the tool gather with the session roster, the run row with history
  * materialization); a further split must keep those pairs inside one stage.
  */
+import { errorMessage } from '../../../../lib/errors'
 import { runtimeRunAdmission } from '../run-admission'
 import type { RunExecutionOutcome } from '../run-outcome'
+import { warnOnRunPath } from './failure-log'
 import { teardownRun } from './run-teardown'
 import { admitRun } from './stages/admit'
 import { completeRun } from './stages/complete'
@@ -70,7 +72,10 @@ async function executeAdmittedRun(
     void frame.teardown
       .releaseMcp?.()
       .catch((error: unknown) =>
-        console.warn('[agent-runner] releasing the agent MCP servers failed', error),
+        warnOnRunPath(
+          env.deps,
+          `[agent-runner] releasing the agent MCP servers failed: ${errorMessage(error)}`,
+        ),
       )
     teardownRun({
       env,

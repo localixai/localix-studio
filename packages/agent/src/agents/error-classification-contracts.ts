@@ -1,4 +1,5 @@
 import type { ModelUnavailableReason } from './errors'
+import type { Recovery } from './error-presentation'
 
 export interface AgentErrorInfo {
   kind: 'abort' | 'dismissed' | 'timeout' | 'fatal' | 'context_overflow'
@@ -33,6 +34,11 @@ export interface AgentErrorInfo {
    */
   authFailed?: boolean
   /**
+   * The refused credential is a SIGN-IN that could not be renewed (the token endpoint refused the
+   * refresh grant): the fix is to sign in again, not to check a key. Set with `authFailed`.
+   */
+  signInExpired?: true
+  /**
    * The chosen model could not be bound to a provider, and why (`NO_PROVIDER_CONNECTION` with a
    * host-supplied reason). Additive like `authFailed`: a consumer keys on this, not on the text.
    */
@@ -41,7 +47,26 @@ export interface AgentErrorInfo {
    * `userMessage` is the error's OWN text — a provider's response body, a proxy's page, an
    * unrecognised exception — not a sentence this classifier wrote. Such text rendered in the
    * transcript as `403: {"message":"Key limit exceeded…"}`; a presenter (`presentError`) keeps
-   * it out of the headline and the reason and offers it only as detail.
+   * the raw text out of the headline, says only its readable words after a lead of its own, and
+   * offers the whole text as detail.
    */
   verbatim?: true
+  /**
+   * The error's own text, kept beside a `userMessage` this classifier wrote: a provider's whole
+   * answer, the code-bearing message of a network failure. For a tooltip and the log, never the
+   * reason; it may hold anything the provider echoed, so a host redacts it like `userMessage`.
+   */
+  detail?: string
+  /**
+   * `userMessage` without the provider's words it quotes ("The provider refused the request
+   * (422)."), for a surface outside the app, such as a system notification, where a provider's
+   * echo of the request must not appear. Absent when `userMessage` quotes nothing.
+   */
+  plain?: string
+  /**
+   * The recovery a HOST names for a failure it classified itself (a required MCP server that did
+   * not start opens that server's page). This classifier never sets it: it knows no host's pages.
+   * A presenter offers it in place of the actions it would derive.
+   */
+  recovery?: readonly Recovery[]
 }

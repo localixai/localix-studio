@@ -8,6 +8,7 @@
  * lose the newer refresh token, and it runs on its own deadline, never the run's signal: a stop
  * that lands after the provider rotated the refresh token would otherwise lose the new one.
  */
+import { isSignInExpiredError } from '@localixai/agent/agents'
 import type { RuntimeCredentialStore, RuntimeOAuthCredential } from '@localixai/agent/runtime'
 
 import type { ProviderAccess } from '../providers/connect'
@@ -112,7 +113,13 @@ export function refreshingAccess(
     const used = stale(current) ? await renew() : current
     const response = await send(used, input, init)
     if (response.status !== 401 || !replayable(init)) return response
-    const next = await renew(used.accessToken).catch(() => used)
+    // A renewal that merely failed leaves the 401 to speak; one the provider REFUSED is the real
+    // cause (a token revoked before it lapsed here), and the 401 would only say "check the key".
+    const next = await renew(used.accessToken).catch(async (error: unknown) => {
+      if (!isSignInExpiredError(error)) return used
+      await response.body?.cancel().catch(() => undefined)
+      throw error
+    })
     if (next.accessToken === used.accessToken) return response
     await response.body?.cancel().catch(() => undefined)
     return send(next, input, init)

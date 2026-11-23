@@ -37,6 +37,7 @@ import { createKeyedSerializer } from '../../lib/keyed-serializer'
 import { createOAuthFlowManager } from './oauth-flow-manager'
 import {
   refreshFailureReason,
+  refreshUnreachable,
   type ProviderCredentialEvent,
 } from '../notifications/conditions/providers'
 import { onDeviceFirst } from '@localixai/agent/catalog'
@@ -314,13 +315,15 @@ export function createProviderConnectionsService(deps: ProviderConnectionsServic
         } catch (error) {
           // The update IS the OAuth refresh: it throwing means this connection cannot sign in.
           const reason = refreshFailureReason(error)
-          if (reason !== null) {
+          const unreachable = refreshUnreachable(error)
+          if (reason !== null || unreachable !== null) {
             deps.onCredentialRefresh?.({
               userId,
               connectionId,
               label: providerId,
               ok: false,
-              error: reason,
+              ...(reason !== null ? { error: reason } : {}),
+              ...(unreachable !== null ? { unreachable } : {}),
             })
           }
           throw error
