@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import type { AssistantMessage, ModelStepHook, ReasoningEffort } from '@localixai/agent'
 import { agentOf, fieldOf, fireIn, hearsIn, type ModEventScope } from './event-scope'
 import { claudeCodeToolName, localToolName, toolCallEvent, toolInputOf } from '../plugins/kit'
+import { turnUsageOf } from './turn-usage'
 
 /**
  * `turn.step`: each model request of a turn, before it is sent. The event streams: a hook is an
@@ -35,15 +36,7 @@ export function stepResult(turnId: string, index: number, message: AssistantMess
       return [{ name: claudeCodeToolName(part), input }]
     }),
     stopReason: STOPS.has(message.stopReason) ? message.stopReason : null,
-    usage: usage
-      ? {
-          input_tokens: usage.inputTokens,
-          output_tokens: usage.outputTokens,
-          cache_read_input_tokens: usage.cacheReadTokens ?? 0,
-          cache_creation_input_tokens: usage.cacheWriteTokens ?? 0,
-          model: message.responseModel ?? message.model,
-        }
-      : null,
+    usage: usage ? turnUsageOf(usage, message.responseModel ?? message.model) : null,
   }
 }
 

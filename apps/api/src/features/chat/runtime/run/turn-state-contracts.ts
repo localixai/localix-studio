@@ -61,6 +61,11 @@ export interface RunTurnState {
 
   // ---- Usage / cost provenance ------------------------------------------
   usageTotals: RunUsageTotals
+  /**
+   * A request of this row wrote to the prompt cache and its provider named no lifetime for the
+   * write, so `usageTotals.cacheWrite1hTokens` is not the row's whole one-hour part.
+   */
+  cacheWriteLifetimeUnnamed: boolean
   /** Sum of the provider's ACTUAL per-turn costs (when reported). */
   actualCostSum: number
   /** Sum of catalog estimates priced per request (required for tiered pricing). */

@@ -9,7 +9,7 @@
  */
 import type { LanguageModelV4Prompt, LanguageModelV4StreamPart } from '@ai-sdk/provider'
 
-import type { AssembledUsage } from './finish'
+import { oneHourWritesOf, type AssembledUsage } from './finish'
 
 const CHARS_PER_TOKEN = 4
 
@@ -32,6 +32,7 @@ export function countsOf(raw: unknown): Counts | undefined {
   if (anthropic && ('input_tokens' in anthropic || 'output_tokens' in anthropic)) {
     const cacheRead = num(anthropic.cache_read_input_tokens)
     const cacheWrite = num(anthropic.cache_creation_input_tokens)
+    const long = cacheWrite !== undefined ? oneHourWritesOf(anthropic) : undefined
     const fresh = num(anthropic.input_tokens)
     return {
       ...(fresh !== undefined ? { inputTokens: fresh + (cacheRead ?? 0) + (cacheWrite ?? 0) } : {}),
@@ -40,6 +41,7 @@ export function countsOf(raw: unknown): Counts | undefined {
         : {}),
       ...(cacheRead !== undefined ? { cacheReadTokens: cacheRead } : {}),
       ...(cacheWrite !== undefined ? { cacheWriteTokens: cacheWrite } : {}),
+      ...(long !== undefined ? { cacheWrite1hTokens: long } : {}),
     }
   }
   // Gemini: every chunk carries the totals so far.

@@ -37,6 +37,7 @@
     "event:ui.render:Pane",
     "result:prompt.submit",
     "result:tool.call:Write",
+    "result:tool.check",
     "result:turn.step"
   ]
 }

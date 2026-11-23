@@ -53,3 +53,50 @@ describe('turn.step as an async generator', () => {
     expect(message.stopReason).toBe('end_turn')
   })
 })
+
+describe("turn.step's usage", () => {
+  /** The `usage` a hook reads from `next(e)` for one response with these counts. */
+  async function usageSeen(usage: AssistantMessage['usage']) {
+    const seen: unknown[] = []
+    const { scope } = await hostWithMod((on) => {
+      on('turn.step', async function* ($, e, next) {
+        const result = (yield* next(e) as AsyncGenerator<unknown, unknown>) as { usage: unknown }
+        seen.push(result.usage)
+        return result
+      })
+    })
+    await scope.modelStep('turn-1')!(
+      { index: 0, modelId: 'model-a', messageCount: 1 },
+      async () => ({ ...answer('hi'), ...(usage ? { usage } : {}) }),
+    )
+    return seen[0]
+  }
+
+  test('splits the cache write by the lifetime the provider named', async () => {
+    expect(
+      await usageSeen({
+        inputTokens: 90,
+        outputTokens: 2,
+        cacheWriteTokens: 50,
+        cacheWrite1hTokens: 30,
+      }),
+    ).toEqual({
+      input_tokens: 90,
+      output_tokens: 2,
+      cache_read_input_tokens: 0,
+      cache_creation_input_tokens: 50,
+      ephemeral_5m_input_tokens: 20,
+      ephemeral_1h_input_tokens: 30,
+      model: 'model-a',
+    })
+  })
+
+  test('names no lifetime where the provider reported one total, or nothing was written', async () => {
+    const total = await usageSeen({ inputTokens: 90, outputTokens: 2, cacheWriteTokens: 50 })
+    expect(total).toMatchObject({ cache_creation_input_tokens: 50 })
+    expect(total).not.toHaveProperty('ephemeral_5m_input_tokens')
+    expect(total).not.toHaveProperty('ephemeral_1h_input_tokens')
+    const none = await usageSeen({ inputTokens: 90, outputTokens: 2, cacheWrite1hTokens: 0 })
+    expect(none).not.toHaveProperty('ephemeral_5m_input_tokens')
+  })
+})

@@ -31,12 +31,16 @@ export function priceUsage(
   if (!counted) return undefined
   const cacheRead = counted.cacheReadTokens ?? 0
   const cacheWrite = counted.cacheWriteTokens ?? 0
+  // Anthropic bills a one-hour write at twice the input rate, a five-minute one at the catalog's
+  // `cacheWrite` rate; a provider that names no lifetime is all at the catalog's rate.
+  const longWrite = Math.min(cacheWrite, counted.cacheWrite1hTokens ?? 0)
   const freshInput = Math.max(0, counted.inputTokens - cacheRead - cacheWrite)
   const usage: Usage = {
     inputTokens: counted.inputTokens,
     outputTokens: counted.outputTokens,
     ...(counted.cacheReadTokens !== undefined ? { cacheReadTokens: cacheRead } : {}),
     ...(counted.cacheWriteTokens !== undefined ? { cacheWriteTokens: cacheWrite } : {}),
+    ...(counted.cacheWrite1hTokens !== undefined ? { cacheWrite1hTokens: longWrite } : {}),
     ...(counted.reasoningTokens !== undefined ? { reasoningTokens: counted.reasoningTokens } : {}),
     totalTokens: counted.inputTokens + counted.outputTokens,
   }
@@ -47,7 +51,11 @@ export function priceUsage(
     input: rates ? (freshInput * rates.input) / PER_MILLION : 0,
     output: rates ? (counted.outputTokens * rates.output) / PER_MILLION : 0,
     cacheRead: rates ? (cacheRead * (rates.cacheRead ?? rates.input)) / PER_MILLION : 0,
-    cacheWrite: rates ? (cacheWrite * (rates.cacheWrite ?? rates.input)) / PER_MILLION : 0,
+    cacheWrite: rates
+      ? ((cacheWrite - longWrite) * (rates.cacheWrite ?? rates.input) +
+          longWrite * rates.input * 2) /
+        PER_MILLION
+      : 0,
   }
   const estimated = breakdown.input + breakdown.output + breakdown.cacheRead + breakdown.cacheWrite
   const total = billed ?? estimated

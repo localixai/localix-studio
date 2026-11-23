@@ -11,6 +11,7 @@ import { announceEmptyReply, announceRunStopped } from './finalize-notices'
 import { isSilentConversationTurn, settleConversationTurn } from './conversation-silence'
 import { runStopHooks } from './finalize-stop-hooks'
 import { sealFinalPayload } from './finalize-payload'
+import { runTokenCounts } from './turn-state'
 
 import type { SessionRecord } from '../../repository'
 import type { PersistedMessage } from '../../contracts'
@@ -18,6 +19,7 @@ import type { LoadedPlugins } from '../../../plugins/loader'
 import { ccBackgroundWork } from './cc-hook-run-facts'
 import type { CcHooksRuntime } from '../../../cc-hooks'
 import type { ModRunScope } from '../../../mods/run-scope'
+import { turnUsageOf } from '../../../mods/turn-usage'
 import { runAssistantMessageHooks } from '../../../mini-apps/hooks-messages'
 import { runMemoryProviderRunEnd } from '../../../mini-apps/memory-hooks'
 import type { TurnEventContext } from './event-handlers'
@@ -190,13 +192,7 @@ export async function finalizeSuccessfulRun(args: {
     reason: stoppedRuntimeSessionIds.has(session.id) ? 'aborted' : 'answer',
     ...(totals.inputTokens + totals.outputTokens > 0
       ? {
-          usage: {
-            input_tokens: totals.inputTokens,
-            output_tokens: totals.outputTokens,
-            cache_read_input_tokens: totals.cacheReadTokens,
-            cache_creation_input_tokens: totals.cacheWriteTokens,
-            model: args.rawModelId,
-          },
+          usage: turnUsageOf(runTokenCounts(state), args.rawModelId),
         }
       : {}),
   })

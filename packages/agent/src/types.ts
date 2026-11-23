@@ -152,7 +152,10 @@ export interface Usage {
   outputTokens: number
   cacheReadTokens?: number
   cacheWriteTokens?: number
-  /** Subset of cacheWriteTokens created with one-hour retention. */
+  /**
+   * Subset of cacheWriteTokens created with one-hour retention; the rest was written for five
+   * minutes. Absent where the provider names no lifetime for its writes (it reports one total).
+   */
   cacheWrite1hTokens?: number
   reasoningTokens?: number
   totalTokens?: number

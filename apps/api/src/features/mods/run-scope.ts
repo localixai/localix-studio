@@ -3,7 +3,7 @@ import type { AgentTool } from '@localixai/agent/agents'
 import { clampReason, promptDroppedText } from '../plugins/kit'
 import { offerAgents, wrapAgent, type DirectoryAgent } from './agent-events'
 import type { RunSurface } from './session/run-tools'
-import type { ModelUsage, ModScene } from './contracts'
+import type { ModScene } from './contracts'
 import { skillPromptIn, wrapSkillTool } from './conversation-events'
 import { agentOf, fireIn, hearsIn, type ModEventScope } from './event-scope'
 import type { ModsHost } from './host'
@@ -20,6 +20,7 @@ import { modTools, wrapInToolCall, type ModTool } from './tool-call'
 import { toolCheckPort, type ModVerdict, type ToolCheckRun } from './tool-check'
 import { describeTools, type DescribedTools, type ToolPlacement } from './tool-describe'
 import { modelStepHook } from './turn-step'
+import type { TurnUsage } from './turn-usage'
 
 /**
  * The mods of one conversation turn: the events a run fires — `prompt.submit`, `turn.start`,
@@ -83,7 +84,7 @@ export interface TurnEnd {
   durationMs: number
   reason: 'answer' | 'aborted' | 'error'
   /** The turn's token counts and the model that answered last; absent when none counted. */
-  usage?: ModelUsage & { model: string }
+  usage?: TurnUsage
 }
 
 export interface ModToolCheck {

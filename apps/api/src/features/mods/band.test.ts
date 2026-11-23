@@ -32,6 +32,7 @@ describe('the AbovePrompt band', () => {
       surface: 'desktop',
       props: {
         hasSurvey: false,
+        isCollapsed: false,
         isWorking: false,
         maxRows: 12,
         bodyColumns: 95,
@@ -42,6 +43,22 @@ describe('the AbovePrompt band', () => {
 
     const quiet = await hostWithMod((on) => on('ui.render', (_$, e, next) => next(e)))
     expect((await quiet.host.band.render('s1', { columns: 100, rows: 12 })).tree).toBeNull()
+  })
+
+  // 2.1.330 `isCollapsed`: the person collapsed the band; a tree still returns, and the collapsed
+  // band shows one line of what each part of it says.
+  test('a collapsed band still asks each mod for its row, saying it is collapsed', async () => {
+    const collapsed: unknown[] = []
+    const { host } = await hostWithMod((on) => {
+      on('ui.render', { component: 'AbovePrompt' }, ($, e) => {
+        collapsed.push((e as { props: { isCollapsed?: unknown } }).props.isCollapsed)
+        return ui($, e).Text({ children: 'forecast' })
+      })
+    })
+    const drawing = await host.band.render('s1', { columns: 100, rows: 12 }, { collapsed: true })
+    expect(texts(drawing.tree)).toEqual(['forecast'])
+    await host.band.render('s1', { columns: 100, rows: 12 })
+    expect(collapsed).toEqual([true, false])
   })
 
   // reference.md, "Render sites" (2.1.323): `AbovePrompt` is asked once for each mod, `e.plugin`

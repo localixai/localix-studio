@@ -119,11 +119,21 @@ export const modsApi = {
       }),
     )
   },
-  async band(sessionId: string, columns: number, rows: number): Promise<ModBandDrawing> {
+  /** The band as its mods draw it; `collapsed` while the person has it collapsed. */
+  async band(
+    sessionId: string,
+    columns: number,
+    rows: number,
+    collapsed: boolean,
+  ): Promise<ModBandDrawing> {
     return (await unwrap(
       await client.rpc.mods.sessions[':sessionId'].band.$get({
         param: { sessionId },
-        query: { columns: String(columns), rows: String(rows) },
+        query: {
+          columns: String(columns),
+          rows: String(rows),
+          collapsed: collapsed ? 'true' : 'false',
+        },
       }),
     )) as ModBandDrawing
   },

@@ -20,9 +20,11 @@ path in a reply that leads nowhere now says what happened instead of a generic e
 - **Plugins follow Claude Code 2.1.330**: they load, install and run their hooks and mods as that
   release does. Each mod now draws its own row in the band above the message box, stacked in the
   order the mods load, instead of one mod's drawing hiding the others behind pages, so the band's
-  pager, its ⌥[ and ⌥] shortcuts and Settings → Preferences → Mods band are gone. A plugin that
-  needs a newer Claude Code does not load from a marketplace, and a marketplace entry with a
-  malformed field says why it cannot be installed.
+  pager, its ⌥[ and ⌥] shortcuts and Settings → Preferences → Mods band are gone. A mod is told when
+  you collapse the band, and a turn's usage gives it the cache write split into its five-minute and
+  one-hour parts where Anthropic reports them; a reply's cost now counts its one-hour cache writes
+  at their own price. A plugin that needs a newer Claude Code does not load from a marketplace, and
+  a marketplace entry with a malformed field says why it cannot be installed.
 
 ### Fixed
 

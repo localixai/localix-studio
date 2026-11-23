@@ -17,6 +17,9 @@ const viewportQuery = z.object({
   rows: z.coerce.number().int().min(4).max(400).optional(),
 })
 
+/** The band's viewport, and whether the person collapsed it on that screen. */
+const bandQuery = viewportQuery.extend({ collapsed: z.enum(['true', 'false']).optional() })
+
 const takenBody = z.object({
   fills: z.array(z.string().max(100)).max(50).optional(),
   suggestion: z.boolean().optional(),
@@ -69,13 +72,14 @@ export function createModRoutes(
         return c.json({ ok: true })
       })
       // The band above a conversation's prompt box, as its mods draw it (`AbovePrompt`).
-      .get('/sessions/:sessionId/band', zValidator('query', viewportQuery), async (c) => {
-        const { columns, rows } = c.req.valid('query')
+      .get('/sessions/:sessionId/band', zValidator('query', bandQuery), async (c) => {
+        const { columns, rows, collapsed } = c.req.valid('query')
         return c.json(
-          await host.band.render(c.req.param('sessionId'), {
-            columns: columns ?? 100,
-            rows: rows ?? 12,
-          }),
+          await host.band.render(
+            c.req.param('sessionId'),
+            { columns: columns ?? 100, rows: rows ?? 12 },
+            { collapsed: collapsed === 'true' },
+          ),
         )
       })
       .post('/sessions/:sessionId/band/actions', zValidator('json', actionBody), async (c) => {
