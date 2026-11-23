@@ -8,7 +8,7 @@ import type { ExternalAgentsPort } from '../../external-agents/contracts'
 import type { AgentToolResult } from '@localixai/agent/agents'
 import type { Kysely } from 'kysely'
 
-import type { CatalogAgent } from '@rsaryev/llx-plugin/agents'
+import type { CatalogAgent } from '@localix-ai/agent-plugins/agents'
 import type { AppDatabase } from '../../../db'
 import type { ChatRepository } from '../repository'
 import type { CatalogService } from '../../catalog/service'

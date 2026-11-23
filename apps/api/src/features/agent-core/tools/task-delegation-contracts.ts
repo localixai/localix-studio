@@ -1,4 +1,4 @@
-import type { CatalogAgent } from '@rsaryev/llx-plugin/agents'
+import type { CatalogAgent } from '@localix-ai/agent-plugins/agents'
 import type { AgentPermissionMode } from '../../../contracts/agent-permission-mode'
 import type { AgentRuntimeStatus, ReasoningEffort } from '../../../db/types'
 import type { DelegationPriority, LaneSpec } from '../delegation-lanes'

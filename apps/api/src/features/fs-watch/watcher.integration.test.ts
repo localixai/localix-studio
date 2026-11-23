@@ -174,7 +174,7 @@ describe('createDirWatcher (real fs)', () => {
     let error: unknown = null
     handles.push(createDirWatcher(root, () => {}, { quietMs: 40, onError: (e) => (error = e) }))
     await sleep(150)
-    await rename(root, path.join(base, 'llx-plugin'))
+    await rename(root, path.join(base, 'agent-plugins'))
     await until(() => error !== null)
     expect(String(error)).toContain(root)
   })

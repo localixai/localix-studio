@@ -4,7 +4,12 @@ import type { SessionRecord } from '../repository'
 import type { StatusLineModelInfo } from './status-line-input'
 import type { StatusLineUsage } from './status-line-usage'
 import type { StatusLineWorkspace } from './status-line-workspace'
-import type { Timers } from './subagent-rows-live'
+
+/** The timers a status line arms: real ones by default, fired by hand in tests. */
+export interface Timers {
+  set(run: () => void, ms: number): unknown
+  clear(handle: unknown): void
+}
 
 /** What a conversation's status line reads from, and where it draws; all injectable for tests. */
 export interface StatusLineDeps {

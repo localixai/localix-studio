@@ -8,7 +8,7 @@ import type { AgentRuntime, LanguageModelFactory, ScriptSandbox } from '@localix
 import type { AgentTool, AgentToolResult } from '@localixai/agent/agents'
 import type { ExternalAgentsPort } from '../../external-agents/contracts'
 
-import type { CatalogAgent } from '@rsaryev/llx-plugin/agents'
+import type { CatalogAgent } from '@localix-ai/agent-plugins/agents'
 import type { AppDatabase } from '../../../db'
 import type { CatalogService } from '../../catalog/service'
 import type { ProviderConnectionsService } from '../../provider-connections/service'

@@ -10,7 +10,7 @@ import {
   marketplaceFetchPlan,
   type EntryFetchPlan,
 } from './kit'
-import type { MarketplaceSource } from '@rsaryev/llx-plugin/marketplace'
+import type { MarketplaceSource } from '@localix-ai/agent-plugins/marketplace'
 import { assertGitArgs } from './marketplace-git-args'
 import { fetchNpmPlugin } from './marketplace-source-npm'
 import { fetchArchivePlugin, fetchCatalogText } from './marketplace-source-archive'

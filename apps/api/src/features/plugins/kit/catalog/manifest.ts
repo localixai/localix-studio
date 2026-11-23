@@ -2,9 +2,9 @@ import {
   bundleSettingKey,
   type PluginManifest as KitManifest,
   type UserConfigOption,
-} from '@rsaryev/llx-plugin/format'
-import type { Plugin } from '@rsaryev/llx-plugin/loading'
-import { pluginIdIssues } from '@rsaryev/llx-plugin/marketplace'
+} from '@localix-ai/agent-plugins/format'
+import type { Plugin } from '@localix-ai/agent-plugins/loading'
+import { pluginIdIssues } from '@localix-ai/agent-plugins/marketplace'
 import type { LocalixManifest } from '../../contracts'
 import type { PluginConfigOption } from '../../contracts-base'
 import { issueLine } from './issue-line'

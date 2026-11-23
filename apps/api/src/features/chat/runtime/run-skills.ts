@@ -13,8 +13,8 @@ import {
   touchSessionFiles,
   type SkillText,
 } from '../../plugins/kit'
-import type { PluginSession as KitSession, SessionSkill } from '@rsaryev/llx-plugin'
-import type { CatalogAgent } from '@rsaryev/llx-plugin/agents'
+import type { PluginSession as KitSession, SessionSkill } from '@localix-ai/agent-plugins'
+import type { CatalogAgent } from '@localix-ai/agent-plugins/agents'
 import type { PersistedMessage } from '../contracts'
 import type { SessionRecord } from '../repository'
 import { triggeringKeywords, type TriggeredSkill } from './prompt-skill-triggers'

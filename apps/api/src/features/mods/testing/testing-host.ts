@@ -1,6 +1,6 @@
 import { join } from 'node:path'
 import { tempDirPerTest, writeTree } from '@localixai/testing'
-import type { ModRuntime } from '@rsaryev/llx-plugin/mods'
+import type { ModRuntime } from '@localix-ai/agent-plugins/mods'
 import { modsTesting } from '../../plugins/kit/testing'
 import { INERT_MOD_PORTS, type ModScene, type ModsPorts } from '../contracts'
 import { createModsHost, type ModsHostOptions } from '../host'

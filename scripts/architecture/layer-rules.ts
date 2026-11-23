@@ -3,7 +3,7 @@ import { importsOf, resolveSpec, type Rule } from './kit'
 /**
  * X1 (`docs/internals/plugins-and-mini-apps.md`): plugins and mini apps share no code. The
  * plugins feature never imports the mini app feature or SDK, and the mini app feature and SDK never
- * import the plugin side or the plugin kit (`@rsaryev/llx-plugin`). Type imports count: a type is
+ * import the plugin side or the plugin kit (`@localix-ai/agent-plugins`). Type imports count: a type is
  * knowledge of the other layer too. A consumer of both (the chat runtime, bootstrap) is free to.
  */
 const SIDES = [
@@ -17,7 +17,7 @@ const SIDES = [
     side: 'mini app',
     owns: ['apps/api/src/features/mini-apps/', 'packages/mini-app-sdk/'],
     files: ['apps/api/src/features/plugins/'],
-    packages: ['@rsaryev/llx-plugin'],
+    packages: ['@localix-ai/agent-plugins'],
   },
 ] as const
 

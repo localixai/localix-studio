@@ -36,7 +36,7 @@ import type { WorkflowEntry } from '../../../agent-core/tools/workflow/workflow'
 import type { AgentModelChoice } from '../../../agent-core/agent-model-route'
 import type { SkillCommandPolicyRef } from './skill-tool-ports'
 import type { PluginLspServer, SubagentModelContext } from '../../../plugins/kit'
-import type { PluginSession as KitSession } from '@rsaryev/llx-plugin'
+import type { PluginSession as KitSession } from '@localix-ai/agent-plugins'
 import type { LoadedMiniApps } from '../../../mini-apps/loader-contract'
 
 export interface RuntimeToolWiringContext {

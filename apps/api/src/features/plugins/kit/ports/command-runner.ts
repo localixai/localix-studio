@@ -1,4 +1,4 @@
-import type { CommandResult, CommandRunner } from '@rsaryev/llx-plugin'
+import type { CommandResult, CommandRunner } from '@localix-ai/agent-plugins'
 import { runHookCommand } from '../../../lifecycle-hooks/command'
 
 /**

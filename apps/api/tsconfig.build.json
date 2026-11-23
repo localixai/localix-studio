@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    // Workspace packages build their dist first; `@rsaryev/llx-plugin` is read from its published
+    // Workspace packages build their dist first; `@localix-ai/agent-plugins` is read from its published
     // declarations, as in tsconfig.json.
     "incremental": false,
     "target": "ES2022",

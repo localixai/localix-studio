@@ -77,6 +77,7 @@
   },
   "dependencies": {
     "@hono/zod-validator": "^0.9.1",
+    "@localix-ai/agent-plugins": "0.3.0",
     "@localix-ai/flowdown": "^0.9.1",
     "@localixai/agent": "workspace:*",
     "@localixai/change-feed": "workspace:*",
@@ -92,7 +93,6 @@
     "@modelcontextprotocol/sdk": "^1.32.2",
     "@mozilla/readability": "^0.6.0",
     "@parcel/watcher": "^2.5.1",
-    "@rsaryev/llx-plugin": "0.1.1",
     "@xterm/headless": "^6.0.0",
     "croner": "^10.0.1",
     "diff": "^9.0.0",
@@ -108,7 +108,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@anthropic-ai/claude-agent-sdk": "0.3.321",
+    "@anthropic-ai/claude-agent-sdk": "0.3.330",
     "@localixai/engine-scripts": "workspace:*",
     "@localixai/source-lint": "workspace:*",
     "@localixai/testing": "workspace:*",

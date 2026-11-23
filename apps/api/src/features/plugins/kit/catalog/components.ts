@@ -1,7 +1,7 @@
 import { join } from 'node:path'
-import { readCatalog } from '@rsaryev/llx-plugin'
-import type { Plugin } from '@rsaryev/llx-plugin/loading'
-import { themeColorToHex, type Command, type Theme } from '@rsaryev/llx-plugin/format'
+import { readCatalog } from '@localix-ai/agent-plugins'
+import type { Plugin } from '@localix-ai/agent-plugins/loading'
+import { themeColorToHex, type Command, type Theme } from '@localix-ai/agent-plugins/format'
 import type { PluginCommand } from '../../contracts'
 import { styleBody, type StyleBody } from './output-style'
 

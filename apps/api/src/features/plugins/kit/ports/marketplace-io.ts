@@ -2,14 +2,14 @@ import { promises as fs } from 'node:fs'
 import { createHash } from 'node:crypto'
 import { join } from 'node:path'
 import { inflateRawSync } from 'node:zlib'
-import type { PluginFiles } from '@rsaryev/llx-plugin'
+import type { PluginFiles } from '@localix-ai/agent-plugins'
 import type {
   ArchiveReader,
   GitTags,
   PluginDirectories,
   PluginStateStore,
   Sha256,
-} from '@rsaryev/llx-plugin/marketplace'
+} from '@localix-ai/agent-plugins/marketplace'
 import { errorMessage } from '../../../../lib/errors'
 import { isZipLink, scanZip, type ZipMember } from '../../marketplace-zip-scan'
 import { cloneUrl } from '../marketplace/sources'

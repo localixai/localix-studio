@@ -1,7 +1,7 @@
-import type { PluginIssue } from '@rsaryev/llx-plugin'
+import type { PluginIssue } from '@localix-ai/agent-plugins'
 import type { LocalixPluginHost } from './host'
 import { openScopeSession, type PluginScope } from './scope-session'
-import type { SessionSkill } from '@rsaryev/llx-plugin'
+import type { SessionSkill } from '@localix-ai/agent-plugins'
 import { sessionSkills } from './skill-catalog'
 
 /** A scope's skills and commands, and what the kit found wrong reading them. */

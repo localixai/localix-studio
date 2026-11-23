@@ -5,7 +5,7 @@ import {
   type ClosureMarketplace,
   type KnownMarketplace,
 } from './kit'
-import type { Marketplace } from '@rsaryev/llx-plugin/marketplace'
+import type { Marketplace } from '@localix-ai/agent-plugins/marketplace'
 import { marketplacesRoot } from './marketplace-source'
 import { errorMessage } from '../../lib/errors'
 import type { MarketplaceRegistryDeps } from './marketplace-registry'

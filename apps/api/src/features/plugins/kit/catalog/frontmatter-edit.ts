@@ -1,4 +1,4 @@
-import { editFrontmatter } from '@rsaryev/llx-plugin/format'
+import { editFrontmatter } from '@localix-ai/agent-plugins/format'
 
 /**
  * A Markdown file Localix writes (a skill's `SKILL.md`, an agent file) with `changes` set in its

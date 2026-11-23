@@ -2,7 +2,7 @@ import type { PluginCatalog } from './catalog'
 import { listCommandsFromCatalog, modCommandSpecs } from './commands'
 import type { PluginCommandSpec } from './contracts'
 import { kitPluginsOf } from './catalog-kit'
-import type { SessionSkill } from '@rsaryev/llx-plugin'
+import type { SessionSkill } from '@localix-ai/agent-plugins'
 import { savedWorkflows, scopeSkills, skillPlugin, type LocalixPluginHost } from './kit'
 
 /**

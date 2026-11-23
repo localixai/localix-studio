@@ -1,7 +1,7 @@
 import { promises as fs } from 'node:fs'
 import { join } from 'node:path'
-import type { Clock, Environment, Locations, ScratchFiles } from '@rsaryev/llx-plugin'
-import { pluginDataId } from '@rsaryev/llx-plugin/loading'
+import type { Clock, Environment, Locations, ScratchFiles } from '@localix-ai/agent-plugins'
+import { pluginDataId } from '@localix-ai/agent-plugins/loading'
 
 /**
  * The small machine ports: time, the environment, where things are, and a scratch folder. Each is

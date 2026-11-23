@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { memoryFiles, scriptedRunner } from '@rsaryev/llx-plugin/testing'
+import { memoryFiles, scriptedRunner } from '@localix-ai/agent-plugins/testing'
 import { memoryKitPorts } from './testing'
 
 const signal = new AbortController().signal

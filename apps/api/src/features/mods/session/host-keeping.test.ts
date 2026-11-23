@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test'
-import type { ModsHost as KitModsHost } from '@rsaryev/llx-plugin/mods'
+import type { ModsHost as KitModsHost } from '@localix-ai/agent-plugins/mods'
 import { manualClock } from '../isolation/testing/testing-mods'
 import { createHostKeeping, type HostKeepingDeps } from './host-keeping'
 import { keyOf, type Live } from './live-hosts'

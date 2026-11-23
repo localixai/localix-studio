@@ -1,5 +1,5 @@
-import { validatePlugin } from '@rsaryev/llx-plugin'
-import { HEADERS_HELPER_GUARD, rejectUserConfigInShell } from '@rsaryev/llx-plugin/loading'
+import { validatePlugin } from '@localix-ai/agent-plugins'
+import { HEADERS_HELPER_GUARD, rejectUserConfigInShell } from '@localix-ai/agent-plugins/loading'
 import { diskFiles } from '../ports/files'
 
 /**

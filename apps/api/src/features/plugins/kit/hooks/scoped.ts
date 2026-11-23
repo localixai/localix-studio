@@ -1,5 +1,7 @@
-import type { HooksSettings, PluginSession } from '@rsaryev/llx-plugin'
-import { agentHookGroups } from '@rsaryev/llx-plugin/agents'
+import type { HookSource } from '@localix-ai/agent-plugins/hooks'
+import type { HooksSettings, PluginSession } from '@localix-ai/agent-plugins'
+import { agentHookGroups } from '@localix-ai/agent-plugins/agents'
+import type { SkillOrigin } from '@localix-ai/agent-plugins/format'
 
 /** A skill's or an agent's frontmatter `hooks`, as the run holds them. */
 export interface ScopedHooksBlock {
@@ -12,6 +14,26 @@ export interface ScopedHooksBlock {
   readonly pluginId?: string
   /** Kept for the session's later runs (a skill's); else this run's only. */
   readonly lifetime?: 'session'
+  /** Where a skill's block came from (its `SkillOrigin`): what its trust and locks read. */
+  readonly origin?: SkillOrigin['kind']
+}
+
+/**
+ * The trust and lock facts a skill's hooks carry, per origin, as the kit gives the hooks of a skill
+ * it expands itself (hooks.md, "Hooks in skills and agents": a project skill's hooks wait for the
+ * workspace trust dialog; "Limits on skill hooks": a plugin-only lock keeps a plugin's, a bundled
+ * and a managed-directory skill's; `allowManagedHooksOnly` keeps a managed-directory skill's). A
+ * skill synced from claude.ai counts as the user's own.
+ */
+const SKILL_ORIGIN_SOURCE: {
+  readonly [K in SkillOrigin['kind']]: Pick<HookSource, 'scope' | 'managed'>
+} = {
+  plugin: {},
+  managed: { managed: true },
+  user: { scope: 'user' },
+  project: { scope: 'project' },
+  synced: { scope: 'user' },
+  bundled: {},
 }
 
 /**
@@ -42,6 +64,7 @@ export function registerScopedHooks(
         kind: block.source,
         label: block.plugin ? `[${block.plugin.name}]` : `[${block.source}]`,
         ...(block.plugin ? { pluginName: block.plugin.name } : {}),
+        ...(block.origin ? SKILL_ORIGIN_SOURCE[block.origin] : {}),
       },
       block.pluginId ? { pluginId: block.pluginId } : {},
     )

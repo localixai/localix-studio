@@ -3,7 +3,7 @@ import {
   type Marketplace,
   type MarketplaceEntry,
   type NpmFetchPlan,
-} from '@rsaryev/llx-plugin/marketplace'
+} from '@localix-ai/agent-plugins/marketplace'
 import { parseMarketplace } from './catalog'
 
 /** A marketplace as the kit reads it, from the fields a catalog writes (`name`, `owner` filled). */

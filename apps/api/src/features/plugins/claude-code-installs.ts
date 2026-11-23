@@ -20,8 +20,8 @@ import {
   type ClaudeSettingsInput,
   type FolderSource,
 } from './kit'
-import type { MarketplaceEntry } from '@rsaryev/llx-plugin/marketplace'
-import type { FileScope } from '@rsaryev/llx-plugin/settings'
+import type { MarketplaceEntry } from '@localix-ai/agent-plugins/marketplace'
+import type { FileScope } from '@localix-ai/agent-plugins/settings'
 import { loadManifest } from './manifest-load'
 import { withWorkflowCommands } from './workflow-commands'
 

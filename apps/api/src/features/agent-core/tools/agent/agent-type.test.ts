@@ -144,6 +144,28 @@ test.each([
   },
 )
 
+test('a built-in type asks its route as the built-in; a file of the same name asks as a file', async () => {
+  const asked: unknown[] = []
+  const subagentRoute = (ask: unknown) => {
+    asked.push(ask)
+    return {}
+  }
+  const explore = testCatalogAgent('Explore', {}, { source: { kind: 'builtin' } })
+  const typed: Record<string, DelegateResolution> = {
+    ...CATALOG,
+    Explore: {
+      kind: 'agent',
+      agent: { agentId: 'builtin:Explore', name: 'Explore' },
+      type: explore,
+    },
+    tester: CATALOG.tester!,
+  }
+  const { opts, ports } = host({ subagentRoute }, typed)
+  await launchAgent('c', request({ agent: 'Explore' }), opts, undefined, ports)
+  await launchAgent('d', request({ agent: 'tester' }), opts, undefined, ports)
+  expect(asked).toEqual([{ builtin: 'Explore' }, {}])
+})
+
 test('an ambiguous or unknown agent is refused before anything is created', async () => {
   const { opts, ports, calls } = host()
   const ambiguous = await launchAgent('c', request({ agent: 'reviewer' }), opts, undefined, ports)

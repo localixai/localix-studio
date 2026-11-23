@@ -1,4 +1,4 @@
-import type { ModInterface as KitModInterface } from '@rsaryev/llx-plugin/mods'
+import type { ModInterface as KitModInterface } from '@localix-ai/agent-plugins/mods'
 import type { ModScene, ModsPorts } from '../contracts'
 import type { ModComposer } from '../composer'
 import { copyToClipboard } from '../api/clipboard'

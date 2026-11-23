@@ -1,7 +1,7 @@
 import { readCollections, readCuration, type Curation, type Editorial } from '@localixai/store'
 
 import { isRecord } from '../../lib/record'
-import type { MarketplaceEntry } from '@rsaryev/llx-plugin/marketplace'
+import type { MarketplaceEntry } from '@localix-ai/agent-plugins/marketplace'
 import type { MarketView } from './store-listing'
 
 /**

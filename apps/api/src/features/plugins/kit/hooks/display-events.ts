@@ -1,4 +1,4 @@
-import { resolveWorktreePath } from '@rsaryev/llx-plugin/hooks'
+import { resolveWorktreePath } from '@localix-ai/agent-plugins/hooks'
 import type { McpElicitationHookRequest } from '../../../agent-core/tools/hitl/mcp-elicitation'
 import type { CcHooksRuntime } from '../../../cc-hooks/runtime-contracts'
 import { elicitationFacts, hookElicitationAnswer, reviewedElicitationAnswer } from '../elicitation'

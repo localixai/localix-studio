@@ -1,4 +1,8 @@
-import { HOOK_EVENTS, type HookHandler, type RegisteredHandler } from '@rsaryev/llx-plugin/hooks'
+import {
+  HOOK_EVENTS,
+  type HookHandler,
+  type RegisteredHandler,
+} from '@localix-ai/agent-plugins/hooks'
 
 const KIND_LABEL = {
   skill: 'a skill',

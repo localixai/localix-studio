@@ -4,9 +4,9 @@ import {
   type OptionValues,
   type PluginSession,
   type SessionOptions,
-} from '@rsaryev/llx-plugin'
-import type { TrustSituation } from '@rsaryev/llx-plugin/loading'
-import { createPolicyView, type PolicyLayer } from '@rsaryev/llx-plugin/settings'
+} from '@localix-ai/agent-plugins'
+import type { TrustSituation } from '@localix-ai/agent-plugins/loading'
+import { createPolicyView, type PolicyLayer } from '@localix-ai/agent-plugins/settings'
 import { keepUnchanged, samePlugins, type LoadedKitPlugin, type LocalixPluginHost } from './host'
 import { contentApplies } from './settings/trust'
 import { LOCALIX_TOOL_NAMES } from './tool-names'

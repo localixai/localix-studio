@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import { join } from 'node:path'
-import { loadPlugin, type Plugin } from '@rsaryev/llx-plugin'
-import { memoryFiles } from '@rsaryev/llx-plugin/testing'
+import { loadPlugin, type Plugin } from '@localix-ai/agent-plugins'
+import { memoryFiles } from '@localix-ai/agent-plugins/testing'
 import { tempDirPerTest } from '@localixai/testing'
 import { createLocalixPluginHost } from './host'
 import {

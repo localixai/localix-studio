@@ -1,4 +1,4 @@
-import type { HookEvent, HookOutcome } from '@rsaryev/llx-plugin'
+import type { HookEvent, HookOutcome } from '@localix-ai/agent-plugins'
 import type { CcHooksRuntime, StopResult } from '../../../cc-hooks/runtime-contracts'
 import { createLifecycleEvents } from './lifecycle-events'
 import { joinContext } from '../../../cc-hooks/runtime-results'

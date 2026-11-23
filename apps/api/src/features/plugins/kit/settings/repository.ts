@@ -1,6 +1,6 @@
 import { readFileSync, statSync, type Stats } from 'node:fs'
 import { dirname, join, resolve, sep } from 'node:path'
-import type { RepositoryFacts } from '@rsaryev/llx-plugin/settings'
+import type { RepositoryFacts } from '@localix-ai/agent-plugins/settings'
 
 /**
  * What the disk says about the git repository a folder is in, for the kit's placement and trust

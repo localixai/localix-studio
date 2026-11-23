@@ -7,7 +7,7 @@ import {
   type RepositoryContent,
   type TrustSituation,
   type TrustSource,
-} from '@rsaryev/llx-plugin/loading'
+} from '@localix-ai/agent-plugins/loading'
 import { isRecord } from '../../../../lib/record'
 import { claudeStateFile } from '../../../cc-settings/config-dir'
 import { folderRepository, type FolderRepository } from './repository'

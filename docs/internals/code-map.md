@@ -55,8 +55,8 @@ app's conversations live in a project of its own (`shared/lib/standaloneAppProje
 actions and icons live in `features/standalone-mini-apps/`.
 
 An extension is a [plugin or a mini app](plugins-and-mini-apps.md), never both: a plugin is
-`.claude-plugin/plugin.json` in the Claude Code format, read by the kit `@rsaryev/llx-plugin` (no
-Localix knowledge); a mini app is `.localix-mini-app/mini-app.json`
+`.claude-plugin/plugin.json` in the Claude Code format, read by the kit `@localix-ai/agent-plugins`
+(no Localix knowledge); a mini app is `.localix-mini-app/mini-app.json`
 (`@localixai/mini-app-sdk/app-manifest`) with its `guide.md`, which the agent reads with
 `MiniAppGuide` (`agent-core/tools/mini-app-guide.ts`). `apps/api/src/features/plugins/kit/` is the
 only place that value-imports the kit (rule X7): `kit/catalog/read-folder.ts` reads a plugin folder

@@ -1,5 +1,6 @@
 import { useContext, type ReactNode } from 'react'
 import { cn } from '@localixai/mini-app-sdk/ui/classes'
+import { ProgressBar } from '@localixai/kit/progress-bar'
 import { ExternalAnchor } from '@/shared/ui/external-anchor'
 import { MarkdownRenderer } from '@/shared/ui/MarkdownRenderer'
 import type { ModAction, ModElement } from '@/shared/api/modsApi'
@@ -13,7 +14,7 @@ import { diffLineOf, leadingGlyphOf } from './modText'
 
 /**
  * A mod's drawing on a Localix screen. The elements are Claude Code's (`Box`, `Text`, `Button`,
- * `Link`, `Code`, `Markdown`, `Input`, `Select`, `Svg`, `Client`); each is drawn with the kit's own
+ * `Link`, `Code`, `Markdown`, `Input`, `Select`, `Svg`, `Progress`, `Client`); each is drawn with the kit's own
  * control, so a mod looks like the rest of the app; a `Client` runs plugin code, in an isolated
  * frame. Layout and text props read as `modStyle.ts` says, at the density of the site the tree is
  * drawn on (`ModSite`); controls are `ModControls.tsx`.
@@ -172,7 +173,36 @@ function ModNode({ node, act }: { node: ModElement | string; act: ModTreeProps['
       return <ModInput element={text(props.key)} props={props} act={act} />
     case 'Select':
       return <ModSelect props={props} act={act} />
+    case 'Progress':
+      return <ModProgress props={props} />
+    // A `Shader` draws only in a `Backdrop`, a site Localix does not draw.
+    case 'Shader':
+      return null
   }
+}
+
+/**
+ * A task's progress as Claude Code reads it: `value` from 0 to `max` (default 1), held at either
+ * end; with no `value` the task runs with no known end, a full track that pulses.
+ */
+function ModProgress({ props }: { props: Record<string, unknown> }) {
+  const max = typeof props.max === 'number' && props.max > 0 ? props.max : 1
+  const value = typeof props.value === 'number' && Number.isFinite(props.value) ? props.value : null
+  const percent =
+    value === null ? null : Math.round((Math.min(Math.max(value, 0), max) / max) * 100)
+  const valueText = text(props.valueText)
+  return (
+    <ProgressBar
+      value={percent ?? 100}
+      className="h-1.5 w-full"
+      {...(percent === null ? { fillClassName: 'animate-pulse bg-foreground/20' } : {})}
+      aria-label={text(props.label)}
+      {...(percent === null
+        ? {}
+        : { 'aria-valuenow': percent, 'aria-valuemin': 0, 'aria-valuemax': 100 })}
+      {...(valueText ? { 'aria-valuetext': valueText } : {})}
+    />
+  )
 }
 
 /**

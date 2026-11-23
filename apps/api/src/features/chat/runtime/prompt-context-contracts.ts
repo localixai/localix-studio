@@ -13,7 +13,7 @@ import type { SessionPromptSnapshotRepository } from '../session-prompt-snapshot
 import type { RuntimeState } from './agent-runner-state'
 import type { createProjectsRepository } from '../../projects/repository'
 import type { LocalixPluginHost } from '../../plugins/kit'
-import type { PluginSession as KitSession } from '@rsaryev/llx-plugin'
+import type { PluginSession as KitSession } from '@localix-ai/agent-plugins'
 import type { resolveAgentPromptContext } from './prompt-agent-context'
 
 export interface PromptContextDeps {

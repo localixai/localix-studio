@@ -79,8 +79,12 @@ too, without waiting. An `engine.create` step adds nouns of its own (`$.telemetr
 
 A mod draws in the band above a chat's message box with `ui.render` for
 `{ component: 'AbovePrompt' }`, as in Claude Code's terminal and desktop app. `e.props` carries
-`hasSurvey`, `isWorking`, `maxRows`, `bodyColumns`, `scroll` and `view`; the mods of the chat's
-project compose it, `next(e)` giving what the mods after one drew.
+`hasSurvey`, `isWorking`, `maxRows`, `bodyColumns`, `scroll` and `view`. As in Claude Code since
+2.1.323, each mod of the chat's project draws its own row: `AbovePrompt` is asked once for each mod,
+`e.plugin` naming it, and a hook without `plugin` in its matcher hears only its own mod's row. The
+rows stack from the top in the order the mods loaded, under the limits of one tree: a row past them
+is left out while the others draw. A hook on `{ component: 'AbovePromptList' }` gets the rows in
+`e.props.rows` and may hide, reorder or wrap them.
 
 The band's Buttons press by their `hotkey` while the band has focus, and a digit typed alone into
 the empty message box presses the band's Button on that digit after a pause. The mark at the band's
@@ -162,19 +166,6 @@ whole text in a tooltip. Rows of text and buttons one line high sit side by side
 that does not fit scrolls sideways, with the wheel and with ← and →, its edge fading into the box.
 Anything else (a framed box, a field, code) is drawn as it is, and the band scrolls past 10 rows.
 
-A mod that draws its own band and does not call `next(e)` hides the mods after it, which in Claude
-Code's terminal simply never show. Localix keeps them: the band has one **page** for each such
-drawing, the first being what Claude Code draws, and the rest the mods that mod hid.
-
-With more than one page, the end of the band's first row shows a pager, `‹ 1/2 ›`, and the mods that
-drew the page (in a tooltip where the band is narrow). `‹` and `›`, or ⌥[ and ⌥] in the message box,
-turn the pages; only the page showing answers its hotkeys and digits, and a collapsed band sums up
-every page. A page you pick stays for that chat until its mods stop drawing it.
-
-Until you pick one, the band turns to the next page every eight seconds, so each mod is seen without
-a click. It holds still while you hover or focus the band, type in the message box, or a turn runs,
-and never moves with reduced motion. Turn it off in Settings → Preferences → Mods band.
-
 A pane tab is the mod's frame and title, so a pane lays its tree out by shape too:
 
 - The one root `Box` with a border — or the first one inside plain one-child wrappers — loses its
@@ -223,10 +214,10 @@ the `code-modernization` plugin load and run their hooks, commands and panes in 
 
 ## Not yet in Localix
 
-- Render sites other than `Pane` and `AbovePrompt` (`Spinner`, `PromptHint`, `SessionMode`,
-  `UserMessage`, `AssistantMessage`, `ToolUse`, `ToolResult`, `ToolGroup`, `CommandOutput`,
-  `AskUserQuestion`, `InfoNotice`, `TurnDuration`): Localix draws those parts of a chat itself, and
-  a `ui.render` hook on them is not asked.
+- Render sites other than `Pane`, `AbovePrompt` and `AbovePromptList` (`Spinner`, `PromptHint`,
+  `SessionMode`, `UserMessage`, `AssistantMessage`, `ToolUse`, `ToolResult`, `ToolGroup`,
+  `CommandOutput`, `AskUserQuestion`, `InfoNotice`, `TurnDuration`): Localix draws those parts of a
+  chat itself, and a `ui.render` hook on them is not asked.
 - `classic.*` events: Claude Code hooks from settings and plugins run in Localix's own hook runner,
   which mods do not wrap.
 - The message box's events (`prompt.edit`, `prompt.autocomplete`, `prompt.mention`) are not raised,

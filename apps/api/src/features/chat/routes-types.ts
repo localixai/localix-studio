@@ -23,7 +23,6 @@ import type {
   QueueRemovalResult,
 } from './contracts'
 import type { ToolSurface } from '@localixai/agent/agents'
-import type { SubagentRowsView } from './service/subagent-rows'
 import type {
   createSessionRequestSchema,
   importSessionRequestSchema,
@@ -65,7 +64,6 @@ export interface ChatRoutesService extends ChatRecapFacade {
     id: string,
     opts?: { messageLimit?: number; deferToolDetails?: boolean },
   ): Promise<SessionDetail>
-  getSubagentRows(userId: string, id: string): Promise<SubagentRowsView>
   getMessageToolDetails(
     userId: string,
     sessionId: string,

@@ -228,4 +228,24 @@ describe('a plugin folder read by the kit', () => {
     )
     expect(found.manifest.name).toBe('lsp')
   })
+
+  // plugins-reference.md, "engines": a plugin outside its Claude Code range does not load, unless
+  // it is read from a folder of the person's own, which loads anyway.
+  test('a plugin that needs a newer Claude Code than Localix follows does not load', async () => {
+    const tree = {
+      ...manifest({ name: 'future', engines: { 'claude-code': '>=9.0.0' } }),
+      'skills/a/SKILL.md': '---\ndescription: A\n---\nA',
+    }
+    const installed = await read(tree)
+    expect(installed.error).toMatch(/^"future" needs Claude Code >=9\.0\.0, this is 2\.1\.\d+/)
+    expect(installed.kit).toBeUndefined()
+    const own = await read(tree, { localFolder: true })
+    expect(own.error).toBeUndefined()
+    expect(own.provides.skills).toEqual(['a'])
+  })
+
+  test('a plugin within its Claude Code range loads from any folder', async () => {
+    const found = await read(manifest({ name: 'now', engines: { 'claude-code': '>=2.1.0' } }))
+    expect(found.error).toBeUndefined()
+  })
 })

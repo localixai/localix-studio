@@ -1,7 +1,7 @@
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 
-import type { MarketplaceSource } from '@rsaryev/llx-plugin/marketplace'
+import type { MarketplaceSource } from '@localix-ai/agent-plugins/marketplace'
 
 /**
  * Localix's own helpers around a marketplace's source: where its registry lives, the

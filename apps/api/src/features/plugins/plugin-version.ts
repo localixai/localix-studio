@@ -1,4 +1,4 @@
-import type { MarketplaceEntry, VersionInput } from '@rsaryev/llx-plugin/marketplace'
+import type { MarketplaceEntry, VersionInput } from '@localix-ai/agent-plugins/marketplace'
 import { readFetchedManifest } from './kit'
 
 /**

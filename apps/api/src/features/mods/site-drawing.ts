@@ -1,5 +1,11 @@
-import type { Drawn, ElementNode, HookReport, Props, TreeChild } from '@rsaryev/llx-plugin/mods'
-import type { ModsHost as KitModsHost } from '@rsaryev/llx-plugin/mods'
+import type {
+  Drawn,
+  ElementNode,
+  HookReport,
+  Props,
+  TreeChild,
+} from '@localix-ai/agent-plugins/mods'
+import type { ModsHost as KitModsHost } from '@localix-ai/agent-plugins/mods'
 import {
   controlKey,
   isElementNode,

@@ -5,7 +5,7 @@ import {
   resolveRename,
   type Marketplace,
   type MarketplaceSource,
-} from '@rsaryev/llx-plugin/marketplace'
+} from '@localix-ai/agent-plugins/marketplace'
 import { issueLine } from '../catalog/issue-line'
 import { catalogAt } from './records'
 

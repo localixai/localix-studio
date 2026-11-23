@@ -1,4 +1,4 @@
-import { resolveSettingsEnv } from '@rsaryev/llx-plugin/settings'
+import { resolveSettingsEnv } from '@localix-ai/agent-plugins/settings'
 import { readClaudeSettingsSync, type ClaudeSettings, type ClaudeSettingsInput } from './read'
 import { contentApplies } from './trust'
 

@@ -14,7 +14,7 @@ import { assertGunzipWithin } from './marketplace-gzip-limit'
 import { npmAuthFor } from './marketplace-npm-auth'
 import { downloadNpmTarball } from './marketplace-npm-integrity'
 import { DEFAULT_NPM_REGISTRY, npmHop, userNpmRegistryFor } from './marketplace-npm-registry'
-import type { NpmFetchPlan } from '@rsaryev/llx-plugin/marketplace'
+import type { NpmFetchPlan } from '@localix-ai/agent-plugins/marketplace'
 
 const execFileAsync = promisify(execFile)
 

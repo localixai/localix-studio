@@ -6,7 +6,7 @@ import {
   readOutputStyle,
   resolveOutputStyle,
   type OutputStyle,
-} from '@rsaryev/llx-plugin/format'
+} from '@localix-ai/agent-plugins/format'
 
 export { DEFAULT_OUTPUT_STYLE_ID }
 

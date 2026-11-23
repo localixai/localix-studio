@@ -8,8 +8,8 @@ import {
   urlSourceLayer,
   type DownloadHeaderPorts,
   type HeadersSetting,
-} from '@rsaryev/llx-plugin/marketplace'
-import { decideAcceptance } from '@rsaryev/llx-plugin/cli'
+} from '@localix-ai/agent-plugins/marketplace'
+import { decideAcceptance } from '@localix-ai/agent-plugins/cli'
 import { isRecord } from '../../../../lib/record'
 import { nodeSha256 } from '../ports/marketplace-io'
 import { hostCommandRunner } from '../ports/command-runner'

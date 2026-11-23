@@ -13,7 +13,7 @@ import {
   readKnownMarketplaces,
   writeKnownMarketplaces,
 } from './kit'
-import type { MarketplaceSource } from '@rsaryev/llx-plugin/marketplace'
+import type { MarketplaceSource } from '@localix-ai/agent-plugins/marketplace'
 
 /**
  * WHICH MARKETPLACES AUTO-UPDATE, by Claude Code's rule as the kit judges it (loading.md, "Which

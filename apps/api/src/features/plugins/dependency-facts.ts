@@ -1,4 +1,4 @@
-import type { GraphFacts } from '@rsaryev/llx-plugin/marketplace'
+import type { GraphFacts } from '@localix-ai/agent-plugins/marketplace'
 import type { PluginCatalogEntry } from './catalog'
 import { installedRecord } from './kit'
 import { parseMarketplaceRef } from './marketplace-source'

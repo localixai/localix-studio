@@ -2,7 +2,7 @@
  * The per-run runtime surface of the events added after the first eleven. Each method fires
  * one Claude Code event and folds its handlers into the answer its dispatch point applies.
  */
-import type { HookEvent } from '@rsaryev/llx-plugin'
+import type { HookEvent } from '@localix-ai/agent-plugins'
 import type { CcHookToolRef, StopResult } from './runtime-contracts'
 
 /** A typed command that expanded into its prompt (UserPromptExpansion). */

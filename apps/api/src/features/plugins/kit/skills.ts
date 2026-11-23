@@ -1,10 +1,11 @@
 import type {
   Expansion,
   FileReference,
+  HooksSettings,
   PermissionBehavior,
   PluginSession,
   SkillInvoker,
-} from '@rsaryev/llx-plugin'
+} from '@localix-ai/agent-plugins'
 
 /**
  * A skill run as Claude Code runs it, from the chat's kit session: its body with `$ARGUMENTS`,
@@ -24,6 +25,11 @@ export interface InvokedSkill {
   readonly effort?: string
   /** The files its text names with `@`, for the host to attach; the `@` stays in `text`. */
   readonly references: readonly FileReference[]
+  /**
+   * Its frontmatter `hooks`, when they register under the managed locks (a plugin-only lock on
+   * hooks keeps a personal or project skill's out): what a forked child registers.
+   */
+  readonly hooks?: HooksSettings
 }
 
 export type SkillInvocation =
@@ -78,6 +84,7 @@ function invokedOf(expansion: Extract<Expansion, { ok: true }>): InvokedSkill {
       : {}),
     ...(overrides.model ? { model: overrides.model } : {}),
     ...(overrides.effort?.level ? { effort: overrides.effort.level } : {}),
+    ...(expansion.hooks ? { hooks: expansion.hooks } : {}),
   }
 }
 

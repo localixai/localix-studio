@@ -1,7 +1,7 @@
 import { promises as fs } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import type { CommandRunner } from '@rsaryev/llx-plugin'
+import type { CommandRunner } from '@localix-ai/agent-plugins'
 import {
   installOutcome,
   LOCKFILE_NAMES,
@@ -17,7 +17,7 @@ import {
   type NodeDepsInstall,
   type PackageManager,
   type ReadPackageJson,
-} from '@rsaryev/llx-plugin/marketplace'
+} from '@localix-ai/agent-plugins/marketplace'
 import { childEnvNonInteractive } from '../../../../lib/login-shell-env'
 import { hostCommandRunner } from '../ports/command-runner'
 

@@ -1,5 +1,5 @@
-import { normalizePermissionMode } from '@rsaryev/llx-plugin'
-import { hookTightensOnly } from '@rsaryev/llx-plugin/mods'
+import { normalizePermissionMode } from '@localix-ai/agent-plugins'
+import { hookTightensOnly } from '@localix-ai/agent-plugins/mods'
 
 /**
  * `tool.check`'s merge as the kit decides it (plugins/mods/events.md, "Approve or refuse a tool
@@ -7,7 +7,11 @@ import { hookTightensOnly } from '@rsaryev/llx-plugin/mods'
  * host reached and the one a mod answered give the call's decision. Where hooks only tighten (plan
  * mode, `hooksTightenOnlyIn`), a mod may refuse a call that is not read-only but not approve it.
  */
-export { mergeToolCheck, type ToolCheckContext, type ToolDecision } from '@rsaryev/llx-plugin/mods'
+export {
+  mergeToolCheck,
+  type ToolCheckContext,
+  type ToolDecision,
+} from '@localix-ai/agent-plugins/mods'
 
 /** Whether a run in `mode`, in Claude Code's spelling (`ccPermissionMode`), lets hooks only tighten. */
 export const hooksTightenOnlyIn = (mode: string): boolean =>

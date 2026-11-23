@@ -1,4 +1,4 @@
-import type { HttpClient, HttpResponse } from '@rsaryev/llx-plugin'
+import type { HttpClient, HttpResponse } from '@localix-ai/agent-plugins'
 
 /**
  * The kit's `HttpClient` over a `fetch` (the host's, or a test's stub). The body is read as a

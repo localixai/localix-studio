@@ -48,7 +48,7 @@ describe('the MCP bundle reader of one plugin', () => {
     const root = plugin()
     const opened = await mcpBundleReader(root).open(
       { kind: 'path', path: 'bundles/db.mcpb' },
-      '.mcpb-cache',
+      'mcpb',
     )
     expect(opened).toMatchObject({
       name: 'db-server',
@@ -56,22 +56,16 @@ describe('the MCP bundle reader of one plugin', () => {
       // The bundle's own `user_config` block, as written: the kit reads it into options.
       userConfig: MANIFEST.user_config,
     })
-    expect(JSON.stringify(opened)).toContain(join(root, '.mcpb-cache'))
+    expect(JSON.stringify(opened)).toContain(join(root, 'mcpb'))
   })
 
   test('has no bundle for a missing path, and a failure for one that cannot be read', async () => {
     const reader = mcpBundleReader(plugin())
-    expect(
-      await reader.open({ kind: 'path', path: 'bundles/none.mcpb' }, '.mcpb-cache'),
-    ).toBeUndefined()
-    expect(
-      await reader.open({ kind: 'path', path: 'bundles/broken.mcpb' }, '.mcpb-cache'),
-    ).toMatchObject({
+    expect(await reader.open({ kind: 'path', path: 'bundles/none.mcpb' }, 'mcpb')).toBeUndefined()
+    expect(await reader.open({ kind: 'path', path: 'bundles/broken.mcpb' }, 'mcpb')).toMatchObject({
       failure: 'bundle',
     })
-    expect(
-      await reader.open({ kind: 'path', path: 'bundles/nameless.mcpb' }, '.mcpb-cache'),
-    ).toEqual({
+    expect(await reader.open({ kind: 'path', path: 'bundles/nameless.mcpb' }, 'mcpb')).toEqual({
       failure: 'bundle',
       message: 'the bundle manifest has no name',
     })

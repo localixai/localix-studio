@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import { join } from 'node:path'
 import { tempDirPerTest, writeTree } from '@localixai/testing'
-import { skillKeywords } from '@rsaryev/llx-plugin'
+import { skillKeywords } from '@localix-ai/agent-plugins'
 import { sessionSkills } from './skill-catalog'
 import { preloadedSkillTexts, skillTexts } from './skill-texts'
 import { scopeSkills } from './scope-skills'

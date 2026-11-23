@@ -10,7 +10,7 @@ import {
   type InstallRecord,
   type InstalledRecords,
   type StoreLayout,
-} from '@rsaryev/llx-plugin/marketplace'
+} from '@localix-ai/agent-plugins/marketplace'
 import { systemClock } from '../ports/host-io'
 import { diskPluginStateStore, nodeSha256 } from '../ports/marketplace-io'
 

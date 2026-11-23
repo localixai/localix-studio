@@ -1,4 +1,4 @@
-import type { CommandOrigin } from '@rsaryev/llx-plugin/mods'
+import type { CommandOrigin } from '@localix-ai/agent-plugins/mods'
 
 /**
  * `command.run` as Localix fires it through the kit's `runCommand`: a mod's command typed in a

@@ -1,6 +1,15 @@
 import { describe, expect, test } from 'bun:test'
 import { hostWithMod, hostWithMods } from './testing/testing-host'
 
+const texts = (tree: unknown): string[] =>
+  typeof tree === 'string'
+    ? [tree]
+    : Array.isArray(tree)
+      ? tree.flatMap(texts)
+      : tree && typeof tree === 'object'
+        ? texts((tree as { children?: unknown }).children ?? [])
+        : []
+
 /** The band above a conversation's prompt box (`AbovePrompt`), as a mod draws in it. */
 
 type Ui = { Box: Fn; Text: Fn; Button: Fn }
@@ -35,29 +44,44 @@ describe('the AbovePrompt band', () => {
     expect((await quiet.host.band.render('s1', { columns: 100, rows: 12 })).tree).toBeNull()
   })
 
-  test('mods compose: next(e) gives the band the mods after it drew', async () => {
+  // reference.md, "Render sites" (2.1.323): `AbovePrompt` is asked once for each mod, `e.plugin`
+  // naming it, and the rows are stacked through `AbovePromptList` under one tree's limits.
+  test('each mod draws its own row, stacked in the order the mods loaded', async () => {
+    const heard: Record<string, unknown[]> = { outer: [], inner: [] }
     const { host } = await hostWithMods({
       outer: (on) =>
-        on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
-          const below = await next(e)
-          return ui($, e).Box({ children: [below, ui($, e).Text({ children: 'outer' })] })
+        on('ui.render', { component: 'AbovePrompt' }, ($, e) => {
+          heard.outer!.push((e as { plugin?: unknown }).plugin)
+          return ui($, e).Text({ children: 'outer' })
         }),
       inner: (on) =>
-        on('ui.render', { component: 'AbovePrompt' }, ($, e) =>
-          ui($, e).Text({ children: 'inner' }),
-        ),
+        on('ui.render', { component: 'AbovePrompt' }, ($, e) => {
+          heard.inner!.push((e as { plugin?: unknown }).plugin)
+          return ui($, e).Text({ children: 'inner' })
+        }),
     })
     const drawing = await host.band.render('s1', { columns: 80, rows: 10 })
-    expect(drawing.tree).toEqual([
-      {
-        type: 'Box',
-        props: {},
-        children: [
-          { type: 'Text', props: {}, children: ['inner'] },
-          { type: 'Text', props: {}, children: ['outer'] },
-        ],
-      },
-    ])
+    expect(texts(drawing.tree)).toEqual(['outer', 'inner'])
+    expect(drawing.rows).toEqual(['outer', 'inner'])
+    // A hook with no `plugin` in its matcher hears its own mod's row alone.
+    expect(heard).toEqual({ outer: ['outer'], inner: ['inner'] })
+  })
+
+  test('a mod hooking AbovePromptList may reorder or hide the rows', async () => {
+    const { host } = await hostWithMods({
+      first: (on) =>
+        on('ui.render', { component: 'AbovePrompt' }, ($, e) => ui($, e).Text({ children: 'a' })),
+      second: (on) =>
+        on('ui.render', { component: 'AbovePrompt' }, ($, e) => ui($, e).Text({ children: 'b' })),
+      list: (on) =>
+        on('ui.render', { component: 'AbovePromptList' }, ($, e) => {
+          const rows = (e as { props: { rows: Array<{ plugin: string; tree: unknown }> } }).props
+            .rows
+          return ui($, e).Box({ children: rows.toReversed().map((row) => row.tree) })
+        }),
+    })
+    const drawing = await host.band.render('s1', { columns: 80, rows: 10 })
+    expect(texts(drawing.tree)).toEqual(['b', 'a'])
   })
 
   test('a press runs onPress with its ui.press argument, in the band’s conversation', async () => {

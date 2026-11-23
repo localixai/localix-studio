@@ -1,11 +1,11 @@
 import { isRecord } from '../../../../lib/record'
-import type { MarketplaceSource } from '@rsaryev/llx-plugin/marketplace'
+import type { MarketplaceSource } from '@localix-ai/agent-plugins/marketplace'
 import {
   createMarketplaceGate,
   createPolicyView,
   pluginBlockedMessage,
   type MarketplaceGate,
-} from '@rsaryev/llx-plugin/settings'
+} from '@localix-ai/agent-plugins/settings'
 import {
   readManagedComposition,
   systemManagedSource,

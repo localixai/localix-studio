@@ -7,7 +7,7 @@ import { isRecord } from '../../lib/record'
 import { readSkillDescriptions } from './kit'
 import { entrySource } from './claude-code-installs'
 import type { DiscoveredPlugin } from './discovery-types'
-import type { MarketplaceEntry } from '@rsaryev/llx-plugin/marketplace'
+import type { MarketplaceEntry } from '@localix-ai/agent-plugins/marketplace'
 import { loadManifest } from './manifest-load'
 
 /**

@@ -148,15 +148,20 @@ export async function prepareRunInputs(frame: RunFrame, turn: ResolvedTurn, view
   // agent has no file; a plugin's `agent` setting is applied below.
   const typed =
     agentId === DEFAULT_AGENT_ID ? null : applyCatalogAgent(context, turn.admittedAgent.spec)
-  // The agent file's own run options: no instruction files, its compaction window, its memory.
+  // The agent file's own run options: no instruction files, its compaction window (a subagent's
+  // alone: a chat with no parent runs as the agent), its memory.
   const typeOptions = typed
-    ? await subagentRunOptions(typed.subagent, {
-        projectDir: defaultCwd,
-        homeDir: userHome(),
-        configDir: claudeConfigDir(userHome()),
-        autoMemoryEnabled: () =>
-          autoMemoryDir({ cwd: defaultCwd, homeDir: claudeCodeHome() }) !== null,
-      })
+    ? await subagentRunOptions(
+        typed.subagent,
+        {
+          projectDir: defaultCwd,
+          homeDir: userHome(),
+          configDir: claudeConfigDir(userHome()),
+          autoMemoryEnabled: () =>
+            autoMemoryDir({ cwd: defaultCwd, homeDir: claudeCodeHome() }) !== null,
+        },
+        { asMainSession: !session.parentSessionId },
+      )
     : null
   const asType = typed && typeOptions ? withSubagentRunOptions(typed, typeOptions) : typed
   if (typeOptions?.contextLimit) {

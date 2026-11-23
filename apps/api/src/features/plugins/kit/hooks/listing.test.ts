@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import type { RegisteredHandler } from '@rsaryev/llx-plugin/hooks'
+import type { RegisteredHandler } from '@localix-ai/agent-plugins/hooks'
 import { formatHookEntries } from './listing'
 
 const entry = (over: Partial<RegisteredHandler>): RegisteredHandler =>

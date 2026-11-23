@@ -1,6 +1,6 @@
 import type { CapabilitySourceRepository } from '../capabilities/source-repository'
 import type { DiscoveredPlugin } from './discovery-types'
-import type { SkippedBy } from '@rsaryev/llx-plugin/marketplace'
+import type { SkippedBy } from '@localix-ai/agent-plugins/marketplace'
 import {
   precheckUpdate,
   readMarketplace,

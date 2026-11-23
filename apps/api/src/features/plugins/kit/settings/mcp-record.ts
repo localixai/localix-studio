@@ -4,7 +4,7 @@ import {
   type McpTransport,
   type PluginMcpServer,
   type RemoteMcpServer,
-} from '@rsaryev/llx-plugin/format'
+} from '@localix-ai/agent-plugins/format'
 import { mcpServerInputSchema, type McpServerInput } from '../../../mcp/contracts'
 
 /**

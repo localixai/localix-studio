@@ -1,5 +1,5 @@
 import { constants as fsConstants, promises as fs } from 'node:fs'
-import type { FileReference } from '@rsaryev/llx-plugin'
+import type { FileReference } from '@localix-ai/agent-plugins'
 import { relative } from 'node:path'
 
 import { confineToDir } from '../ext/fs-discovery'

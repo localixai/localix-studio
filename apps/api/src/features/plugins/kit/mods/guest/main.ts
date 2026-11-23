@@ -7,7 +7,7 @@
  * and runs the hooks the host calls (`hooks.ts`), each `$` call and `next` going back to the host
  * (`dollar.ts`).
  */
-import { Fragment, h } from '@rsaryev/llx-plugin/mods/isolate'
+import { Fragment, h } from '@localix-ai/agent-plugins/mods/isolate'
 import type { CallInput } from './call-protocol'
 import { createEndpoint, type Handler } from './endpoint'
 import { createGuestConsole } from './console'

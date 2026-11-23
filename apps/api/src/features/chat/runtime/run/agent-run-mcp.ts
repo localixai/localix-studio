@@ -1,5 +1,5 @@
-import type { CatalogAgent } from '@rsaryev/llx-plugin/agents'
-import type { TrustSituation } from '@rsaryev/llx-plugin/loading'
+import type { CatalogAgent } from '@localix-ai/agent-plugins/agents'
+import type { TrustSituation } from '@localix-ai/agent-plugins/loading'
 import { agentMcpServers, type AgentMcpServers } from '../../../mcp/agent-servers'
 import { agentMcpSpecs } from '../../../plugins/kit'
 import type { SessionRecord } from '../../repository'

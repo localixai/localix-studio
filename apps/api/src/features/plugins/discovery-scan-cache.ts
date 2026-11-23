@@ -3,8 +3,9 @@ import { dirname, join } from 'node:path'
 import type { DiscoveredPlugin } from './discovery-types'
 
 /** Bump when a scan of the same files would now resolve differently (2: no native default
- * entrypoint for a Claude Code plugin), so a cached scan from before is discarded. */
-export const SCAN_CACHE_VERSION = 2
+ * entrypoint for a Claude Code plugin; 3: the kit reads plugins as Claude Code 2.1.330 does), so a
+ * cached scan from before is discarded. */
+export const SCAN_CACHE_VERSION = 3
 export const SCAN_CACHE_FILE = 'plugin-scan-cache-v1.json'
 
 interface ScanFingerprintEntry {

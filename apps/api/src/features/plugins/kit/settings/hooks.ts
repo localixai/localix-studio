@@ -1,19 +1,16 @@
-import { readCommandLine } from '@rsaryev/llx-plugin/settings'
+import { readCommandLine } from '@localix-ai/agent-plugins/settings'
 import type { ClaudeSettings } from './read'
 
-export interface SettingsCommandLine {
+export interface SettingsStatusLine {
   command: string
   padding: number
   refreshInterval?: number
 }
 
-/** `statusLine` or `subagentStatusLine` as the kit lets it run (`readCommandLine`), else undefined. */
-export function settingsCommandLine(
-  settings: ClaudeSettings,
-  key: 'statusLine' | 'subagentStatusLine',
-): SettingsCommandLine | undefined {
+/** The `statusLine` the settings run, as the kit lets it run (`readCommandLine`), else undefined. */
+export function settingsStatusLine(settings: ClaudeSettings): SettingsStatusLine | undefined {
   const policy = settings.policy()
-  const value = readCommandLine(policy.view, key, policy.hooks).runs?.value
+  const value = readCommandLine(policy.view, 'statusLine', policy.hooks).runs?.value
   if (!value?.command.trim()) return undefined
   const padding =
     typeof value.padding === 'number' && value.padding > 0 ? Math.floor(value.padding) : 0

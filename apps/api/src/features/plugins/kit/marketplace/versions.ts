@@ -4,7 +4,7 @@ import {
   type UpdateSubject,
   type UpdateVerdict,
   type VersionInput,
-} from '@rsaryev/llx-plugin/marketplace'
+} from '@localix-ai/agent-plugins/marketplace'
 import { nodeSha256 } from '../ports/marketplace-io'
 
 /**
@@ -23,4 +23,4 @@ export async function pluginVersion(input: VersionInput): Promise<string> {
 export const updateCheck = (subject: UpdateSubject, installed: string): Promise<UpdateVerdict> =>
   checkForUpdate(subject, installed, nodeSha256)
 
-export { precheckUpdate, UNKNOWN_VERSION } from '@rsaryev/llx-plugin/marketplace'
+export { precheckUpdate, UNKNOWN_VERSION } from '@localix-ai/agent-plugins/marketplace'

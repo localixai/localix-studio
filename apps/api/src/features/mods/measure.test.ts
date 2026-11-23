@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test'
-import type { ModsHost as KitModsHost } from '@rsaryev/llx-plugin/mods'
+import type { ModsHost as KitModsHost } from '@localix-ai/agent-plugins/mods'
 import type { ModSessionRead } from './contracts'
 import { createMeasurer } from './measure'
 

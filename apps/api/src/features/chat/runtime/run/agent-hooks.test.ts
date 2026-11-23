@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 
-import type { HooksSettings } from '@rsaryev/llx-plugin'
+import type { HooksSettings } from '@localix-ai/agent-plugins'
 import { testCatalogAgent } from '../../../plugins/kit/testing'
 import { agentScopedHooks } from './agent-hooks'
 

@@ -6,7 +6,7 @@ import type {
   ModFs as KitModFs,
   ModSpawner as KitModSpawner,
   ModStore as KitModStore,
-} from '@rsaryev/llx-plugin/mods'
+} from '@localix-ai/agent-plugins/mods'
 import { MOD_LIMITS } from '../../plugins/kit'
 
 /**

@@ -17,7 +17,7 @@ import type { RunCatalog, RunEnv, RunParams } from './types'
 import { ccSubagentOf } from './cc-hook-session-facts'
 import { claudeCodeHome } from '../../../cc-settings/config-dir'
 import { openRunHooks, readClaudeSettingsSync, type ScopedHooksBlock } from '../../../plugins/kit'
-import type { PluginSession as KitSession } from '@rsaryev/llx-plugin'
+import type { PluginSession as KitSession } from '@localix-ai/agent-plugins'
 import { ccBackgroundWork, ccRunFacts } from './cc-hook-run-facts'
 import { createCcTranscript } from './cc-transcript'
 import { publishAgentPhase } from '../session-stream-registry'
@@ -249,5 +249,6 @@ function scopedBlock(scoped: ScopedCcHooks): ScopedHooksBlock {
     ...(scoped.plugin ? { plugin: { name: scoped.plugin.name } } : {}),
     ...(pluginId ? { pluginId } : {}),
     ...(scoped.lifetime ? { lifetime: scoped.lifetime } : {}),
+    ...(scoped.origin ? { origin: scoped.origin } : {}),
   }
 }

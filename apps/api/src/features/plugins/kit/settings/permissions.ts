@@ -4,7 +4,7 @@ import {
   permissionRuleLists,
   type PermissionRuleLists,
   type PolicyScope,
-} from '@rsaryev/llx-plugin/settings'
+} from '@localix-ai/agent-plugins/settings'
 import type { ClaudeSettings, SettingsFile } from './read'
 import { contentApplies } from './trust'
 

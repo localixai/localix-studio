@@ -18,10 +18,8 @@ import type { SecretsStore } from '../features/secrets/store-contracts'
 import { forgetSecretOptions } from '../features/plugins/config-vault'
 import { miniAppOptions } from '../features/mini-apps/config-vault'
 import { createSessionResidue, type SessionResiduePorts } from '../features/chat/session-residue'
-import { createSubagentRowsChanges } from '../features/chat/service/subagent-rows-changes'
 import { createStatusLineChanges } from '../features/chat/service/status-line-changes'
 import type { StatusLine } from '../features/chat/service/status-line'
-import type { SubagentRowsLive } from '../features/chat/service/subagent-rows-live'
 import { cancelSessionLoops } from '../features/chat/service/loop-ops'
 import { stopSessionMonitors } from '../features/chat/service/monitor-ops'
 import type { NotificationJournal } from '../features/notifications/journal-contracts'
@@ -59,8 +57,6 @@ export interface CoreReactorDeps {
   publish(userId: string, resources: RealtimeResource[]): void
   /** Re-converge the mini app backends and channels (each host debounces). */
   refreshMiniAppHosts(): void
-  /** The subagent rows the chat service keeps: their inputs' notices redraw them. */
-  subagentRows: SubagentRowsLive
   /** Claude Code's `statusLine` per conversation: its conversation's notices redraw it. */
   statusLine: StatusLine
   /** The plugin monitors of each chat: they stop when it is deleted. */
@@ -254,11 +250,6 @@ export async function startCoreReactors(deps: CoreReactorDeps): Promise<void> {
   await deps.feed.subscribe('session-residue', residue.handlers, {
     kind: 'reactor',
     reconcile: () => residue.reconcile(),
-  })
-  const subagentRows = createSubagentRowsChanges(deps.subagentRows)
-  await deps.feed.subscribe('subagent-rows', subagentRows.handlers, {
-    kind: 'projector',
-    reconcile: subagentRows.reconcile,
   })
   const statusLine = createStatusLineChanges(deps.statusLine)
   await deps.feed.subscribe('status-line', statusLine.handlers, {

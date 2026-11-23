@@ -1,4 +1,4 @@
-import type { HookObserver, PluginSession } from '@rsaryev/llx-plugin'
+import type { HookObserver, PluginSession } from '@localix-ai/agent-plugins'
 import type { CcHooksRuntime } from '../../../cc-hooks/runtime-contracts'
 import {
   lateMcpCaller,

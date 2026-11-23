@@ -5,7 +5,7 @@ import {
   isHookBody,
   matchesEvent,
   plainDataProblem,
-} from '@rsaryev/llx-plugin/mods/isolate'
+} from '@localix-ai/agent-plugins/mods/isolate'
 import type { CallInput, HookSpecWire } from './call-protocol'
 import type { createGuestApi } from './dollar'
 

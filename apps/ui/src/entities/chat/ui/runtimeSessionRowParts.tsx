@@ -23,8 +23,6 @@ interface RuntimeSessionRowProps {
   onToggle: (id: string) => void
   onSelect: (id: string) => void | Promise<void>
   onStop: (session: UiSession) => void
-  /** A mini app status line's text for this row, drawn in place of its title and activity. */
-  body?: string
 }
 
 /** Each row subscribes only to its own activity ticks. */
@@ -36,7 +34,6 @@ export const RuntimeSessionRow = memo(function RuntimeSessionRow({
   onToggle,
   onSelect,
   onStop,
-  body,
 }: RuntimeSessionRowProps) {
   const { session } = node
   const runtime = useSessionActivity(session.id)
@@ -69,9 +66,9 @@ export const RuntimeSessionRow = memo(function RuntimeSessionRow({
         <span
           className={`min-w-0 flex-1 truncate text-xs text-left ${node.depth === 0 ? 'font-medium' : 'font-normal'}`}
         >
-          {body || title}
+          {title}
         </span>
-        {body ? null : isRunning && runtime.activity ? (
+        {isRunning && runtime.activity ? (
           <span className="max-w-40 truncate text-2xs text-text-faint" title={runtime.activity}>
             {runtime.activity}
           </span>

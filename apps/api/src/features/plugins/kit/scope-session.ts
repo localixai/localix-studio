@@ -1,4 +1,4 @@
-import type { PluginSession, Resolved, ResolvedMcpServer } from '@rsaryev/llx-plugin'
+import type { PluginSession, Resolved, ResolvedMcpServer } from '@localix-ai/agent-plugins'
 import type { LocalixPluginHost } from './host'
 import type { ManagedSettingsSource } from './settings/managed'
 import {

@@ -10,7 +10,7 @@ import {
   writeKnownMarketplaces,
   type KnownMarketplace,
 } from './kit'
-import type { Marketplace, MarketplaceSource } from '@rsaryev/llx-plugin/marketplace'
+import type { Marketplace, MarketplaceSource } from '@localix-ai/agent-plugins/marketplace'
 import { keptPreferences } from './marketplace-catalog'
 
 /**

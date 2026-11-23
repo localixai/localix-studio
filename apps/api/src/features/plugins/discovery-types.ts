@@ -1,7 +1,7 @@
 import type { LocalixManifest, PluginCommand, PluginProvides } from './contracts'
 import type { ResolvedEntrypoints } from './kit'
-import type { Plugin as KitPlugin } from '@rsaryev/llx-plugin/loading'
-import type { AgentRecord, PluginIssue } from '@rsaryev/llx-plugin/format'
+import type { Plugin as KitPlugin } from '@localix-ai/agent-plugins/loading'
+import type { AgentRecord, PluginIssue } from '@localix-ai/agent-plugins/format'
 
 export interface DiscoveredPlugin {
   manifest: LocalixManifest

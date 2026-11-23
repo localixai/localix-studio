@@ -2,7 +2,7 @@ import {
   fetchArchive,
   unsafeEntryIssue,
   type ArchiveFetchPlan,
-} from '@rsaryev/llx-plugin/marketplace'
+} from '@localix-ai/agent-plugins/marketplace'
 import { InvalidRequestError } from '../../../../lib/domain-errors'
 import { fetchHttpClient } from '../ports/http-client'
 import { nodeSha256, zipArchiveReader } from '../ports/marketplace-io'

@@ -3,15 +3,15 @@ import {
   enabledPlugin,
   pluginConfig,
   type FileScope,
-} from '@rsaryev/llx-plugin/settings'
-import { isFileScope } from '@rsaryev/llx-plugin/settings'
+} from '@localix-ai/agent-plugins/settings'
+import { isFileScope } from '@localix-ai/agent-plugins/settings'
 import {
   createStoreLayout,
   resolvePluginsRoot,
   SCOPES_BY_PRECEDENCE,
   type InstallRecord,
   type StoreLayout,
-} from '@rsaryev/llx-plugin/marketplace'
+} from '@localix-ai/agent-plugins/marketplace'
 import { join } from 'node:path'
 import { claudeConfigDir } from '../../../cc-settings/config-dir'
 import { readClaudeSettings, type ClaudeSettingsInput } from '../settings/read'

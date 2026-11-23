@@ -17,7 +17,7 @@ import {
   type ChatPluginSessions,
   type LocalixPluginHost,
 } from '../../plugins/kit'
-import type { PluginSession as KitSession, SessionSkill } from '@rsaryev/llx-plugin'
+import type { PluginSession as KitSession, SessionSkill } from '@localix-ai/agent-plugins'
 import { kitPluginsOf } from '../../plugins/catalog-kit'
 import { claudeCodeHome } from '../../cc-settings/config-dir'
 import { openChatPluginSession } from '../runtime/run/chat-plugin-session'

@@ -8,7 +8,7 @@ import {
   runMcpHeadersHelper,
   type HeadersHelperOrigin,
   type HelperOutput,
-} from '@rsaryev/llx-plugin/loading'
+} from '@localix-ai/agent-plugins/loading'
 import { childEnvNonInteractive } from '../../../../lib/login-shell-env'
 import { claudeCodeHome } from '../../../cc-settings/config-dir'
 import type { McpRemoteRequest } from '../../../mcp/claude-code-settings'

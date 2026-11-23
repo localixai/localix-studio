@@ -5,7 +5,7 @@ import { catalogHop, fetchChecked, readCapped } from './marketplace-download'
 import { judgedArchive } from './kit'
 import { extractZipMembers } from './marketplace-zip-extract'
 import { scanZip } from './marketplace-zip-scan'
-import type { ArchiveFetchPlan } from '@rsaryev/llx-plugin/marketplace'
+import type { ArchiveFetchPlan } from '@localix-ai/agent-plugins/marketplace'
 
 /** Headers for a download URL: given only on `origin` (same scheme, host and port). */
 function onOrigin(

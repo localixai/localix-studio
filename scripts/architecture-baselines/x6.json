@@ -19,7 +19,5 @@
   "apps/api/src/features/plugins/entry-headers-helper.ts spells headersHelper (MCP headers helper)",
   "apps/api/src/features/plugins/marketplace-materialize.ts spells headersHelper (MCP headers helper)",
   "apps/api/src/features/plugins/marketplace-resolve.ts spells headersHelper (MCP headers helper)",
-  "apps/api/src/features/plugins/mcp.ts spells headersHelper (MCP headers helper)",
-  "apps/api/src/features/plugins/subagent-status-line.ts spells CLAUDE_PLUGIN_DATA (plugin variables)",
-  "apps/api/src/features/plugins/subagent-status-line.ts spells CLAUDE_PROJECT_DIR (hook variables)"
+  "apps/api/src/features/plugins/mcp.ts spells headersHelper (MCP headers helper)"
 ]

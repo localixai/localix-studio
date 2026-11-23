@@ -1,6 +1,6 @@
 import { basename } from 'node:path'
-import { resolveSkillName } from '@rsaryev/llx-plugin/format'
-import { scanSkillContainer, scopeFilePath } from '@rsaryev/llx-plugin/skills'
+import { resolveSkillName } from '@localix-ai/agent-plugins/format'
+import { scanSkillContainer, scopeFilePath } from '@localix-ai/agent-plugins/skills'
 import { diskFolderScan } from './ports/folder-scan'
 
 /**

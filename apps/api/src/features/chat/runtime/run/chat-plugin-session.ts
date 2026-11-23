@@ -14,7 +14,7 @@ import {
   type ClaudeSettings,
   type ScopePlugin,
 } from '../../../plugins/kit'
-import type { PluginSession as KitSession } from '@rsaryev/llx-plugin'
+import type { PluginSession as KitSession } from '@localix-ai/agent-plugins'
 import { ccPermissionMode } from './cc-hook-session-facts'
 
 /** What the run's hooks already read: the folder and Claude Code's settings there. */

@@ -1,7 +1,7 @@
 import type { McpServerRecord } from '../mcp/repository'
 import { mcpServerShape } from './kit'
 import type { DiscoveredPlugin } from './discovery'
-import type { Resolved, ResolvedMcpServer } from '@rsaryev/llx-plugin'
+import type { Resolved, ResolvedMcpServer } from '@localix-ai/agent-plugins'
 
 /**
  * The MCP server records of one enabled plugin, from the servers its scope's kit session resolved

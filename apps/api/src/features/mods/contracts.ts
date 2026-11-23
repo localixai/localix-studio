@@ -4,7 +4,7 @@
  * builds no other feature's service (A4).
  */
 
-import type { CommandListing } from '@rsaryev/llx-plugin/mods'
+import type { CommandListing } from '@localix-ai/agent-plugins/mods'
 
 /** Where an event happens: the conversation a hook's `$` acts in. */
 export interface ModScene {

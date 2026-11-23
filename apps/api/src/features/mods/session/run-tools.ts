@@ -6,7 +6,7 @@ import { claudeCodeToolName, localToolName, toolInputOf } from '../../plugins/ki
 import type {
   ModHostPortsInput as KitModHostPorts,
   ModSessionPorts as KitModSessionPorts,
-} from '@rsaryev/llx-plugin/mods'
+} from '@localix-ai/agent-plugins/mods'
 import type { ModVerdict } from '../tool-check'
 
 /**

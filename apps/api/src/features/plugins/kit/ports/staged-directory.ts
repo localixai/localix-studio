@@ -5,7 +5,7 @@ import type {
   PreviousCopy,
   StagedCommit,
   StagedDirectory,
-} from '@rsaryev/llx-plugin/marketplace'
+} from '@localix-ai/agent-plugins/marketplace'
 import { errorMessage } from '../../../../lib/errors'
 import { openDirectory } from './marketplace-io'
 import { copyPluginTree } from './tree-copy'

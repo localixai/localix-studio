@@ -1,6 +1,6 @@
 import { promises as fs, type Dirent } from 'node:fs'
 import { join, relative } from 'node:path'
-import type { MemoryRule, MemoryRuleScope } from '@rsaryev/llx-plugin/format'
+import type { MemoryRule, MemoryRuleScope } from '@localix-ai/agent-plugins/format'
 
 /**
  * MODULAR RULE FILES — `.localix/rules/**\/*.md` and Claude Code's `.claude/rules/**\/*.md`,

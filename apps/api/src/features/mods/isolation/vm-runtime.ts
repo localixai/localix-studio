@@ -1,5 +1,5 @@
-import type { GuestHook, HookCall, ModRuntime } from '@rsaryev/llx-plugin/mods'
-import type { PluginIssue } from '@rsaryev/llx-plugin/format'
+import type { GuestHook, HookCall, ModRuntime } from '@localix-ai/agent-plugins/mods'
+import type { PluginIssue } from '@localix-ai/agent-plugins/format'
 import { loadModRuntime } from '../../plugins/kit'
 import { defaultElementTable, RENDER_SITE_NAMES } from '../../plugins/kit/mods'
 import { errorMessage } from '../../../lib/errors'

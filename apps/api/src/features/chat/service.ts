@@ -12,8 +12,6 @@ import { createChatQueryFacade } from './service/query-facade'
 import { createChatInboundFacade } from './service/inbound-facade'
 import { createChatRecapFacade } from './service/recap-facade'
 import { createChatSkillFacade } from './service/skill-facade'
-import { listDelegatedRuns } from './service/delegated-runs'
-import { createSubagentRows } from './service/subagent-rows'
 import { createStatusLine } from './service/status-line'
 import { statusLineUsage } from './service/status-line-usage'
 import { statusLineModelInfo } from './service/status-line-model'
@@ -118,17 +116,6 @@ export function createChatService(deps: ChatServiceDeps) {
       },
       publish: (sessionId, text) => deps.mods?.composer.status(sessionId, 'statusLine', text),
       watched: (userId, sessionId) => streamRegistry.hasWatchers(userId, sessionId),
-    }),
-
-    // A plugin's `subagentStatusLine` over this conversation's subagent rows.
-    ...createSubagentRows({
-      requireSession,
-      getSession: (userId, id) => repo.getSession(userId, id),
-      buildSessionPluginCatalog: core.buildSessionPluginCatalog,
-      chatPluginSession: core.chatPluginSession,
-      resolveSessionWorkingDir: core.resolveSessionWorkingDir,
-      listDelegatedRuns: (userId, id) => listDelegatedRuns(deps.db, usageRepo, userId, id),
-      streamRegistry,
     }),
   }
 }

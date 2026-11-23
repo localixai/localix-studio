@@ -34,6 +34,8 @@ export type SpawnForkSkillFn = (
     hooks?: unknown
     /** The plugin shipping the skill: its `hooks` get that plugin's root and data dir. */
     hooksPlugin?: ScopedCcHooks['plugin']
+    /** Where the skill came from: what its `hooks` trust and locks read. */
+    hooksOrigin?: ScopedCcHooks['origin']
     /**
      * CC `agent:` — the agent the fork runs as. A catalog agent (a file, a plugin's, `Explore`) is
      * used by the child and runs on its own definition; `general-purpose` or none is the
@@ -113,6 +115,7 @@ export function createSpawnForkSkill(deps: ForkSkillDeps): SpawnForkSkillFn {
                 asSubagent: true,
                 agentType: named?.kind === 'agent' ? named.agent.name : GENERAL_PURPOSE_TYPE,
                 ...(opts.hooksPlugin ? { plugin: opts.hooksPlugin } : {}),
+                ...(opts.hooksOrigin ? { origin: opts.hooksOrigin } : {}),
               },
             ],
           }

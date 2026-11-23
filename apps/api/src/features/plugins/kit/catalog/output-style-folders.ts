@@ -1,6 +1,6 @@
 import { dirname, join, resolve } from 'node:path'
 
-import { settingsLocations } from '@rsaryev/llx-plugin/settings'
+import { settingsLocations } from '@localix-ai/agent-plugins/settings'
 
 /** Localix's own folder beside each of Claude Code's `.claude/output-styles`. */
 const LOCALIX_STYLE_DIR = '.localix/output-styles'

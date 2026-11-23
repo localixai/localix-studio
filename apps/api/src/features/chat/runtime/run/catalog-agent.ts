@@ -6,7 +6,7 @@ import {
   type WorktreeHook,
 } from '../../../agent-core/tools/workflow/hook-worktree'
 import { createAgentWorktree } from '../../../agent-core/tools/workflow/worktree'
-import type { CatalogAgent } from '@rsaryev/llx-plugin/agents'
+import type { CatalogAgent } from '@localix-ai/agent-plugins/agents'
 import {
   agentToolsRefusal,
   subagentModelRoute,

@@ -1,4 +1,4 @@
-import { readOutputStyleSetting } from '@rsaryev/llx-plugin/settings'
+import { readOutputStyleSetting } from '@localix-ai/agent-plugins/settings'
 import type { PermissionMode } from '../../../../contracts/permission-modes'
 import type { ClaudeSettings } from './read'
 

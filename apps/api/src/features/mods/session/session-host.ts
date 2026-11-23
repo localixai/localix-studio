@@ -1,6 +1,10 @@
 import { AsyncLocalStorage } from 'node:async_hooks'
-import type { JsonObject } from '@rsaryev/llx-plugin/mods'
-import type { ModsHost as KitModsHost, ModCompiler, ModRuntime } from '@rsaryev/llx-plugin/mods'
+import type { JsonObject } from '@localix-ai/agent-plugins/mods'
+import type {
+  ModsHost as KitModsHost,
+  ModCompiler,
+  ModRuntime,
+} from '@localix-ai/agent-plugins/mods'
 import {
   createModsHost,
   hostCommandRunner,

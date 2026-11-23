@@ -1,4 +1,4 @@
-import { parseToolEntry } from '@rsaryev/llx-plugin/agents'
+import { parseToolEntry } from '@localix-ai/agent-plugins/agents'
 import { normalizeMcpToolAlias } from '../../agent-core/mcp-tool-alias'
 import { localixToolNames } from './tool-names'
 

@@ -7,7 +7,7 @@ import {
   subagentPermissionMode,
 } from './spawn'
 import { testCatalogAgent } from './testing'
-import type { AgentDefinition } from '@rsaryev/llx-plugin'
+import type { AgentDefinition } from '@localix-ai/agent-plugins'
 
 // sub-agents.md, "Choose a model": the definition's `model` is an alias, a full id or `inherit`; an
 // alias of the main model's family, and `opus` when that family cannot be told, is the main model.
@@ -25,6 +25,25 @@ describe('the model of a delegated child the person chose none for', () => {
     ['claude-opus-9', 'claude-sonnet-4-5', {}],
   ])('model %p on %p routes %p', (model, mainModel, route) => {
     expect(subagentModelRoute({ definition: model }, { mainModel, available }, {})).toEqual(route)
+  })
+
+  // sub-agents.md, "Choose a model": the variable alone leaves the built-in Explore and Plan on the
+  // conversation's model; with `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` on (any on spelling) it moves
+  // them.
+  const context = { mainModel: 'claude-sonnet-4-5', available }
+  const variable = { CLAUDE_CODE_SUBAGENT_MODEL: 'claude-haiku-4-5' }
+  const haiku = { modelId: 'claude-haiku-4-5', providerConnectionId: null }
+  test.each(['Explore', 'Plan'])(
+    'the variable alone leaves the built-in %s where it is',
+    (name) => {
+      expect(subagentModelRoute({ builtin: name }, context, variable)).toEqual({})
+      expect(subagentModelRoute({}, context, variable)).toEqual(haiku)
+    },
+  )
+
+  test.each(['1', 'true', 'YES', 'on'])('the force switch written %p moves Explore too', (on) => {
+    const forced = { ...variable, CLAUDE_CODE_SUBAGENT_MODEL_FORCE: on }
+    expect(subagentModelRoute({ builtin: 'Explore' }, context, forced)).toEqual(haiku)
   })
 })
 

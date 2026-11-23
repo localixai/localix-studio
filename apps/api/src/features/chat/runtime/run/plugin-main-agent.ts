@@ -1,6 +1,6 @@
 import { DEFAULT_AGENT_ID } from '@localixai/agent/agents'
 
-import type { CatalogAgent } from '@rsaryev/llx-plugin/agents'
+import type { CatalogAgent } from '@localix-ai/agent-plugins/agents'
 
 /**
  * The `agent` setting (`settings.json` of the person, the project or a plugin), as Claude Code

@@ -7,7 +7,7 @@ import {
   serializeKnownMarketplaces,
   type KnownMarketplace as Recorded,
   type MarketplaceSource,
-} from '@rsaryev/llx-plugin/marketplace'
+} from '@localix-ai/agent-plugins/marketplace'
 import { isRecord } from '../../../../lib/record'
 import { marketplaceFetchPlan } from './sources'
 

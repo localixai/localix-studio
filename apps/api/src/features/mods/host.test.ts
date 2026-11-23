@@ -279,7 +279,7 @@ describe('mods host', () => {
     await host.reconcile([
       mod(
         'gate',
-        `on('plugin.register', ($, e, next) => e.plugin === 'bad' ? { refuse: 'not here' } : next(e))
+        `on('plugin.register', ($, e, next) => e.name === 'bad' ? { refuse: 'not here' } : next(e))
          on('ui.resolve', { component: 'Pane' }, async ($, e, next) => {
            const table = await next(e)
            return { ...table, Text: (props) => table.Text({ ...props, bold: true }) }

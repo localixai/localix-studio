@@ -1,10 +1,10 @@
-import type { PluginIssue, PluginSession } from '@rsaryev/llx-plugin'
+import type { PluginIssue, PluginSession } from '@localix-ai/agent-plugins'
 import {
   languageIdFor,
   lspRestartDecision,
   planLspStartup,
   type ResolvedLspServer,
-} from '@rsaryev/llx-plugin/loading'
+} from '@localix-ai/agent-plugins/loading'
 
 /**
  * A plugin's language server as the kit resolved it for a chat, in the shape Localix's LSP client

@@ -1,9 +1,9 @@
 import { promises as fs } from 'node:fs'
 import { dirname, join } from 'node:path'
-import type { EnvFileStore } from '@rsaryev/llx-plugin'
-import { ENV_FILE_KINDS, type EnvFileKind } from '@rsaryev/llx-plugin/hooks'
-import type { PathResolver } from '@rsaryev/llx-plugin/rules'
-import type { WorkspaceTrust } from '@rsaryev/llx-plugin/loading'
+import type { EnvFileStore } from '@localix-ai/agent-plugins'
+import { ENV_FILE_KINDS, type EnvFileKind } from '@localix-ai/agent-plugins/hooks'
+import type { PathResolver } from '@localix-ai/agent-plugins/rules'
+import type { WorkspaceTrust } from '@localix-ai/agent-plugins/loading'
 import { errorMessage } from '../../../../lib/errors'
 import { trustedFolders } from '../settings/trust'
 
