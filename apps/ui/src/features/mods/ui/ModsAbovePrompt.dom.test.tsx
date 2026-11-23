@@ -37,10 +37,10 @@ async function mountBand(opts: {
   const React = await import('react')
   const { createRoot } = await import('react-dom/client')
   const { modsApi } = await import('@/shared/api/modsApi')
-  const reads: Array<{ sessionId: string; columns: number; rows: number }> = []
+  const reads: Array<{ sessionId: string; columns: number; rows: number; collapsed: boolean }> = []
   const actions: Array<{ sessionId: string; action: ModAction }> = []
-  spyOn(modsApi, 'band').mockImplementation(async (sessionId, columns, rows) => {
-    reads.push({ sessionId, columns, rows })
+  spyOn(modsApi, 'band').mockImplementation(async (sessionId, columns, rows, collapsed) => {
+    reads.push({ sessionId, columns, rows, collapsed })
     return opts.drawing()
   })
   spyOn(modsApi, 'bandAct').mockImplementation(async (sessionId, action) => {
@@ -80,7 +80,32 @@ describe('the mods’ band above the prompt box', () => {
     })
     expect(band.host.textContent).toContain('next:')
     expect(band.host.textContent).toContain('Run the tests')
-    expect(band.reads).toEqual([{ sessionId: 's-draw', columns: 100, rows: 12 }])
+    expect(band.reads).toEqual([{ sessionId: 's-draw', columns: 100, rows: 12, collapsed: false }])
+    await band.done()
+  })
+
+  test('collapsing the band asks its mods again, saying so, and keeps it collapsed', async () => {
+    const band = await mountBand({
+      sessionId: 's-collapse',
+      drawing: () => ({ sessionId: 's-collapse', tree: suggestion('Commit') }),
+    })
+    const collapse = band.host.querySelector<HTMLButtonElement>(
+      'button[aria-label="Collapse the band"]',
+    )!
+    await band.React.act(async () => collapse.click())
+    await band.turns()
+    expect(band.reads.map((read) => read.collapsed)).toEqual([false, true])
+    // The redrawn tree keeps the band as the person left it: one line of what it says.
+    expect(band.host.querySelector('[aria-label="Mods band, collapsed"]')?.textContent).toBe(
+      'next: Commit',
+    )
+    const expand = band.host.querySelector<HTMLButtonElement>(
+      'button[aria-label="Expand the band"]',
+    )!
+    await band.React.act(async () => expand.click())
+    await band.turns()
+    expect(band.reads.map((read) => read.collapsed)).toEqual([false, true, false])
+    expect(band.button('Commit')).toBeDefined()
     await band.done()
   })
 

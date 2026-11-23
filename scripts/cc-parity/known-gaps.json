@@ -2,11 +2,13 @@
   "$comment": "Known differences from the newest Claude Code snapshot, each with why. The report prints the reason beside the entry; fixing one moves it to checked.json.",
   "gaps": {
     "event:turn.step": "Localix leaves effort out when the run sets no effort Claude Code names (the fixture's run sets none).",
-    "event:ui.render:CommandOutput": "Localix's desktop surface draws only panes through ui.render.",
-    "event:ui.render:PromptHint": "Localix's desktop surface draws only panes through ui.render.",
-    "event:ui.render:SessionMode": "Localix's desktop surface draws only panes through ui.render.",
-    "event:ui.render:Spinner": "Localix's desktop surface draws only panes through ui.render.",
-    "event:ui.render:UserMessage": "Localix's desktop surface draws only panes through ui.render.",
-    "result:tool.check": "The fixture's permission verdict names no rule; Claude Code's names the rule that decided."
+    "event:ui.render:AbovePromptList": "Claude Code did not hand the probe's ui.render hook, which names no component, the band's stack (its declarations: heard by a bare on('*') or a matcher naming it); @localix-ai/agent-plugins 0.3.0 hands it to every ui.render hook without a component matcher.",
+    "event:ui.render:BesidePrompt": "Localix's desktop surface draws only panes and the band above the prompt through ui.render.",
+    "event:ui.render:CommandOutput": "Localix's desktop surface draws only panes and the band above the prompt through ui.render.",
+    "event:ui.render:PromptHint": "Localix's desktop surface draws only panes and the band above the prompt through ui.render.",
+    "event:ui.render:SessionMode": "Localix's desktop surface draws only panes and the band above the prompt through ui.render.",
+    "event:ui.render:Spinner": "Localix's desktop surface draws only panes and the band above the prompt through ui.render.",
+    "event:ui.render:Underlay": "Claude Code raises Underlay on the terminal surface only; Localix's mods draw on the desktop surface.",
+    "event:ui.render:UserMessage": "Localix's desktop surface draws only panes and the band above the prompt through ui.render."
   }
 }

@@ -50,6 +50,7 @@ export function computeContextEstimateDrift(
 export function freshRowAccounting(nowMs: number) {
   return {
     usageTotals: zeroUsageTotals(),
+    cacheWriteLifetimeUnnamed: false,
     actualCostSum: 0,
     estimatedCostSum: 0,
     turnsWithUsage: 0,
@@ -188,6 +189,8 @@ export function accumulateTurnUsage(
   totals.cacheReadTokens += normalized.cacheReadTokens
   totals.cacheWriteTokens += normalized.cacheWriteTokens
   totals.cacheWrite1hTokens += normalized.cacheWrite1hTokens
+  if (normalized.cacheWriteTokens > 0 && usage.cacheWrite1hTokens === undefined)
+    state.cacheWriteLifetimeUnnamed = true
   totals.reasoningTokens += normalized.reasoningTokens
   totals.totalTokens += normalized.totalTokens
   // The per-REQUEST context anchor: inputTokens is the normalized TOTAL context
@@ -215,4 +218,13 @@ export function accumulateTurnUsage(
     state.actualCostSum += usage.totalCost
     state.turnsWithActualCost += 1
   }
+}
+
+/**
+ * The row's token totals for a reader that splits the cache write by lifetime (`turn.complete`):
+ * the one-hour part only while every request that wrote named its lifetimes.
+ */
+export function runTokenCounts(state: RunTurnState) {
+  const { cacheWrite1hTokens, ...totals } = state.usageTotals
+  return state.cacheWriteLifetimeUnnamed ? totals : { ...totals, cacheWrite1hTokens }
 }

@@ -10,6 +10,8 @@ import type { ModsPorts, ModSource } from '../../../apps/api/src/features/mods/c
 import { createModsHost } from '../../../apps/api/src/features/mods/host'
 import { paneInstanceOf } from '../../../apps/api/src/features/mods/panes'
 import { createModRunScope } from '../../../apps/api/src/features/mods/run-scope'
+import { turnUsageOf } from '../../../apps/api/src/features/mods/turn-usage'
+import { verdictOf } from '../../../apps/api/src/features/agent-core/permission-verdict'
 import { PROBE_PLUGIN } from './fixtures'
 
 /**
@@ -142,13 +144,21 @@ async function turnSession(dir: string, reports: string[]) {
   const written: string[] = []
   const write = writeTool(written)
   const check = scope.toolCheck()
+  // The gate's own verdict before the review, under one rule that allows the tool, as
+  // `observe` runs Claude Code with `--allowedTools Write`.
+  const verdict = verdictOf({
+    rules: [{ permission: write.name, pattern: '*', action: 'allow' }],
+    toolsByName: new Map([[write.name, write]]),
+    root: dir,
+  })
   const gated: AgentTool = {
     ...write,
     async execute(toolCallId, input, signal, onUpdate, context) {
-      const verdict = check?.review
-        ? await check.review({ toolCallId, toolName: write.name, input }, { decision: 'allow' })
-        : { decision: 'allow' }
-      if (verdict.decision === 'deny') return { content: 'denied', isError: true }
+      const before = verdict(write.name, input)
+      const reviewed = check?.review
+        ? await check.review({ toolCallId, toolName: write.name, input }, before)
+        : before
+      if (reviewed.decision === 'deny') return { content: 'denied', isError: true }
       return write.execute(toolCallId, input, signal, onUpdate, context)
     },
   }
@@ -159,7 +169,15 @@ async function turnSession(dir: string, reports: string[]) {
     content,
     model: MODEL,
     stopReason: content.some((part) => part.type === 'tool_call') ? 'tool_use' : 'end_turn',
-    usage: { inputTokens: 12, outputTokens: 3, cacheReadTokens: 0, cacheWriteTokens: 0 },
+    // Claude on Anthropic, as `observe` runs it: the prompt written to the cache, each write's
+    // lifetime named (`usage.cache_creation`).
+    usage: {
+      inputTokens: 12,
+      outputTokens: 3,
+      cacheReadTokens: 0,
+      cacheWriteTokens: 8,
+      cacheWrite1hTokens: 0,
+    },
     timestamp: 0,
   })
   const files = [{ path: 'note.txt', content: 'ok' }]
@@ -187,13 +205,16 @@ async function turnSession(dir: string, reports: string[]) {
   )
   // finalize.ts: `turn.complete` with the answer and how long the turn took.
   // finalize.ts: the turn's token totals, as the run counted them, and the model that answered.
-  const usage = {
-    input_tokens: 120,
-    output_tokens: 8,
-    cache_read_input_tokens: 0,
-    cache_creation_input_tokens: 0,
-    model: MODEL,
-  }
+  const usage = turnUsageOf(
+    {
+      inputTokens: 120,
+      outputTokens: 8,
+      cacheReadTokens: 0,
+      cacheWriteTokens: 16,
+      cacheWrite1hTokens: 0,
+    },
+    MODEL,
+  )
   await scope.turnComplete({ answer: 'Done.', turnId, durationMs: 1200, reason: 'answer', usage })
   await host.stop()
   if (written.length !== 1) throw new Error('the Write tool did not run in the Localix turn')

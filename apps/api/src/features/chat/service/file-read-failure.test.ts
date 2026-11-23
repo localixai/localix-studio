@@ -57,7 +57,8 @@ describe('a failed read, classified by its own error', () => {
         detail: 'EIO: i/o error, read',
       },
     ])
-    expect(warn).not.toHaveBeenCalled()
+    // The spy sees the whole process: only this module's own `[files]` lines count.
+    expect(warn.mock.calls.filter(([line]) => String(line).startsWith('[files]'))).toEqual([])
   })
 
   test('a missing or refused file is an answer, not a log line', async () => {

@@ -30,7 +30,27 @@ export interface AssembledUsage {
   outputTokens: number
   cacheReadTokens?: number
   cacheWriteTokens?: number
+  /**
+   * The part of `cacheWriteTokens` written for one hour, where the provider names each write's
+   * lifetime (the rest is five minutes); absent where it reports one total.
+   */
+  cacheWrite1hTokens?: number
   reasoningTokens?: number
+}
+
+/**
+ * The one-hour part of a cache write in Anthropic's own usage (direct and Vertex alike):
+ * `cache_creation` splits `cache_creation_input_tokens` by the lifetime each write asked for.
+ * Undefined for a usage without that split, which every other API is.
+ */
+export function oneHourWritesOf(raw: unknown): number | undefined {
+  const split =
+    raw && typeof raw === 'object'
+      ? (raw as { cache_creation?: unknown }).cache_creation
+      : undefined
+  if (!split || typeof split !== 'object') return undefined
+  const long = (split as { ephemeral_1h_input_tokens?: unknown }).ephemeral_1h_input_tokens
+  return typeof long === 'number' && Number.isFinite(long) && long >= 0 ? long : undefined
 }
 
 export function usageOf(usage: LanguageModelV4Usage): AssembledUsage {
@@ -39,6 +59,7 @@ export function usageOf(usage: LanguageModelV4Usage): AssembledUsage {
     (usage.inputTokens.noCache ?? 0) +
       (usage.inputTokens.cacheRead ?? 0) +
       (usage.inputTokens.cacheWrite ?? 0)
+  const long = usage.inputTokens.cacheWrite !== undefined ? oneHourWritesOf(usage.raw) : undefined
   return {
     inputTokens: input,
     outputTokens: usage.outputTokens.total ?? 0,
@@ -48,6 +69,7 @@ export function usageOf(usage: LanguageModelV4Usage): AssembledUsage {
     ...(usage.inputTokens.cacheWrite !== undefined
       ? { cacheWriteTokens: usage.inputTokens.cacheWrite }
       : {}),
+    ...(long !== undefined ? { cacheWrite1hTokens: long } : {}),
     ...(usage.outputTokens.reasoning !== undefined
       ? { reasoningTokens: usage.outputTokens.reasoning }
       : {}),

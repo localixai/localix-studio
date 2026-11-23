@@ -34,14 +34,16 @@ import { useComposerShell } from './useComposerShell'
 
 export interface ModBandProps {
   tree: Array<ModElement | string>
+  /** The person collapsed the band; its owner keeps it, as the mods are told it. */
+  collapsed: boolean
+  onCollapsedChange: (collapsed: boolean) => void
   /** A control used in the band. */
   act: (action: ModAction) => void
   /** Runs `run` once the person paused; injected by tests. */
   afterPause?: (run: () => void) => () => void
 }
 
-export function ModBand({ tree, act, afterPause }: ModBandProps) {
-  const [collapsed, setCollapsed] = useState(false)
+export function ModBand({ tree, collapsed, onCollapsedChange, act, afterPause }: ModBandProps) {
   const root = useRef<HTMLDivElement>(null)
   const controls = useRef<HTMLDivElement>(null)
   const controlsWidth = useWidth(controls)
@@ -70,7 +72,7 @@ export function ModBand({ tree, act, afterPause }: ModBandProps) {
                   size="xs"
                   variant="ghost"
                   className="max-w-56 font-normal text-text-faint"
-                  onClick={() => setCollapsed(false)}
+                  onClick={() => onCollapsedChange(false)}
                 >
                   <span className="min-w-0 truncate">{part.summary}</span>
                 </Button>
@@ -103,7 +105,7 @@ export function ModBand({ tree, act, afterPause }: ModBandProps) {
             size="xs"
             aria-label={collapsed ? 'Expand the band' : 'Collapse the band'}
             tooltip={collapsed ? 'Expand the band' : 'Collapse the band'}
-            onClick={() => setCollapsed((value) => !value)}
+            onClick={() => onCollapsedChange(!collapsed)}
           >
             {collapsed ? <ChevronsUpDown /> : <ChevronsDownUp />}
           </IconButton>

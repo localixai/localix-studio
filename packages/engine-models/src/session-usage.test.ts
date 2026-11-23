@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import type {
+  JSONObject,
   LanguageModelV4,
   LanguageModelV4CallOptions,
   LanguageModelV4StreamPart,
@@ -108,6 +109,92 @@ describe('the usage of a response cut short', () => {
     ).turn({ systemPrompt: 's', messages: [], tools: [], signal: controller.signal })
     setTimeout(() => controller.abort(), 0)
     expect((await turn.message).usage).toBeUndefined()
+  })
+})
+
+/** A response that ends with its `finish` part, from a provider with Anthropic's cache rates. */
+async function finished(parts: LanguageModelV4StreamPart[]) {
+  const model = {
+    specificationVersion: 'v4',
+    provider: 'fake',
+    modelId: 'fake-1',
+    supportedUrls: {},
+    doGenerate: () => Promise.reject(new Error('not used')),
+    doStream: async () => ({
+      stream: new ReadableStream<LanguageModelV4StreamPart>({
+        start(controller) {
+          for (const part of parts) controller.enqueue(part)
+          controller.close()
+        },
+      }),
+    }),
+  } as unknown as LanguageModelV4
+  const turn = createModelSession(
+    {
+      ref: { providerId: 'anthropic', modelId: 'fake-1' },
+      model,
+      profile: { namespace: 'anthropic', cacheBreakpoints: true, temperature: true },
+      origin: { api: 'anthropic-messages', provider: 'anthropic', model: 'fake-1' },
+      cost: { input: 3, output: 15, cacheRead: 0.3, cacheWrite: 3.75 },
+      subscription: false,
+    },
+    { sessionId: 's' },
+  ).turn({ systemPrompt: 's', messages: [], tools: [], signal: new AbortController().signal })
+  return turn.message
+}
+
+const finishWith = (raw?: JSONObject): LanguageModelV4StreamPart => ({
+  type: 'finish',
+  usage: {
+    inputTokens: { total: 1_100, noCache: 100, cacheRead: 0, cacheWrite: 1_000 },
+    outputTokens: { total: 5, text: 5, reasoning: undefined },
+    ...(raw ? { raw } : {}),
+  },
+  finishReason: { unified: 'stop', raw: 'end_turn' },
+})
+
+describe('the lifetime of what a response wrote to the cache', () => {
+  test("takes the one-hour part from Anthropic's own split and prices it at twice the input", async () => {
+    const message = await finished([
+      ...text('ok'),
+      finishWith({
+        input_tokens: 100,
+        output_tokens: 5,
+        cache_creation_input_tokens: 1_000,
+        cache_creation: { ephemeral_5m_input_tokens: 400, ephemeral_1h_input_tokens: 600 },
+      }),
+    ])
+    expect(message.usage).toMatchObject({ cacheWriteTokens: 1_000, cacheWrite1hTokens: 600 })
+    // 100 fresh × $3 + 400 five-minute writes × $3.75 + 600 one-hour writes × $6 + 5 out × $15.
+    expect(message.usage!.totalCost).toBeCloseTo(
+      (100 * 3 + 400 * 3.75 + 600 * 6 + 5 * 15) / 1e6,
+      10,
+    )
+  })
+
+  test('names no lifetime where the provider reports one total', async () => {
+    const message = await finished([
+      ...text('ok'),
+      finishWith({ cache_creation_input_tokens: 1_000 }),
+    ])
+    expect(message.usage).toMatchObject({ cacheWriteTokens: 1_000 })
+    expect(message.usage!.cacheWrite1hTokens).toBeUndefined()
+  })
+
+  test('reads the split from the first event of a response cut short', () => {
+    expect(
+      countsOf({
+        type: 'message_start',
+        message: {
+          usage: {
+            input_tokens: 10,
+            output_tokens: 1,
+            cache_creation_input_tokens: 50,
+            cache_creation: { ephemeral_5m_input_tokens: 20, ephemeral_1h_input_tokens: 30 },
+          },
+        },
+      }),
+    ).toEqual({ inputTokens: 60, outputTokens: 1, cacheWriteTokens: 50, cacheWrite1hTokens: 30 })
   })
 })
 

@@ -33,10 +33,15 @@ const band: ModElement[] = [
 ]
 
 async function mount(tree: ModElement[] = band) {
-  const { act } = await import('react')
+  const { act, useState } = await import('react')
   const { createRoot } = await import('react-dom/client')
   const { ModBand } = await import('./ModBand')
   const actions: ModAction[] = []
+  // The band's owner keeps whether it is collapsed, as the composer's band does.
+  function Owned(props: Omit<Parameters<typeof ModBand>[0], 'collapsed' | 'onCollapsedChange'>) {
+    const [collapsed, setCollapsed] = useState(false)
+    return <ModBand {...props} collapsed={collapsed} onCollapsedChange={setCollapsed} />
+  }
   // The composer's shell: the band sits above its text field, as in the composer.
   const shell = document.createElement('div')
   shell.setAttribute('data-agent-link-drop-target', '')
@@ -48,7 +53,7 @@ async function mount(tree: ModElement[] = band) {
   const draw = (next: ModElement[]) =>
     act(async () =>
       root.render(
-        <ModBand
+        <Owned
           tree={next}
           act={(action) => actions.push(action)}
           // No pause in a test: the digit is still alone in the box when the band looks.

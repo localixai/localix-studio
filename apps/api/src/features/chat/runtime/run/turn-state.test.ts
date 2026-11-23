@@ -6,6 +6,7 @@ import {
   computeContextEstimateDrift,
   createRunTurnState,
   finalizeTiming,
+  runTokenCounts,
 } from './turn-state'
 import { settleToolTiming } from './tool-timing'
 
@@ -91,6 +92,26 @@ describe('accumulateTurnUsage', () => {
     expect(s.actualCostSum).toBeCloseTo(0.25, 6)
     expect(s.turnsWithActualCost).toBe(1)
     expect(s.turnsWithUsage).toBe(3)
+  })
+})
+
+describe('runTokenCounts — the cache write by lifetime', () => {
+  it('keeps the one-hour part while every request that wrote named its lifetimes', () => {
+    const s = newState()
+    accumulateTurnUsage(s, { inputTokens: 100, cacheWriteTokens: 40, cacheWrite1hTokens: 30 })
+    // A request that wrote nothing names nothing, and leaves the split known.
+    accumulateTurnUsage(s, { inputTokens: 120 })
+    accumulateTurnUsage(s, { inputTokens: 130, cacheWriteTokens: 10, cacheWrite1hTokens: 0 })
+    expect(runTokenCounts(s)).toMatchObject({ cacheWriteTokens: 50, cacheWrite1hTokens: 30 })
+  })
+
+  it('names no lifetime once a request wrote without naming one', () => {
+    const s = newState()
+    accumulateTurnUsage(s, { inputTokens: 100, cacheWriteTokens: 40, cacheWrite1hTokens: 30 })
+    accumulateTurnUsage(s, { inputTokens: 130, cacheWriteTokens: 10 })
+    const counts = runTokenCounts(s)
+    expect(counts).toMatchObject({ inputTokens: 230, cacheWriteTokens: 50 })
+    expect(counts.cacheWrite1hTokens).toBeUndefined()
   })
 })
 

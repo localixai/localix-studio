@@ -31,6 +31,15 @@ export interface BandViewport {
   rows: number
 }
 
+/** What the person did with the band on the screen that asks for it. */
+export interface BandView {
+  /**
+   * The person collapsed it (`e.props.isCollapsed`): the mods still draw their rows, and the
+   * screen shows one line of what each part says.
+   */
+  collapsed?: boolean
+}
+
 export interface BandDrawing {
   sessionId: string
   /** The stacked rows' tree; null when no mod draws the band, or its drawing was refused. */
@@ -80,7 +89,11 @@ export function createModBand(deps: {
   /** Each band as last drawn, with its controls' callbacks. */
   const drawn = new Map<string, HeldDrawing>()
 
-  async function render(sessionId: string, viewport: BandViewport): Promise<BandDrawing> {
+  async function render(
+    sessionId: string,
+    viewport: BandViewport,
+    view: BandView = {},
+  ): Promise<BandDrawing> {
     const kit = await deps.hostOf(sessionId)
     const working = running.has(sessionId)
     const mods = (kit?.active() ?? []).map((mod) => mod.name)
@@ -94,6 +107,7 @@ export function createModBand(deps: {
         surface: 'desktop',
         props: {
           hasSurvey: false,
+          isCollapsed: view.collapsed === true,
           isWorking: working,
           maxRows,
           bodyColumns: Math.max(1, viewport.columns - MARK_COLUMNS),
