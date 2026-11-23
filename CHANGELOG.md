@@ -4,6 +4,11 @@ Localix is in beta: versions before 1.0 may change behavior between releases.
 
 ## Unreleased
 
+## v0.1.0-beta.30 — 2026-11-24
+
+Formulas are set by the app itself, plugins follow Claude Code 2.1.330, and a reply that fails or a
+path in a reply that leads nowhere now says what happened instead of a generic error.
+
 ### Changed
 
 - **Formulas in a reply** are laid out by the app itself, in one math font on every system, and what
