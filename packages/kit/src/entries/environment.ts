@@ -7,6 +7,7 @@ export {
 export { getDesktopApiPort, getDesktopOAuthPort, isDesktop, isDesktopRuntime } from '../lib/desktop'
 export {
   IS_MAC,
+  IS_WINDOWS,
   OS_FAMILY,
   REVEAL_IN_OS_LABEL,
   applyPlatformDataset,

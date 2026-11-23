@@ -38,6 +38,15 @@ GB Mac, Balanced picks Gemma 4 12B and Smartest the 26B-A4B mixture of experts a
 
 The model picker lists a local chat model for agents once one is installed.
 
+Chat models an Ollama already running on this computer serves are listed too, as **<name> (Ollama,
+32K copy)**, when they can call tools. Ollama starts a model with a 4K context, too small for an
+agent's prompt and tools, and its OpenAI endpoint cannot ask for more. So the first run with one
+makes a copy in Ollama named `<name>-localix32k`: the same weights, with a 32K context (or the
+model's own, when smaller). The copy stays in Ollama so later runs start at once; it shows in
+`ollama list`, and `ollama rm <name>-localix32k` removes it. Cancelling the run stops the copy being
+made. Localix asks Ollama for its list every 15 seconds while it runs, less and less often (up to
+every five minutes) while it is installed but not running, and never where it is not installed.
+
 EmbeddingGemma 2 is built in: Localix downloads it quietly on first start and keeps it — its row
 says **Built in**, and it can be paused but not cancelled or removed. Semantic search and mini apps
 use it from the list of installed models; none of them owns its download.

@@ -696,6 +696,17 @@ pub(crate) fn remove_workspace(app: &AppHandle, label: &str) {
         .remove(label);
 }
 
+/// Windows draws the app menu as a bar of its own under the title bar (File, Edit, Project, View,
+/// Terminal, Window, Help). Localix hides that bar: the menu stays attached, so its accelerators
+/// (Ctrl+N, Ctrl+S, Ctrl+W, zoom…) keep routing through `on_menu_event`, and every item is also in
+/// the command palette. macOS has no per-window bar, and Linux keeps its bar as before.
+pub(crate) fn hide_menu_bar<R: tauri::Runtime>(window: &tauri::WebviewWindow<R>) {
+    #[cfg(target_os = "windows")]
+    let _ = window.hide_menu();
+    #[cfg(not(target_os = "windows"))]
+    let _ = window;
+}
+
 /// Rebuild the native app menu (and the tray's recents) from the current
 /// {@link MenuData}. AppKit menu mutation must happen on the main thread, so this
 /// hops there; it's cheap and happens rarely (only when recents/projects change).
@@ -706,6 +717,10 @@ pub(crate) fn rebuild_menus(app: &AppHandle) {
         let data = state.active.lock().unwrap();
         if let Ok(menu) = build_app_menu(&app2, &data) {
             let _ = app2.set_menu(menu);
+            // Setting the app menu attaches it to every window again; keep the bar hidden.
+            for window in app2.webview_windows().values() {
+                hide_menu_bar(window);
+            }
         }
         // Mirror the recents into the tray (menu-bar) menu too.
         if let Some(tray) = app2.tray_by_id("main-tray") {

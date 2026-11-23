@@ -35,6 +35,21 @@ export function createTerminalRoutes(service: TerminalService, work: WorkRegistr
       return c.json({ terminalId: session.id, cwd: session.cwd }, 201)
     })
     .get('/', (c) => c.json(service.list(c.get('userId')), 200))
+    // Text typed into a PTY from somewhere other than its pane: the message box of a coding
+    // agent's chat view, which shows the agent's turns as messages instead of its terminal.
+    .post(
+      '/:id/input',
+      zValidator('param', z.object({ id: z.string() })),
+      zValidator('json', z.object({ data: z.string().min(1).max(100_000) })),
+      (c) => {
+        const ok = service.writeUserInput(
+          c.get('userId'),
+          c.req.valid('param').id,
+          c.req.valid('json').data,
+        )
+        return c.json({ ok }, ok ? 200 : 404)
+      },
+    )
     .delete('/:id', zValidator('param', z.object({ id: z.string() })), (c) => {
       const ok = service.close(c.get('userId'), c.req.valid('param').id)
       return c.json({ ok }, ok ? 200 : 404)

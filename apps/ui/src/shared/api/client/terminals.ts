@@ -25,6 +25,11 @@ export const terminalsApi = {
   // Run a command in a PTY pane for a session's workspace (e.g. the preview panel
   // relaunching a stopped dev server). Returns the backend terminalId so the UI can
   // adopt the pane and surface its logs on demand.
+  /** Type text into a PTY the user owns, from outside its pane (a coding agent's message box). */
+  async writeTerminalInput(id: string, data: string): Promise<void> {
+    await unwrap(await client.rpc.terminal[':id'].input.$post({ param: { id }, json: { data } }))
+  },
+
   async spawnTerminalCommand(input: {
     sessionId: string
     command: string

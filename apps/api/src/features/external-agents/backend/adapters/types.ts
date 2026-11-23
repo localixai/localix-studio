@@ -22,6 +22,7 @@
  * directory; every open is a read.
  */
 
+import type { AgentAccount } from '../../shared/agent-prompt'
 import type { SessionSummary, TranscriptEvent, ProviderId } from '../../shared/contracts'
 import type { TurnState } from '../live/turn-state'
 
@@ -132,6 +133,36 @@ export interface ProviderAdapter {
   readonly detectionManifestId?: string
   /** Shell command continuing this exact native session, with the id quoted as one argument. */
   readonly resumeCommand?: (nativeSessionId: string) => string
+  /**
+   * Shell command starting a NEW native session under an id the caller chose. With it, a chat
+   * knows its conversation from launch, instead of finding it by observation once the agent has
+   * written its first record (`live/correlate.ts`).
+   */
+  readonly startCommand?: (nativeSessionId: string) => string
+  /**
+   * Environment variables a parent session of this same agent leaves behind. Inherited by an agent
+   * Localix starts, they make it a child session (one that, for Claude Code, saves no transcript),
+   * so they are removed from its terminal.
+   */
+  readonly parentSessionEnv?: readonly string[]
+  /**
+   * How one chat turn runs headless: the arguments after the executable, the message going to its
+   * stdin. `resume` says the session already has a transcript to continue. Absent: the agent is
+   * chatted with through its terminal.
+   */
+  readonly headless?: {
+    readonly args: (nativeSessionId: string, resume: boolean, permissionMode?: string) => string[]
+    /** Permission modes a turn may run in; the agent's own settings decide when none is given. */
+    readonly permissionModes: readonly string[]
+  }
+  /** The agent's own sign-in commands (arguments to its executable), when Localix can drive them. */
+  readonly account?: {
+    readonly status: readonly string[]
+    readonly login: readonly string[]
+    readonly logout: readonly string[]
+    /** Read `status`'s output, printed whether or not it exits non-zero. */
+    readonly read: (stdout: string) => AgentAccount | null
+  }
 
   /** Roots this adapter will probe on this machine, in precedence order, with existence. */
   probeRoots(env: AdapterEnv): Promise<readonly RootProbe[]>

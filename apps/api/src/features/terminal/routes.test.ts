@@ -103,3 +103,26 @@ test('the spawn request preserves the launch directory instead of stripping it',
   expect(response.status).toBe(201)
   expect(received).toMatchObject({ sessionId: 's1', command: 'bun dev', cwd: '/work/frontend' })
 })
+
+describe('typing into a terminal from a message box', () => {
+  test("writes the text to the user's own PTY and refuses one that is not theirs", async () => {
+    const writes: string[] = []
+    const service = {
+      writeUserInput: (userId: string, id: string, data: string) => {
+        if (userId !== 'u1' || id !== 'pty-1') return false
+        writes.push(data)
+        return true
+      },
+    } as unknown as TerminalService
+    const routes = app(service, testWork())
+    const send = (id: string) =>
+      routes.request(`/${id}/input`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ data: 'fix the login bug\r' }),
+      })
+    expect((await send('pty-1')).status).toBe(200)
+    expect(writes).toEqual(['fix the login bug\r'])
+    expect((await send('someone-elses')).status).toBe(404)
+  })
+})

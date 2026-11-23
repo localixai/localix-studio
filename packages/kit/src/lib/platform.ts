@@ -27,6 +27,8 @@ function detectOsFamily(): OsFamily {
 export const OS_FAMILY: OsFamily = detectOsFamily()
 /** Shared platform predicate for titlebar layout and shortcut semantics. */
 export const IS_MAC = OS_FAMILY === 'mac'
+/** Windows: the desktop shell draws its own window buttons there (no system title bar). */
+export const IS_WINDOWS = OS_FAMILY === 'windows'
 
 /**
  * What this OS calls "show me where this file lives", named the way the OS names it.

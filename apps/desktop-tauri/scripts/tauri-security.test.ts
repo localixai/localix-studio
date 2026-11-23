@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import { readFileSync, readdirSync } from 'node:fs'
-import { join } from 'node:path'
+import { join, sep } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 /**
  * The shell's IPC and content boundary, held as configuration (README, "Tauri practices").
@@ -8,8 +9,8 @@ import { join } from 'node:path'
  * Each rule is checked on the committed configuration and on a copy broken in the one way the rule
  * exists to catch, so a guard that stopped seeing its mistake fails here too.
  */
-const SRC_TAURI = new URL('../src-tauri/', import.meta.url).pathname
-const UI_SRC = new URL('../../ui/src/', import.meta.url).pathname
+const SRC_TAURI = fileURLToPath(new URL('../src-tauri/', import.meta.url))
+const UI_SRC = fileURLToPath(new URL('../../ui/src/', import.meta.url))
 
 type Capability = {
   identifier: string
@@ -157,5 +158,7 @@ test('window.__TAURI__ (withGlobalTauri) is read in one file, so turning it off 
   const readers = uiSources(UI_SRC).filter((file) =>
     /\.__TAURI__\b/u.test(readFileSync(file, 'utf8')),
   )
-  expect(readers.map((file) => file.slice(UI_SRC.length))).toEqual(['shared/lib/tauri.ts'])
+  expect(readers.map((file) => file.slice(UI_SRC.length).replaceAll(sep, '/'))).toEqual([
+    'shared/lib/tauri.ts',
+  ])
 })

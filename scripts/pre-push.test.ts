@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { pushChecks } from './pre-push-plan.mjs'
+import { gateArgv, pushChecks } from './pre-push-plan.mjs'
 
 const ZERO = '0'.repeat(40)
 const A = 'a'.repeat(40)
@@ -39,5 +39,25 @@ describe('a push checks only what it adds, and never runs the test suite here', 
     const gates = pushChecks(update(A, B))?.gates ?? []
     expect(gates).not.toContain('test')
     expect(gates).not.toContain('test:integration')
+  })
+})
+
+describe('a gate runs the same on every platform', () => {
+  test('a script with parameter defaults runs as its expanded words, with no shell', () => {
+    // Bun's shell on Windows passed `${TURBO_CONCURRENCY:-2}` to turbo as written.
+    const script = 'bunx turbo type-check --concurrency=${TURBO_CONCURRENCY:-2} ${TURBO_FILTER:-}'
+    expect(gateArgv(script, {})).toEqual(['bunx', 'turbo', 'type-check', '--concurrency=2'])
+    expect(gateArgv(script, { TURBO_CONCURRENCY: '4', TURBO_FILTER: '--affected' })).toEqual([
+      'bunx',
+      'turbo',
+      'type-check',
+      '--concurrency=4',
+      '--affected',
+    ])
+  })
+
+  test('a script that needs a shell (a glob, quotes, a pipe) is left to bun run', () => {
+    expect(gateArgv('bun test scripts/*guard*.test.ts', {})).toBeNull()
+    expect(gateArgv("bun x 'quoted arg'", {})).toBeNull()
   })
 })

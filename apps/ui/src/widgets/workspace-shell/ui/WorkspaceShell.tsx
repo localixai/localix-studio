@@ -1,7 +1,7 @@
 import { type ReactNode, useEffect } from 'react'
 import { Menu } from 'lucide-react'
 import { isDesktop } from '@localixai/kit/environment'
-import { IS_MAC } from '@localixai/kit/environment'
+import { IS_MAC, IS_WINDOWS } from '@localixai/kit/environment'
 import { cn } from '@localixai/mini-app-sdk/ui/classes'
 import { DROP_TARGET_INSET_ACTIVE, DROP_TARGET_TRANSITION } from '@localixai/kit/drop-target'
 import { IconButton } from '@localixai/kit/icon-button'
@@ -297,8 +297,8 @@ export function WorkspaceShell({
             traffic lights. AppKit measures their gap and the native tab band.
             `data-tauri-drag-region` makes the strip drag the window (Tauri reads the
             attribute, not the CSS -webkit-app-region property); double-click zooms.
-          - everywhere else (browser + Windows/Linux, which keep their native OS
-            titlebar): a plain, non-draggable bar with no traffic-light gap. */}
+          - everywhere else: a plain bar with no traffic-light gap. Browser and Linux keep their
+            native OS titlebar; on Windows desktop the bar drags the window. */}
         {!isMobile &&
           titlebarContent &&
           // A standalone app's page sits under its own window's macOS titlebar, like the desktop's.
@@ -311,7 +311,12 @@ export function WorkspaceShell({
               {headerStatus}
             </div>
           ) : (
-            <div className="flex h-[var(--titlebar-height)] shrink-0 items-center gap-1 border-b border-border-soft bg-sidebar px-2 max-sm:hidden lg:px-1">
+            // Windows desktop has no system title bar (the shell builds the window undecorated),
+            // so this bar is what drags the window; its own buttons sit beside the bell.
+            <div
+              data-tauri-drag-region={isDesktop && IS_WINDOWS ? true : undefined}
+              className="flex h-[var(--titlebar-height)] shrink-0 select-none items-center gap-1 border-b border-border-soft bg-sidebar px-2 max-sm:hidden lg:px-1"
+            >
               {titlebarContent}
               {headerStatus}
             </div>

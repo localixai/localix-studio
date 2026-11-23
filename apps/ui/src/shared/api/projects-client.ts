@@ -93,6 +93,29 @@ export const projectsApi = {
     return json.paths
   },
 
+  /** The project's last year of commits, read from its local git history (no account, no key). */
+  /** Commits per day of the last year, keyed by day in this browser's time zone. */
+  async gitActivity(id: string, signal?: AbortSignal) {
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    return unwrap(
+      await client.rpc.projects[':id']['git-activity'].$get(
+        { param: { id }, query: { timeZone } },
+        { init: { signal } },
+      ),
+    )
+  },
+  /** The commits authored in `[from, to)`, epoch milliseconds: one picked day of the grid. */
+  async gitDay(id: string, from: number, to: number) {
+    return (
+      await unwrap(
+        await client.rpc.projects[':id']['git-activity'].day.$get({
+          param: { id },
+          query: { from: String(from), to: String(to) },
+        }),
+      )
+    ).commits
+  },
+
   async openProjectDirectory(id: string): Promise<void> {
     await unwrap(await client.rpc.projects[':id'].open.$post({ param: { id } }))
   },

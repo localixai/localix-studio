@@ -6,7 +6,7 @@
 import { spawnSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { runOrExit } from './lib/run.mjs'
-import { pushChecks } from './pre-push-plan.mjs'
+import { gateArgv, pushChecks } from './pre-push-plan.mjs'
 import { scrubGitEnv } from './scratch-git-env.mjs'
 
 const checks = pushChecks(readFileSync(0, 'utf8'))
@@ -39,9 +39,12 @@ const env = scrubGitEnv({
   ...process.env,
 })
 
+const scripts = JSON.parse(readFileSync('package.json', 'utf8')).scripts ?? {}
 for (const gate of checks.gates) {
-  console.log(`[pre-push] bun run ${gate}`)
-  runOrExit('bun', ['run', gate], {
+  // Expanded here when no shell is needed, so the gate runs the same on Windows (`gateArgv`).
+  const argv = gateArgv(scripts[gate] ?? '', env) ?? ['bun', 'run', gate]
+  console.log(`[pre-push] ${argv.join(' ')}`)
+  runOrExit(argv[0], argv.slice(1), {
     cwd: process.cwd(),
     env,
     stdio: 'inherit',

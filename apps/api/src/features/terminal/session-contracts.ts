@@ -38,8 +38,8 @@ export interface TerminalSessionOptions {
   shell?: string
   /** Extra shell argv (e.g. `--rcfile`) from shell integration. */
   shellArgs?: string[]
-  /** Extra env (e.g. `ZDOTDIR`) from shell integration. */
-  env?: Record<string, string>
+  /** Extra env layered over the PTY's (`ZDOTDIR` from shell integration); `undefined` removes one. */
+  env?: Record<string, string | undefined>
   /** Removes any shell-integration temp files; called on exit + dispose. */
   cleanup?: () => void
   /**

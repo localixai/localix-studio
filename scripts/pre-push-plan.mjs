@@ -28,3 +28,20 @@ export function pushChecks(stdin) {
   const remote = updates.length === 1 ? updates[0][3] : null
   return { base: remote && !ZERO.test(remote) ? remote : 'origin/main', gates: GATES }
 }
+
+/** Shell syntax beyond `${NAME:-default}` words: a glob, quotes, a pipe, a redirect, a chain. */
+const SHELL_SYNTAX = /[*?'"|&;<>`()]/
+
+/**
+ * A gate's script as the argv to run without a shell, its `${NAME:-default}` parameters expanded
+ * from `env`, or null when it needs a shell. Bun's shell on Windows passed `${NAME:-default}` to
+ * the program as written, so turbo refused `--concurrency=${TURBO_CONCURRENCY:-2}`.
+ */
+export function gateArgv(script, env) {
+  const expanded = script.replace(
+    /\$\{([A-Za-z_][A-Za-z0-9_]*)(?::-([^}]*))?\}/g,
+    (_, name, fallback = '') => env[name] || fallback,
+  )
+  if (SHELL_SYNTAX.test(expanded) || expanded.includes('$')) return null
+  return expanded.split(/\s+/).filter(Boolean)
+}

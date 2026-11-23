@@ -13,8 +13,8 @@ export interface PtySpawnOptions {
   cwd: string
   cols: number
   rows: number
-  /** Extra env vars layered over the backend's base environment. */
-  env?: Record<string, string>
+  /** Extra env vars layered over the backend's base environment; `undefined` removes one. */
+  env?: Record<string, string | undefined>
   /**
    * Extra argv passed to the shell (interactive sessions only), e.g. bash's
    * `--rcfile <path>`. Lets a spawn-time concern like shell integration inject

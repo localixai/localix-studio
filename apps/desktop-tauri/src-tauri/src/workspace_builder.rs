@@ -117,6 +117,13 @@ pub(crate) fn build(
         builder = builder.background_color(initial_bg);
     }
 
+    // Windows: no system title bar. The page's top row drags the window and draws its own close,
+    // minimize and maximize beside the bell (`window_controls`); the shadow keeps the resize edges.
+    #[cfg(target_os = "windows")]
+    {
+        builder = builder.decorations(false).shadow(true);
+    }
+
     // Nothing navigates the app's webview away from itself (a hard break with no back button).
     // The app, loopback pages (the preview frames) and generated documents load; mail and
     // calls go to the OS; a web page is cancelled and handed to the UI where it may be a
@@ -168,6 +175,7 @@ pub(crate) fn build(
     "window.__LOCALIX_WORKSPACE={context};if(!location.hash && window.__LOCALIX_WORKSPACE.route) location.hash=window.__LOCALIX_WORKSPACE.route;"
 ));
     let main_window = builder.build()?;
+    crate::menu::hide_menu_bar(&main_window);
 
     // The material can only be attached once the NSWindow exists, so it happens here rather
     // than on the builder. `UnderWindowBackground` samples the DESKTOP behind the app — that

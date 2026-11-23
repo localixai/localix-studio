@@ -165,6 +165,7 @@ mod tray;
 mod updater;
 #[cfg(target_os = "macos")]
 mod webcrypto_key;
+mod window_controls;
 mod window_material;
 mod workspace_builder;
 mod workspace_drag;
@@ -447,6 +448,7 @@ pub fn run() {
             crate::app_bundle_commands::mini_app_uninstall,
             #[cfg(target_os = "macos")]
             crate::titlebar_double_click::titlebar_double_click,
+            crate::window_controls::window_control,
             #[cfg(all(debug_assertions, target_os = "macos"))]
             crate::workspace_probe::workspace_probe
         ])

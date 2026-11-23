@@ -1,13 +1,15 @@
 import { lazy } from 'react'
-import { FolderTree, History } from 'lucide-react'
+import { Bot, FolderTree, History } from 'lucide-react'
 import { externalAgentPresentation } from '@/shared/ui/externalAgentPresentation'
 import { LinkedAgentTerminalPill } from './ui/LinkedAgentTerminalPill'
 import type { MiniAppUiHost } from '@localixai/mini-app-sdk/ui'
 import { resourceMessageBindingDraft } from '@localixai/mini-app-sdk/ui'
 import { EXTERNAL_NAMESPACE, parseExternalResource } from './model/sessionResource'
+import { AGENT_CHAT_KIND } from './model/createSession'
 
 const Transcript = lazy(() => import('./ui/ExternalTranscript'))
 const HistoryTab = lazy(() => import('./ui/ExternalHistoryTab'))
+const AgentChat = lazy(() => import('./ui/AgentChatView'))
 
 export function registerUi(host: MiniAppUiHost): void {
   host.sessionSurfaces.register({ surface: 'composer.context', Component: LinkedAgentTerminalPill })
@@ -28,6 +30,15 @@ export function registerUi(host: MiniAppUiHost): void {
       tools: ['ExternalAgentSessions'],
       nextSteps: ['Read the linked session and its tool results with ExternalAgentSessions.'],
     },
+  })
+  // A linked coding agent as a chat, in the chat's own place; its terminal runs behind it.
+  host.workItems.register({
+    kind: AGENT_CHAT_KIND,
+    Component: AgentChat,
+    Icon: Bot,
+    scope: 'session',
+    restorable: false,
+    placement: 'aux',
   })
   host.workItems.register({
     kind: 'external-agent-history',

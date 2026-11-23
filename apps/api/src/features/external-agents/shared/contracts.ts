@@ -277,5 +277,6 @@ export interface TranscriptSlice {
 
 export * from './quotas'
 export * from './statistics'
+export * from './agent-prompt'
 export type { ProviderStatus } from './provider-status'
 export type { AgentState, StateAuthority, StateExplain, ProviderId }

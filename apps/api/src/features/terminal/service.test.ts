@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test'
+import { resolve } from 'node:path'
 import { createTerminalService } from './service'
 import type { PtyBackend, PtySpawnOptions } from './pty-backend'
 
@@ -18,6 +19,16 @@ const svc = (backend: PtyBackend) =>
   createTerminalService({ backend, resolveCwd: async () => '/workspace' })
 
 describe('terminal service', () => {
+  test('a command pane runs with the environment its caller set, names removed included', async () => {
+    const { backend, spawns } = makeBackend()
+    await svc(backend).spawnCommand('u1', {
+      sessionId: 'chat-1',
+      command: 'claude',
+      env: { CLAUDECODE: undefined, EDITOR: 'vim' },
+    })
+    expect(spawns[0]?.env).toEqual({ CLAUDECODE: undefined, EDITOR: 'vim' })
+  })
+
   test('publishes user input and PTY exit lifecycle for a chat-bound terminal', async () => {
     let write = (_data: string) => {}
     let exit = (_code: number) => {}
@@ -232,7 +243,7 @@ describe('terminal service', () => {
   test('open resolves the cwd and returns a descriptor', async () => {
     const { backend } = makeBackend()
     const info = await svc(backend).open('u1', { sessionId: 'chat-1' })
-    expect(info.cwd).toBe('/workspace')
+    expect(info.cwd).toBe(resolve('/workspace'))
     expect(info.id).toBeTruthy()
     expect(typeof info.createdAt).toBe('number')
   })
@@ -255,7 +266,7 @@ describe('terminal service', () => {
   test('an explicit cwd overrides the resolver', async () => {
     const { backend } = makeBackend()
     const info = await svc(backend).open('u1', { sessionId: 'chat-1', cwd: '/custom' })
-    expect(info.cwd).toBe('/custom')
+    expect(info.cwd).toBe(resolve('/custom'))
   })
 
   test('clamps cols/rows to sane bounds', async () => {

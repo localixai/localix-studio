@@ -27,6 +27,12 @@ export function sessionFieldsPatch(
     runtimeStatus?: SessionRecord['runtimeStatus']
     /** Already cleared by the caller against the session being a delegated child. */
     permissionMode?: PermissionMode
+    /**
+     * Deferred tools to load for this chat from its next run on, as `ToolSearch` would: a chat
+     * started for one job (planning) names the tools that job needs instead of hoping a model
+     * finds them.
+     */
+    activateTools?: readonly string[]
   },
   now: () => string,
 ): Partial<SessionRecord> | null {
@@ -48,6 +54,11 @@ export function sessionFieldsPatch(
     ...(patch.projectId !== undefined ? { projectId: patch.projectId } : {}),
     ...(patch.runtimeStatus !== undefined ? { runtimeStatus: patch.runtimeStatus } : {}),
     ...(patch.permissionMode !== undefined ? { permissionMode: patch.permissionMode } : {}),
+    ...(patch.activateTools?.length
+      ? {
+          activatedTools: [...new Set([...(session.activatedTools ?? []), ...patch.activateTools])],
+        }
+      : {}),
   }
   // Correlating or reopening a CLI only records identity; it is not conversation activity.
   const identity =

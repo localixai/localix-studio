@@ -16,7 +16,7 @@ import { workspaceOf } from '@/shared/lib/workspaceOf'
 import { toast } from '@/shared/lib/notify'
 import { errorMessage } from '@localixai/mini-app-sdk/ui/utilities'
 import { createTerminal } from '../api'
-import { makeTerminalItem, placeTerminal } from './terminalTabPlacement'
+import { makeTerminalItem, placeAgentTerminal, placeTerminal } from './terminalTabPlacement'
 
 export { restartTerminalTab } from './restartTerminalTab'
 
@@ -161,7 +161,8 @@ export function revealTerminal(args: {
   })
 }
 
-/** A user-launched agent pane belongs to its Localix session, including when reopened. */
+/** A user-launched agent pane belongs to its Localix session, including when reopened. It opens in
+ *  the chat's place, not in the terminal area. */
 export function openOwnedTerminal(sessionId: string, terminalId: string, title: string): void {
-  placeTerminal(makeTerminalItem({ sessionId, terminalId, title, owned: true }))
+  placeAgentTerminal(makeTerminalItem({ sessionId, terminalId, title, owned: true }))
 }

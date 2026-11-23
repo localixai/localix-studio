@@ -117,7 +117,7 @@ async function localAccess(
       )
     }
   }
-  const { baseUrl, apiKey } = await host.endpoint(signal)
+  const { baseUrl, apiKey } = await host.endpoint(signal, modelId)
   return { baseURL: `${baseUrl}/v1`, apiKey }
 }
 

@@ -64,6 +64,7 @@ export function createTerminalService(deps: TerminalServiceDeps) {
       command?: string
       chatSessionId?: string | null
       wakesAgent?: boolean
+      env?: Record<string, string | undefined>
     },
   ) => {
     const id = randomUUID()
@@ -115,7 +116,7 @@ export function createTerminalService(deps: TerminalServiceDeps) {
         chatSessionId: input.chatSessionId,
         shell: injection ? shell : undefined,
         shellArgs: injection?.shellArgs,
-        env: injection?.env,
+        env: input.env || injection?.env ? { ...input.env, ...injection?.env } : undefined,
         cleanup: injection ? () => cleanupShellIntegration(injection?.dir) : undefined,
         onStateChange: (sid) => {
           const live = sessions.get(sid)
@@ -169,6 +170,8 @@ export function createTerminalService(deps: TerminalServiceDeps) {
         rows?: number
         /** The agent asked to be woken by this job's exit (`bash notify`). */
         wakesAgent?: boolean
+        /** Layered over the command's environment; a name set to `undefined` is removed. */
+        env?: Record<string, string | undefined>
       },
     ): Promise<TerminalSession> {
       const workspaceCwd = await deps.resolveCwd(userId, input.sessionId)
@@ -179,6 +182,7 @@ export function createTerminalService(deps: TerminalServiceDeps) {
         command: input.command,
         chatSessionId: input.sessionId,
         wakesAgent: input.wakesAgent,
+        env: input.env,
       })
     },
 

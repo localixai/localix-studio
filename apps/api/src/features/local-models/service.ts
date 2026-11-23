@@ -43,6 +43,8 @@ export interface LocalModelsDeps {
   log?: (event: string, fields: Record<string, unknown>) => void
   /** A Hugging Face token (`HF_TOKEN`): higher rate limits, gated repositories. */
   hfToken?: string
+  /** Chat models a model server already running here serves (Ollama), for the status. */
+  external?: () => readonly { id: string; name: string; server: string }[]
   /** Test seams. */
   hf?: HfClient
   detect?: (executable: string | null) => Promise<MachineProfile>
@@ -263,7 +265,7 @@ export function createLocalModelsService(deps: LocalModelsDeps) {
     },
 
     async status(): Promise<LocalModelsStatus> {
-      return buildStatus({
+      const status = buildStatus({
         runtime: { supported: !!build, tag: build?.tag ?? null, installed: runtimeInstalled },
         installed,
         jobs: downloads.list(),
@@ -271,6 +273,7 @@ export function createLocalModelsService(deps: LocalModelsDeps) {
         loaded: await router.loaded(),
         machine: machine.profile(),
       })
+      return { ...status, external: [...(deps.external?.() ?? [])] }
     },
 
     subscribe: progress.on,

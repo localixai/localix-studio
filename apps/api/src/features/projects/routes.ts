@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { z } from 'zod'
 import { zValidator } from '../../lib/validator'
 
 import { defaultErrorHandler } from '../../lib/http'
@@ -25,6 +26,12 @@ import {
   inspectPathRequestSchema,
   inspectPathResponseSchema,
 } from './inspect-path'
+import {
+  type GitActivityResponse,
+  type GitDayResponse,
+  gitActivityResponseSchema,
+  gitDayResponseSchema,
+} from './git-activity'
 
 export interface ProjectsRoutesService {
   listProjects(userId: string): Promise<{ projects: Project[] }>
@@ -38,6 +45,8 @@ export interface ProjectsRoutesService {
   pickFiles(): Promise<{ paths: string[] }>
   expandRefs(userId: string, input: ExpandRefsRequest): Promise<ExpandRefsResponse>
   openProjectDirectory(userId: string, id: string): Promise<{ opened: true }>
+  gitActivity(userId: string, id: string, timeZone: string): Promise<GitActivityResponse>
+  gitDay(userId: string, id: string, from: number, to: number): Promise<GitDayResponse>
 }
 
 export function createProjectsRoutes(service: ProjectsRoutesService) {
@@ -80,6 +89,33 @@ export function createProjectsRoutes(service: ProjectsRoutesService) {
       const response = await service.openProjectDirectory(c.get('userId'), id)
       return c.json(response, 200)
     })
+    .get(
+      '/:id/git-activity',
+      zValidator('param', projectParamsSchema),
+      zValidator('query', z.object({ timeZone: z.string().max(64).default('UTC') })),
+      async (c) => {
+        const { id } = c.req.valid('param')
+        const { timeZone } = c.req.valid('query')
+        const response = await service.gitActivity(c.get('userId'), id, timeZone)
+        return c.json(gitActivityResponseSchema.parse(response), 200)
+      },
+    )
+    .get(
+      '/:id/git-activity/day',
+      zValidator('param', projectParamsSchema),
+      zValidator(
+        'query',
+        z
+          .object({ from: z.coerce.number().int().min(0), to: z.coerce.number().int().min(0) })
+          .refine((range) => range.to > range.from && range.to - range.from <= 2 * 86_400_000),
+      ),
+      async (c) => {
+        const { id } = c.req.valid('param')
+        const { from, to } = c.req.valid('query')
+        const response = await service.gitDay(c.get('userId'), id, from, to)
+        return c.json(gitDayResponseSchema.parse(response), 200)
+      },
+    )
     .get('/:id', zValidator('param', projectParamsSchema), async (c) => {
       const { id } = c.req.valid('param')
       const response = await service.getProject(c.get('userId'), id)

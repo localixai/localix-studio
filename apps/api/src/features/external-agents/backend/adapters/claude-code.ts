@@ -9,6 +9,7 @@
  * Checked against real transcript data under ~/.claude/projects.
  */
 
+import type { AgentAccount } from '../../shared/agent-prompt'
 import { readdir, stat } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { basename, dirname, join } from 'node:path'
@@ -216,6 +217,21 @@ async function readTranscript(req: TranscriptRequest): Promise<TranscriptResult>
   return { ...window.result(), ...(truncated ? { sourceTruncated: true } : {}) }
 }
 
+/** `claude auth status --json`: `{ loggedIn, email, subscriptionType, authMethod, … }`. */
+function readClaudeAccount(stdout: string): AgentAccount | null {
+  try {
+    const status = JSON.parse(stdout) as Record<string, unknown>
+    if (typeof status.loggedIn !== 'boolean') return null
+    if (!status.loggedIn) return { loggedIn: false }
+    const text = (value: unknown) => (typeof value === 'string' && value ? value : undefined)
+    const email = text(status.email)
+    const plan = text(status.subscriptionType) ?? text(status.authMethod)
+    return { loggedIn: true, ...(email ? { email } : {}), ...(plan ? { plan } : {}) }
+  } catch {
+    return null
+  }
+}
+
 export const claudeCodeAdapter: ProviderAdapter = {
   id: ID,
   command: 'claude',
@@ -224,6 +240,41 @@ export const claudeCodeAdapter: ProviderAdapter = {
   verified: true,
   detectionManifestId: 'claude-code',
   resumeCommand: (id) => `claude --resume ${shellQuote(id)}`,
+  startCommand: (id) => `claude --session-id ${shellQuote(id)}`,
+  // Set in every process a Claude Code session runs, such as a Localix started from its terminal.
+  parentSessionEnv: [
+    'CLAUDECODE',
+    'CLAUDE_CODE_CHILD_SESSION',
+    'CLAUDE_CODE_CHILD_NOTES_DIR',
+    'CLAUDE_CODE_ENTRYPOINT',
+    'CLAUDE_CODE_EXECPATH',
+    'CLAUDE_CODE_MESSAGING_SOCKET',
+    'CLAUDE_CODE_MESSAGING_TOKEN',
+    'CLAUDE_CODE_SESSION_ATTENDED',
+    'CLAUDE_CODE_SESSION_ID',
+    'CLAUDE_PID',
+  ],
+  headless: {
+    // `stream-json` for the result record a failed turn is told by. Headless, nothing can answer a
+    // permission prompt, so one that would ask is refused at once rather than left waiting.
+    args: (id, resume, permissionMode) => [
+      '-p',
+      '--output-format',
+      'stream-json',
+      '--verbose',
+      '--permission-prompts',
+      'none',
+      ...(resume ? ['--resume', id] : ['--session-id', id]),
+      ...(permissionMode ? ['--permission-mode', permissionMode] : []),
+    ],
+    permissionModes: ['manual', 'acceptEdits', 'auto', 'plan', 'bypassPermissions'],
+  },
+  account: {
+    status: ['auth', 'status', '--json'],
+    login: ['auth', 'login'],
+    logout: ['auth', 'logout'],
+    read: readClaudeAccount,
+  },
   async probeRoots(env: AdapterEnv): Promise<readonly RootProbe[]> {
     const path = rootFor(env)
     return [{ path, exists: await pathExists(path) }]

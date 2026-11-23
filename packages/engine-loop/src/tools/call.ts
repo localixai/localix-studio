@@ -80,8 +80,21 @@ export type AdmittedCall =
     }
   | { kind: 'settled'; call: ToolCallRequest; outcome: CallOutcome }
 
+/**
+ * The tool a call names. Small local models often glue the action onto the tool's name
+ * (`kanban.create` for `kanban` with `"action": "create"`); when the whole name is no tool but the
+ * part before the first dot is, the call goes to that tool — its input still carries the action.
+ */
+function toolNameOf(env: CallEnvironment, requested: string): string {
+  const name = env.naming.internal(requested)
+  if (env.tools.has(name)) return name
+  const dot = name.indexOf('.')
+  const base = dot > 0 ? env.naming.internal(name.slice(0, dot)) : ''
+  return base && env.tools.has(base) ? base : name
+}
+
 export function resolveCall(env: CallEnvironment, requested: ToolCallRequest): ResolvedCall {
-  const name = env.naming.internal(requested.name)
+  const name = toolNameOf(env, requested.name)
   const call = name === requested.name ? requested : { ...requested, name }
   const runTool = env.tools.get(call.name)
   if (!runTool)

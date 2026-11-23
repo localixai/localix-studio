@@ -12,6 +12,7 @@ import {
   type LocalModelsService,
 } from '../features/local-models/service'
 import { CHAT_CONTEXT_FALLBACK } from '../features/local-models/router'
+import type { OllamaModels } from '../features/local-models/ollama'
 import { localixHome } from '../lib/env'
 import type { createLogger } from '../lib/logger'
 
@@ -25,39 +26,61 @@ export function buildLocalModels(deps: {
   /** `HF_TOKEN`: higher Hugging Face rate limits for the catalog. */
   hfToken?: string
   announce?: LocalModelsDeps['announce']
+  external?: LocalModelsDeps['external']
 }) {
   return createLocalModelsService({
     announce: deps.announce,
     root: deps.root?.trim() || path.join(localixHome(), 'models'),
     log: (event, fields) => deps.logger.info({ event, ...fields }),
     hfToken: deps.hfToken?.trim() || undefined,
+    ...(deps.external ? { external: deps.external } : {}),
   })
 }
 
-export function localProviderHost(localModels: LocalModelsService): LocalProviderHost {
+export function localProviderHost(
+  localModels: LocalModelsService,
+  ollama?: OllamaModels,
+): LocalProviderHost {
   return {
     // What is on this computer: models are found and downloaded in Settings → Models.
     models: () =>
-      localModels.installed('chat').map((spec) => {
-        // The context the server is started with for this computer — what the agent may fill.
-        const contextWindow =
-          localModels.planOf(spec.id)?.context ??
-          Math.min(spec.contextLength ?? 8192, CHAT_CONTEXT_FALLBACK)
-        return {
-          id: spec.id,
-          name: spec.label,
-          contextWindow,
-          maxTokens: Math.min(LOCAL_MAX_OUTPUT_TOKENS, Math.floor(contextWindow / 2)),
-          vision: spec.vision,
-          reasoning: spec.reasoning ?? false,
-        }
-      }),
-    isInstalled: (...args) => localModels.isInstalled(...args),
+      localModels
+        .installed('chat')
+        .map((spec) => {
+          // The context the server is started with for this computer — what the agent may fill.
+          const contextWindow =
+            localModels.planOf(spec.id)?.context ??
+            Math.min(spec.contextLength ?? 8192, CHAT_CONTEXT_FALLBACK)
+          return {
+            id: spec.id,
+            name: spec.label,
+            contextWindow,
+            maxTokens: Math.min(LOCAL_MAX_OUTPUT_TOKENS, Math.floor(contextWindow / 2)),
+            vision: spec.vision,
+            reasoning: spec.reasoning ?? false,
+          }
+        })
+        .concat(
+          // Chat models an Ollama already running here serves, beside the ones Localix downloaded.
+          (ollama?.list() ?? []).map((model) => ({
+            id: model.id,
+            name: model.name,
+            contextWindow: model.contextWindow,
+            maxTokens: Math.min(LOCAL_MAX_OUTPUT_TOKENS, Math.floor(model.contextWindow / 2)),
+            vision: model.vision,
+            reasoning: false,
+          })),
+        ),
+    isInstalled: (modelId) =>
+      localModels.isInstalled(modelId) || (ollama?.isReady(modelId) ?? false),
     whenReady: (modelId, signal) => {
+      // An Ollama model: its first use makes Localix's copy with room for the agent's prompt.
+      if (ollama?.has(modelId)) return ollama.ensure(modelId, signal)
       const label = localModels.installed().find((s) => s.id === modelId)?.label
       return localModels.whenReady(modelId, label ?? modelId, signal)
     },
-    endpoint: async () => {
+    endpoint: async (_signal, modelId) => {
+      if (ollama?.has(modelId)) return ollama.endpoint()
       const server = await localModels.router.ensure()
       return { baseUrl: server.baseUrl, apiKey: server.apiKey }
     },
