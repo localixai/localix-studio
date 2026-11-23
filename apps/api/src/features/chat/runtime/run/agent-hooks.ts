@@ -1,5 +1,5 @@
-import type { CatalogAgent } from '@rsaryev/llx-plugin/agents'
-import type { TrustSituation } from '@rsaryev/llx-plugin/loading'
+import type { CatalogAgent } from '@localix-ai/agent-plugins/agents'
+import type { TrustSituation } from '@localix-ai/agent-plugins/loading'
 import { agentHooksRun } from '../../../plugins/kit'
 import type { SessionRecord } from '../../repository'
 import type { ScopedCcHooks } from '../run-contract'

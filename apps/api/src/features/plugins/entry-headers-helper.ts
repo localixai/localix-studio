@@ -1,5 +1,5 @@
 import { InvalidRequestError } from '../../lib/domain-errors'
-import type { ArchiveFetchPlan, MarketplaceEntry } from '@rsaryev/llx-plugin/marketplace'
+import type { ArchiveFetchPlan, MarketplaceEntry } from '@localix-ai/agent-plugins/marketplace'
 import { archiveHeaders, helperAcceptance, type UrlSourceHeaders } from './kit'
 
 /**

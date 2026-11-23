@@ -14,8 +14,8 @@ import type {
   GlobOutput,
   GrepOutput,
   WebFetchOutput,
-} from '@rsaryev/llx-plugin'
-import { structuredPatchOf } from '@rsaryev/llx-plugin/rules'
+} from '@localix-ai/agent-plugins'
+import { structuredPatchOf } from '@localix-ai/agent-plugins/rules'
 
 import { absolutePath, baseOf, isRecord, num, only, str, type Fields } from './cc-tool-fields'
 import { planText } from './cc-tool-inputs-agentic'

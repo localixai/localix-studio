@@ -1,12 +1,12 @@
-import { OFFICIAL_NAMES, type MarketplaceSource } from '@rsaryev/llx-plugin/marketplace'
+import { OFFICIAL_NAMES, type MarketplaceSource } from '@localix-ai/agent-plugins/marketplace'
 import {
   createMarketplaceRegistry,
   createPolicyView,
   type FileScope,
   type Registration,
-} from '@rsaryev/llx-plugin/settings'
+} from '@localix-ai/agent-plugins/settings'
 import { isRecord } from '../../../../lib/record'
-import { isFileScope } from '@rsaryev/llx-plugin/settings'
+import { isFileScope } from '@localix-ai/agent-plugins/settings'
 import { readClaudeSettings } from '../settings/read'
 import { contentApplies } from '../settings/trust'
 import { marketplacePolicy } from './policy'

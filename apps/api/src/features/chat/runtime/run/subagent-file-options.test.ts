@@ -31,6 +31,21 @@ describe('an agent file’s run options', () => {
     expect(options.enableTools).toEqual(['Read', 'Write', 'Edit'])
   })
 
+  test('a session run as the agent keeps its window: the field is for subagents alone', async () => {
+    const agent = testCatalogAgent('reviewer', { autoCompactWindow: 150000 })
+    expect((await subagentRunOptions(agent, context(), { asMainSession: true })).contextLimit).toBe(
+      undefined,
+    )
+    expect(
+      (await subagentRunOptions(agent, context(), { asMainSession: false })).contextLimit,
+    ).toBe(150000)
+  })
+
+  test('a field below the minimum window changes nothing', async () => {
+    const agent = testCatalogAgent('reviewer', { autoCompactWindow: 50000 })
+    expect((await subagentRunOptions(agent, context())).contextLimit).toBe(undefined)
+  })
+
   test('a user memory lives in the configuration folder, named by the full agent type', async () => {
     const agent = testCatalogAgent('kit:reviewer', { memory: 'user' })
     const options = await subagentRunOptions(agent, context())

@@ -196,6 +196,33 @@ test('under managed settings, a user mod’s approval of a call the rules deny i
   expect(await check('ls')).toMatchObject({ decision: 'allow' })
 })
 
+// plugins/mods/admin.md, "Know what happens by default": a `managed-mcp.json` alone loads the
+// guard.
+test('with only a managed-mcp.json, a user mod’s approval of a call the rules deny is refused', async () => {
+  const managedDir = join(scratch(), 'managed')
+  writeTree(managedDir, { 'managed-mcp.json': JSON.stringify({ mcpServers: {} }) })
+  const { dir, mods, source, scene } = setup({}, { managed: { dir: managedDir } })
+  writeTree(dir, {
+    '.claude/settings.json': JSON.stringify({ permissions: { deny: ['Bash(rm:*)'] } }),
+  })
+  const host = await mods.hostFor(scene('s1'), [
+    source(
+      'approver',
+      `export function register(on) {
+        on('tool.check', async () => ({ decision: 'allow' }))
+      }`,
+    ),
+  ])
+  const check = (command: string) =>
+    host.fire(
+      'tool.check',
+      { tool: 'Bash', input: { command } },
+      { core: async () => ({ decision: 'ask' }) },
+    )
+  expect(await check('rm -rf build')).toMatchObject({ decision: 'deny' })
+  expect(await check('ls')).toMatchObject({ decision: 'allow' })
+})
+
 test('$.tool.call runs the turn’s gated tool: a call the gate refuses is refused to the mod', async () => {
   const ran: unknown[] = []
   const bash = {

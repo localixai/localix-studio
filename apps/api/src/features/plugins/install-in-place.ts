@@ -7,7 +7,7 @@ import { removeIfUnderRoot } from '../ext/install-tree'
 import type { DiscoveredPlugin } from './discovery-types'
 import { loadInPlacePlugin, setInPlaceRecord, type InPlaceRecord } from './in-place-installs'
 import { MINI_APP_FILE } from './layout/read'
-import type { MarketplaceEntry } from '@rsaryev/llx-plugin/marketplace'
+import type { MarketplaceEntry } from '@localix-ai/agent-plugins/marketplace'
 import type { ResolvedMarketplaceInstall } from './marketplace-registry'
 
 /**

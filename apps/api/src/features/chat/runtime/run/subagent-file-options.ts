@@ -1,5 +1,9 @@
-import { agentMemory, type AgentMemoryContext } from '../../../plugins/kit'
-import type { CatalogAgent } from '@rsaryev/llx-plugin/agents'
+import {
+  agentMemory,
+  effectiveAutoCompactWindow,
+  type AgentMemoryContext,
+} from '../../../plugins/kit'
+import type { CatalogAgent } from '@localix-ai/agent-plugins/agents'
 
 /**
  * What a run as an agent type takes from the agent file beyond its prompt and tools
@@ -17,14 +21,38 @@ export interface SubagentRunOptions {
   memoryDir?: string
 }
 
+/** How the agent runs: as a subagent, or as the whole session (a chat the person gave the agent). */
+export interface SubagentRunFacts {
+  asMainSession: boolean
+}
+
+/**
+ * The window the field sets, as the kit decides it (`effectiveAutoCompactWindow`, sub-agents.md,
+ * "Set the auto-compact window for one subagent"): 100000 or more, and no effect for a session run
+ * as the agent. The window it would otherwise inherit (the agent's limit, the model's window) is
+ * resolved later in Localix's own units and the lower one wins there, so it stands unbounded here.
+ * Localix reads no `CLAUDE_CODE_AUTO_COMPACT_WINDOW`, so the kit's variable step never applies.
+ */
+function fieldWindow(field: number | undefined, facts: SubagentRunFacts): number | undefined {
+  const inherited = Number.POSITIVE_INFINITY
+  const window = effectiveAutoCompactWindow({
+    field,
+    inherited,
+    asMainSession: facts.asMainSession,
+  })
+  return window < inherited ? window : undefined
+}
+
 export async function subagentRunOptions(
   agent: Pick<CatalogAgent, 'name' | 'definition'>,
   context: AgentMemoryContext,
+  facts: SubagentRunFacts = { asMainSession: false },
 ): Promise<SubagentRunOptions> {
   const { autoCompactWindow, memory: scope } = agent.definition
+  const contextLimit = fieldWindow(autoCompactWindow, facts)
   const options: SubagentRunOptions = {
     enableTools: [],
-    ...(autoCompactWindow ? { contextLimit: autoCompactWindow } : {}),
+    ...(contextLimit === undefined ? {} : { contextLimit }),
   }
   const memory = await agentMemory(scope, agent.name, context)
   if (!memory) return options

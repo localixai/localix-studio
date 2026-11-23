@@ -108,7 +108,7 @@ describe('positive and negative controls', () => {
       ),
       planted(
         'packages/mini-app-sdk/src/z.ts',
-        "import type { PluginManifest } from '@rsaryev/llx-plugin/format'",
+        "import type { PluginManifest } from '@localix-ai/agent-plugins/format'",
       ),
       planted(
         'apps/api/src/features/chat/both.ts',
@@ -193,54 +193,63 @@ describe('positive and negative controls', () => {
     const hits = X7_KIT_THROUGH_THE_BOUNDARY.detect([
       planted(
         'apps/api/src/features/chat/x.ts',
-        "import { HOOK_EVENTS } from '@rsaryev/llx-plugin'",
+        "import { HOOK_EVENTS } from '@localix-ai/agent-plugins'",
       ),
       planted(
         'apps/api/src/features/chat/x.test.ts',
-        "import { createMemoryPorts } from '@rsaryev/llx-plugin/testing'",
+        "import { createMemoryPorts } from '@localix-ai/agent-plugins/testing'",
       ),
-      planted('apps/ui/src/a.ts', "export { readPlugin } from '@rsaryev/llx-plugin/loading'"),
-      planted('packages/x/src/b.ts', "const m = await import('@rsaryev/llx-plugin/hooks')"),
-      planted('apps/api/src/features/plugins/kit/index.ts', "export * from '@rsaryev/llx-plugin'"),
-      planted('apps/api/src/features/plugins/kit/a.test.ts', "import '@rsaryev/llx-plugin/sdk'"),
-      planted('apps/ui/src/c.ts', "import { STANDARD_LAYOUT } from '@rsaryev/llx-plugin/layout'"),
-      planted('apps/ui/src/d.ts', "import type { E } from '@rsaryev/llx-plugin/elicitation'"),
-      planted('apps/ui/src/e.ts', "import { x } from '@rsaryev/llx-plugin-other'"),
-      planted('apps/ui/src/f.ts', "import { Box } from '@rsaryev/llx-plugin/mods/elements'"),
-      planted('apps/api/src/g.ts', "import { Box } from '@rsaryev/llx-plugin/mods/elements'"),
-      planted('apps/ui/src/h.ts', "import { createModHost } from '@rsaryev/llx-plugin/mods'"),
+      planted('apps/ui/src/a.ts', "export { readPlugin } from '@localix-ai/agent-plugins/loading'"),
+      planted('packages/x/src/b.ts', "const m = await import('@localix-ai/agent-plugins/hooks')"),
+      planted(
+        'apps/api/src/features/plugins/kit/index.ts',
+        "export * from '@localix-ai/agent-plugins'",
+      ),
+      planted(
+        'apps/api/src/features/plugins/kit/a.test.ts',
+        "import '@localix-ai/agent-plugins/sdk'",
+      ),
+      planted(
+        'apps/ui/src/c.ts',
+        "import { STANDARD_LAYOUT } from '@localix-ai/agent-plugins/layout'",
+      ),
+      planted('apps/ui/src/d.ts', "import type { E } from '@localix-ai/agent-plugins/elicitation'"),
+      planted('apps/ui/src/e.ts', "import { x } from '@localix-ai/agent-plugins-other'"),
+      planted('apps/ui/src/f.ts', "import { Box } from '@localix-ai/agent-plugins/mods/elements'"),
+      planted('apps/api/src/g.ts', "import { Box } from '@localix-ai/agent-plugins/mods/elements'"),
+      planted('apps/ui/src/h.ts', "import { createModHost } from '@localix-ai/agent-plugins/mods'"),
       // A type is named straight from the kit, in any file, tests included.
       planted(
         'apps/api/src/features/chat/t.ts',
-        "import type { Plugin } from '@rsaryev/llx-plugin/loading'",
+        "import type { Plugin } from '@localix-ai/agent-plugins/loading'",
       ),
       planted(
         'apps/api/src/features/mcp/u.ts',
-        "import { type Resolved } from '@rsaryev/llx-plugin'",
+        "import { type Resolved } from '@localix-ai/agent-plugins'",
       ),
       planted(
         'packages/x/src/v.test.ts',
-        "import type { Ports } from '@rsaryev/llx-plugin/testing'",
+        "import type { Ports } from '@localix-ai/agent-plugins/testing'",
       ),
       // A type import that also brings a value is a value import; a type re-export is a second home.
       planted(
         'apps/api/src/features/chat/w.ts',
-        "import { type Plugin, loadPlugin } from '@rsaryev/llx-plugin/loading'",
+        "import { type Plugin, loadPlugin } from '@localix-ai/agent-plugins/loading'",
       ),
       planted(
         'apps/api/src/features/chat/types.ts',
-        "export type { Plugin } from '@rsaryev/llx-plugin/loading'",
+        "export type { Plugin } from '@localix-ai/agent-plugins/loading'",
       ),
     ])
     expect(hits).toEqual([
-      'apps/api/src/features/chat/x.ts imports @rsaryev/llx-plugin',
-      'apps/api/src/features/chat/x.test.ts imports @rsaryev/llx-plugin/testing',
-      'apps/ui/src/a.ts re-exports @rsaryev/llx-plugin/loading',
-      'packages/x/src/b.ts imports @rsaryev/llx-plugin/hooks',
-      'apps/api/src/g.ts imports @rsaryev/llx-plugin/mods/elements',
-      'apps/ui/src/h.ts imports @rsaryev/llx-plugin/mods',
-      'apps/api/src/features/chat/w.ts imports @rsaryev/llx-plugin/loading',
-      'apps/api/src/features/chat/types.ts re-exports @rsaryev/llx-plugin/loading',
+      'apps/api/src/features/chat/x.ts imports @localix-ai/agent-plugins',
+      'apps/api/src/features/chat/x.test.ts imports @localix-ai/agent-plugins/testing',
+      'apps/ui/src/a.ts re-exports @localix-ai/agent-plugins/loading',
+      'packages/x/src/b.ts imports @localix-ai/agent-plugins/hooks',
+      'apps/api/src/g.ts imports @localix-ai/agent-plugins/mods/elements',
+      'apps/ui/src/h.ts imports @localix-ai/agent-plugins/mods',
+      'apps/api/src/features/chat/w.ts imports @localix-ai/agent-plugins/loading',
+      'apps/api/src/features/chat/types.ts re-exports @localix-ai/agent-plugins/loading',
     ])
   })
 

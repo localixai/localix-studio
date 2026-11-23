@@ -1,5 +1,5 @@
-import type { EventFactsOf, HookEvent, HookOutcome, PluginSession } from '@rsaryev/llx-plugin'
-import { escapeReminderTags, type HookSourceKind } from '@rsaryev/llx-plugin/hooks'
+import type { EventFactsOf, HookEvent, HookOutcome, PluginSession } from '@localix-ai/agent-plugins'
+import { escapeReminderTags, type HookSourceKind } from '@localix-ai/agent-plugins/hooks'
 import type { CcHooksRuntime, CcRunStop } from '../../../cc-hooks/runtime-contracts'
 import { joinContext } from '../../../cc-hooks/runtime-results'
 import type { CcTranscript } from '../../../cc-hooks/transcript'

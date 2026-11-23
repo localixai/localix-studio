@@ -8,12 +8,12 @@ import {
   sameMarketplaceSource,
   type MarketplaceFetchPlan,
   type MarketplaceSource,
-} from '@rsaryev/llx-plugin/marketplace'
+} from '@localix-ai/agent-plugins/marketplace'
 import {
   concludeMarketplaceAdd,
   startMarketplaceAdd,
   type CommandOutput,
-} from '@rsaryev/llx-plugin/cli'
+} from '@localix-ai/agent-plugins/cli'
 import { issueLine } from '../catalog/issue-line'
 import { hostPlatform } from '../ports/host-io'
 

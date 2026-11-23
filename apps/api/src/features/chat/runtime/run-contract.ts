@@ -45,6 +45,11 @@ export interface ScopedCcHooks {
    */
   plugin?: { id: string; name: string }
   /**
+   * Where a skill's block came from (the kit's `SkillOrigin` kind): a project skill's hooks wait
+   * for workspace trust, and the managed locks read it (hooks.md, "Hooks in skills and agents").
+   */
+  origin?: 'plugin' | 'managed' | 'user' | 'project' | 'synced' | 'bundled'
+  /**
    * `session`: a skill's hooks, which Claude Code keeps for "the rest of the session once the
    * skill is invoked" — this run registers them and every later run of the session merges them
    * (`RuntimeState.ccSessionSkillHooks`). Absent: this run only.

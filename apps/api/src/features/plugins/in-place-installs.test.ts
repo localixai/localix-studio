@@ -92,4 +92,18 @@ describe('discoverInPlacePlugins', () => {
     await setInPlaceRecord(installRoot, 'gone', { id: 'gone@mk', dir: join(tempDir(), 'nope') })
     expect(await discoverInPlacePlugins({ homeDir: home, projectId: '' })).toEqual([])
   })
+
+  test('a folder read in place loads although it needs a newer Claude Code', async () => {
+    const { home, market, installRoot } = fixture()
+    writeTree(join(market, 'tool'), {
+      '.claude-plugin/plugin.json': JSON.stringify({
+        name: 'tool',
+        engines: { 'claude-code': '>=9.0.0' },
+      }),
+    })
+    await setInPlaceRecord(installRoot, 'tool', { id: 'tool@mk', dir: join(market, 'tool') })
+    const [found] = await discoverInPlacePlugins({ homeDir: home, projectId: '' })
+    expect(found?.error).toBeUndefined()
+    expect(found?.provides.skills).toEqual(['hello'])
+  })
 })

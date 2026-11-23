@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test'
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-import type { CommandRun, CommandRunner } from '@rsaryev/llx-plugin'
+import type { CommandRun, CommandRunner } from '@localix-ai/agent-plugins'
 import { tempDirPerTest, writeTree } from '@localixai/testing'
 
 import { installNodeDependencies } from './node-deps'

@@ -1,4 +1,8 @@
-import type { ModsHost as KitModsHost, ModPlugin, SessionEndReason } from '@rsaryev/llx-plugin/mods'
+import type {
+  ModsHost as KitModsHost,
+  ModPlugin,
+  SessionEndReason,
+} from '@localix-ai/agent-plugins/mods'
 import { diskFiles } from '../../plugins/kit'
 import type { ModScene, ModSource, ModsPorts } from '../contracts'
 import { modIdOf } from './session-policy'

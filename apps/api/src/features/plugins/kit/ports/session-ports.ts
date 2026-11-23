@@ -4,7 +4,7 @@ import type {
   ModelRequest,
   ModelRunner,
   PortFailure,
-} from '@rsaryev/llx-plugin'
+} from '@localix-ai/agent-plugins'
 import { errorMessage } from '../../../../lib/errors'
 
 /**

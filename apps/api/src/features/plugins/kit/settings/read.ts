@@ -12,8 +12,8 @@ import {
   type ManagedComposition,
   type PolicyLayer,
   type ResolvedPolicy,
-} from '@rsaryev/llx-plugin/settings'
-import type { PluginIssue } from '@rsaryev/llx-plugin/format'
+} from '@localix-ai/agent-plugins/settings'
+import type { PluginIssue } from '@localix-ai/agent-plugins/format'
 import { claudeConfigDir } from '../../../cc-settings/config-dir'
 import {
   composeManagedSource,

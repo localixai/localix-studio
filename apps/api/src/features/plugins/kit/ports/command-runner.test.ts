@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import type { CommandRun } from '@rsaryev/llx-plugin'
+import type { CommandRun } from '@localix-ai/agent-plugins'
 import { hostCommandRunner } from './command-runner'
 
 const run = (spec: CommandRun['spec'], extra: Partial<CommandRun> = {}): CommandRun => ({

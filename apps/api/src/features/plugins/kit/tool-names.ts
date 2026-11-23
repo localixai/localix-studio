@@ -1,4 +1,4 @@
-import { toolNamesOf, type HostToolNames } from '@rsaryev/llx-plugin/rules'
+import { toolNamesOf, type HostToolNames } from '@localix-ai/agent-plugins/rules'
 
 /**
  * HOW LOCALIX'S TOOLS ARE NAMED IN CLAUDE CODE'S TERMS, stated once for the kit

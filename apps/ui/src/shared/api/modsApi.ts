@@ -1,9 +1,9 @@
-import type { ElementNode } from '@rsaryev/llx-plugin/mods/elements'
+import type { ElementNode } from '@localix-ai/agent-plugins/mods/elements'
 import { client, unwrap } from './internal'
 
 /**
  * One element of a mod's drawing, as the server serializes it from the plugin kit's
- * (`@rsaryev/llx-plugin/mods`): the kit's element node, of the elements the desktop draws (`Raster`
+ * (`@localix-ai/agent-plugins/mods`): the kit's element node, of the elements the desktop draws (`Raster`
  * and `Image` are the terminal's), with its children as the server sends them.
  */
 export type ModElement = Omit<ElementNode, 'type' | 'children'> & {
@@ -71,22 +71,13 @@ export interface ModSessionView {
   statuses: Record<string, string>
 }
 
-/** One page of the band: what the chain drew from one mod on, and the mods that drew it. */
-export interface ModBandPage {
-  mods: string[]
-  tree: Array<ModElement | string>
-}
-
 /** The band above a conversation's prompt box, as its mods draw it (`AbovePrompt`). */
 export interface ModBandDrawing {
   sessionId: string
-  /** The first page's tree. */
+  /** Each mod's row, stacked: one tree; null when no mod draws the band. */
   tree: Array<ModElement | string> | null
-  /**
-   * Every page: the chain as Claude Code runs it first, then what each mod a drawing hid drew
-   * (the API's `band-pages.ts`). Absent from an older API: the tree is the one page.
-   */
-  pages?: ModBandPage[]
+  /** The mods whose rows it stacks, in order. */
+  rows?: string[]
   /** The chat's turn is running. */
   working?: boolean
   problem?: string
@@ -136,12 +127,12 @@ export const modsApi = {
       }),
     )) as ModBandDrawing
   },
-  /** A control used on the band's page `page` (each page is its own drawing). */
-  async bandAct(sessionId: string, action: ModAction, page = 0): Promise<void> {
+  /** A control used in the band. */
+  async bandAct(sessionId: string, action: ModAction): Promise<void> {
     await unwrap(
       await client.rpc.mods.sessions[':sessionId'].band.actions.$post({
         param: { sessionId },
-        json: page === 0 ? action : { ...action, page },
+        json: action,
       }),
     )
   },

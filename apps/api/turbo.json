@@ -5,12 +5,18 @@
     "type-check": {
       "dependsOn": ["^type-check"],
       "outputs": [],
-      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/node_modules/@rsaryev/llx-plugin/package.json"]
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/node_modules/@localix-ai/agent-plugins/package.json"
+      ]
     },
     "type-check:tests": {
       "dependsOn": ["^type-check"],
       "outputs": [],
-      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/node_modules/@rsaryev/llx-plugin/package.json"]
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/node_modules/@localix-ai/agent-plugins/package.json"
+      ]
     },
     "test": {
       "dependsOn": ["^build"],
@@ -22,7 +28,7 @@
         "$TURBO_ROOT$/scripts/test-all.mjs",
         "$TURBO_ROOT$/packages/testing/src/**",
         "$TURBO_ROOT$/packages/kit/test-preload.ts",
-        "$TURBO_ROOT$/node_modules/@rsaryev/llx-plugin/package.json"
+        "$TURBO_ROOT$/node_modules/@localix-ai/agent-plugins/package.json"
       ],
       "outputs": []
     },
@@ -36,7 +42,7 @@
         "$TURBO_ROOT$/scripts/test-all.mjs",
         "$TURBO_ROOT$/packages/testing/src/**",
         "$TURBO_ROOT$/packages/kit/test-preload.ts",
-        "$TURBO_ROOT$/node_modules/@rsaryev/llx-plugin/package.json"
+        "$TURBO_ROOT$/node_modules/@localix-ai/agent-plugins/package.json"
       ],
       "outputs": []
     }

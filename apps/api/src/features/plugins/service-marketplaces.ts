@@ -30,7 +30,7 @@ import {
   readMarketplace,
   resolveEntryName,
 } from './kit'
-import type { Marketplace } from '@rsaryev/llx-plugin/marketplace'
+import type { Marketplace } from '@localix-ai/agent-plugins/marketplace'
 
 /** What became of an installed plugin's entry: still listed, renamed, or removed. */
 function entryFate(

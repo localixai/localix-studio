@@ -2,7 +2,7 @@ import { InvalidRequestError, NotFoundError } from '../../../lib/domain-errors'
 import { basename, dirname } from 'node:path'
 
 import type { ScopeSkills } from '../../plugins/kit'
-import type { PluginIssue } from '@rsaryev/llx-plugin/format'
+import type { PluginIssue } from '@localix-ai/agent-plugins/format'
 import { removeSkill, skillFolderOf, writeSkill } from '../skill-files'
 import { toSkillRecord, type SkillInput, type SkillRecord } from './skills'
 

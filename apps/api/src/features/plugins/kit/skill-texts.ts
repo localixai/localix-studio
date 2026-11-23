@@ -1,5 +1,5 @@
-import type { PluginSession } from '@rsaryev/llx-plugin'
-import { skillLookup } from '@rsaryev/llx-plugin/skills'
+import type { PluginSession } from '@localix-ai/agent-plugins'
+import { skillLookup } from '@localix-ai/agent-plugins/skills'
 
 /**
  * A skill's text as a prompt holds it: its body as the file holds it now (no substitution, no `!`

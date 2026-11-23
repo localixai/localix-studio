@@ -6,7 +6,7 @@
  * Pure type + constant module — no chat/UI imports; the event names are the kit's types.
  */
 
-import type { HookEvent } from '@rsaryev/llx-plugin'
+import type { HookEvent } from '@localix-ai/agent-plugins'
 
 /**
  * Claude Code events this host accepts in a hooks file but never fires, each with the reason a

@@ -1,5 +1,5 @@
-import { readMemoryRule } from '@rsaryev/llx-plugin/format'
-import { ruleActivatesFor } from '@rsaryev/llx-plugin/skills'
+import { readMemoryRule } from '@localix-ai/agent-plugins/format'
+import { ruleActivatesFor } from '@localix-ai/agent-plugins/skills'
 import type { MemoryRuleReader } from '../../agent-core/context-rules'
 
 /**

@@ -1,4 +1,4 @@
-import type { SessionSkill } from '@rsaryev/llx-plugin'
+import type { SessionSkill } from '@localix-ai/agent-plugins'
 
 /**
  * A SessionStart hook's `reloadSkills` (hooks.md, "Reload skills that a hook installs"): the run

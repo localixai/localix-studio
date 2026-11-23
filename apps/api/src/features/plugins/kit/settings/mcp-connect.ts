@@ -1,5 +1,9 @@
-import { expandMcpServer, mcpTimeouts, type PluginMcpServer } from '@rsaryev/llx-plugin/format'
-import type { McpTimeouts } from '@rsaryev/llx-plugin/format'
+import {
+  expandMcpServer,
+  mcpTimeouts,
+  type PluginMcpServer,
+} from '@localix-ai/agent-plugins/format'
+import type { McpTimeouts } from '@localix-ai/agent-plugins/format'
 import type { McpServerRecord } from '../../../mcp/repository'
 import { kitServerOf } from './mcp-plan'
 

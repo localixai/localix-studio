@@ -1,4 +1,4 @@
-import { defaultElementTable, selects, UI_SURFACES } from '@rsaryev/llx-plugin/mods/isolate'
+import { defaultElementTable, selects, UI_SURFACES } from '@localix-ai/agent-plugins/mods/isolate'
 import type { ApiShape, CallMeta, NextReply } from './call-protocol'
 import type { Endpoint } from './endpoint'
 

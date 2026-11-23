@@ -1,5 +1,5 @@
 import { execFile } from 'node:child_process'
-import { promises as fs, readdirSync, readFileSync } from 'node:fs'
+import { existsSync, promises as fs, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import {
   composeManagedReads,
@@ -7,7 +7,7 @@ import {
   type ManagedFileRead,
   type ManagedReads,
   type SourceRead,
-} from '@rsaryev/llx-plugin/settings'
+} from '@localix-ai/agent-plugins/settings'
 
 /**
  * Where this machine keeps Claude Code's managed settings, read as host I/O for the kit, which
@@ -29,6 +29,19 @@ export interface ManagedSettingsSource {
   dir: string
   /** The MDM profile as JSON, or undefined when the machine has none. */
   readMdm?: () => Promise<Record<string, unknown> | undefined>
+}
+
+/**
+ * Whether the machine's managed directory holds `managed-mcp.json` (`source`: the one the settings
+ * were read with; `undefined` is the machine's own, `null` none). It loads the mods guard as
+ * managed settings do (plugins/mods/admin.md, "Know what happens by default").
+ */
+export function hasManagedMcpFile(
+  source: ManagedSettingsSource | null | undefined,
+  platform: NodeJS.Platform = process.platform,
+): boolean {
+  if (source === null) return false
+  return existsSync(join(source?.dir ?? managedSettingsDir(platform), 'managed-mcp.json'))
 }
 
 /** Nothing there is no source; a read that fails is the kit's `unreadable`, never "absent". */

@@ -6,8 +6,8 @@ import {
   type AgentToolFields,
   type SubagentRun,
   type ToolsOutcome,
-} from '@rsaryev/llx-plugin/agents'
-import { normalizePermissionMode, type PluginSession } from '@rsaryev/llx-plugin'
+} from '@localix-ai/agent-plugins/agents'
+import { normalizePermissionMode, type PluginSession } from '@localix-ai/agent-plugins'
 import { normalizeMcpToolAlias } from '../../agent-core/mcp-tool-alias'
 import { LOCALIX_TOOL_NAMES, localixToolNames, type NamedTool } from './tool-names'
 

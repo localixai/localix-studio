@@ -1,9 +1,10 @@
-import { describe, expect, test } from 'bun:test'
-import { mkdirSync, symlinkSync } from 'node:fs'
+import { afterEach, describe, expect, test } from 'bun:test'
+import { chmodSync, mkdirSync, symlinkSync } from 'node:fs'
 import { join } from 'node:path'
 import { tempDirPerTest, writeTree } from '@localixai/testing'
-import type { PluginFiles } from '@rsaryev/llx-plugin'
-import { memoryFiles } from '@rsaryev/llx-plugin/testing'
+import type { PluginFiles } from '@localix-ai/agent-plugins'
+import { loadPlugin } from '@localix-ai/agent-plugins'
+import { memoryFiles } from '@localix-ai/agent-plugins/testing'
 import { diskFiles } from './files'
 
 const dir = tempDirPerTest('kit-files')
@@ -90,4 +91,60 @@ describe('the disk folder answers as the kit reference fake does', () => {
     expect(diskFiles(root).hostPath('skills/review')).toBe(join(root, 'skills/review'))
     expect(diskFiles(root).hostPath('.')).toBe(root)
   })
+})
+
+// The port's error channel (`FileStat.checkFailed`): a path the system could not check is named by
+// its code, never taken for an absent one, so a plugin whose manifest could not be read loads
+// nothing instead of loading as a folder without a manifest (errors.md, "Path could not be
+// checked").
+describe('a path the system could not check', () => {
+  const lockedFolders: string[] = []
+  // Searchable again, so the temporary folder can be removed after the test.
+  afterEach(() => {
+    for (const folder of lockedFolders.splice(0)) chmodSync(folder, 0o755)
+  })
+
+  /** A plugin whose `.claude-plugin` folder cannot be searched, and a skill beside it. */
+  function locked(): { disk: PluginFiles; memory: PluginFiles } {
+    const root = dir()
+    writeTree(root, {
+      '.claude-plugin/plugin.json': '{"name":"demo"}',
+      'skills/review/SKILL.md': '---\ndescription: Review\n---\n# Review',
+    })
+    chmodSync(join(root, '.claude-plugin'), 0o000)
+    lockedFolders.push(join(root, '.claude-plugin'))
+    const memory = memoryFiles({
+      '.claude-plugin/plugin.json': { checkFailed: 'EACCES' },
+      'skills/review/SKILL.md': '---\ndescription: Review\n---\n# Review',
+    })
+    return { disk: diskFiles(root), memory }
+  }
+
+  test.skipIf(process.getuid?.() === 0)(
+    'is named by its code, and nothing there reads',
+    async () => {
+      const { disk, memory } = locked()
+      for (const files of [disk, memory]) {
+        expect(await files.stat('.claude-plugin/plugin.json')).toEqual({
+          isFile: false,
+          isDirectory: false,
+          isSymlink: false,
+          size: 0,
+          checkFailed: 'EACCES',
+        })
+        expect(await files.exists('.claude-plugin/plugin.json')).toBe(false)
+        expect(await files.readText('.claude-plugin/plugin.json')).toBeUndefined()
+      }
+    },
+  )
+
+  test.skipIf(process.getuid?.() === 0)(
+    'keeps a plugin whose manifest it hides from loading',
+    async () => {
+      const { disk } = locked()
+      const loaded = await loadPlugin({ files: disk, fallbackName: 'demo' })
+      expect(loaded.plugin).toBeUndefined()
+      expect(loaded.issues.map((issue) => issue.message).join('\n')).toContain('EACCES')
+    },
+  )
 })

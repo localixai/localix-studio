@@ -1,4 +1,4 @@
-import { scanSavedWorkflows } from '@rsaryev/llx-plugin/agents'
+import { scanSavedWorkflows } from '@localix-ai/agent-plugins/agents'
 import type { WorkflowEntry } from '../../../agent-core/tools/workflow/workflow'
 import { claudeConfigDir } from '../../../cc-settings/config-dir'
 import { diskFolderScan } from '../ports/folder-scan'

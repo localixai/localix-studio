@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
-import { expandMcpServer, type PluginMcpServer } from '@rsaryev/llx-plugin/format'
+import { expandMcpServer, type PluginMcpServer } from '@localix-ai/agent-plugins/format'
 import {
   claudeJsonProject,
   claudeJsonServers,
@@ -12,7 +12,7 @@ import {
   type PlanSource,
   type PlannedServer,
   type FileScope,
-} from '@rsaryev/llx-plugin/settings'
+} from '@localix-ai/agent-plugins/settings'
 import { readJsonRecordSync } from '../../../../lib/json'
 import { isRecord } from '../../../../lib/record'
 import { claudeStateFile } from '../../../cc-settings/config-dir'
@@ -23,7 +23,7 @@ import { managedSettingsDir } from './managed'
 import { mcpServerShape } from './mcp-record'
 import { readClaudeSettingsSync, type ClaudeSettings } from './read'
 import { repositoryApprovalsCount, trustSourceOf } from './trust'
-import type { TrustSource } from '@rsaryev/llx-plugin/loading'
+import type { TrustSource } from '@localix-ai/agent-plugins/loading'
 
 /**
  * THE MCP SERVERS CLAUDE CODE WOULD LOAD IN A FOLDER, decided by the kit (`mcpLoadPlan` through the

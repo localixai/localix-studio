@@ -1,4 +1,4 @@
-import type { PluginManifest } from '@rsaryev/llx-plugin/format'
+import type { PluginManifest } from '@localix-ai/agent-plugins/format'
 import type { PluginConfigOption } from './contracts-base'
 
 /**

@@ -32,8 +32,6 @@ const band: ModElement[] = [
   },
 ]
 
-let mounts = 0
-
 async function mount(tree: ModElement[] = band) {
   const { act } = await import('react')
   const { createRoot } = await import('react-dom/client')
@@ -47,13 +45,11 @@ async function mount(tree: ModElement[] = band) {
   shell.append(slot, field)
   document.body.append(shell)
   const root = createRoot(slot)
-  const sessionId = `band-${(mounts += 1)}`
   const draw = (next: ModElement[]) =>
     act(async () =>
       root.render(
         <ModBand
-          sessionId={sessionId}
-          pages={[{ mods: ['m'], tree: next }]}
+          tree={next}
           act={(action) => actions.push(action)}
           // No pause in a test: the digit is still alone in the box when the band looks.
           afterPause={(run) => (run(), () => {})}

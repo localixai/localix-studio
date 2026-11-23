@@ -12,6 +12,12 @@ Localix is in beta: versions before 1.0 may change behavior between releases.
 - **Formulas are set closer to TeX**: sub- and superscripts sit where TeX puts them, a function such
   as log keeps its thin space, a brace under or over a term is drawn as a real brace, and the label
   on an arrow sits close to it.
+- **Plugins follow Claude Code 2.1.330**: they load, install and run their hooks and mods as that
+  release does. Each mod now draws its own row in the band above the message box, stacked in the
+  order the mods load, instead of one mod's drawing hiding the others behind pages, so the band's
+  pager, its ⌥[ and ⌥] shortcuts and Settings → Preferences → Mods band are gone. A plugin that
+  needs a newer Claude Code does not load from a marketplace, and a marketplace entry with a
+  malformed field says why it cannot be installed.
 
 ### Fixed
 
@@ -28,6 +34,18 @@ Localix is in beta: versions before 1.0 may change behavior between releases.
   error with no sentence of its own shows the provider's words instead of a generic one.
 - **Failed replies are in the log**: each one is a single line in the app's log with the reason and
   the error, so the log you send with a report has it.
+- **Plugins are held to Claude Code's safer defaults**: a plugin or marketplace fetched over SSH
+  refuses a host that is not already in your known hosts instead of accepting it, a project skill
+  run in a fork waits for the folder's trust before its hooks run, a plugin whose manifest cannot be
+  read does not load as a folder without one, and a machine with only a managed MCP file puts your
+  mods under the same guard as managed settings. `CLAUDE_CODE_SUBAGENT_MODEL` alone no longer moves
+  the built-in Explore and Plan agents, and its force switch takes `true`, `yes` and `on`.
+
+### Removed
+
+- **The subagent status line**: Claude Code 2.1.323 dropped `subagentStatusLine`, so the agent
+  sessions panel no longer runs it over its rows. A settings file or plugin that still sets it loads
+  as before.
 
 ## v0.1.0-beta.29 — 2026-11-17
 

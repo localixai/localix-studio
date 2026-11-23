@@ -1,5 +1,5 @@
 /**
- * The plugin kit boundary: the only folder that imports a value of `@rsaryev/llx-plugin` (rule X7,
+ * The plugin kit boundary: the only folder that imports a value of `@localix-ai/agent-plugins` (rule X7,
  * `docs/internals/plugins-and-mini-apps.md`). Everything Localix does with the Claude Code plugin
  * format and its semantics runs through this file; the rest of the API calls what it exports, and
  * names the kit's types with `import type` straight from the kit (this file re-exports none of
@@ -16,9 +16,8 @@ export {
 export { sessionLspServers, type PluginLspServer } from './lsp-servers'
 export { monitorsToLaunch, type MonitorLaunch } from './monitors'
 export { scopeAgents, type HostAgents, type ScopeAgent, type ScopeAgents } from './agents'
-export { catalogTier } from '@rsaryev/llx-plugin/agents'
+export { catalogTier, effectiveAutoCompactWindow } from '@localix-ai/agent-plugins/agents'
 export { scopeRun, type ScopeRun } from './scope-session'
-export { chosenSubagentStatusLine, type ChosenSubagentStatusLine } from './subagent-status-line'
 export { readPluginFolder, type FolderSource } from './catalog/read-folder'
 export { issueLine } from './catalog/issue-line'
 export { isPluginFolder, PLUGIN_MANIFEST } from './catalog/plugin-folder'
@@ -38,7 +37,7 @@ export {
 } from './spawn'
 export { resolveModelAlias } from './model-alias'
 export type { HexTheme, PluginWorkflow } from './catalog/components'
-export { customThemeId } from '@rsaryev/llx-plugin/format'
+export { customThemeId } from '@localix-ai/agent-plugins/format'
 export { readSkillDescriptions } from './catalog/components'
 export { workflowScript, type WorkflowScript } from './catalog/workflow-script'
 export { savedWorkflows } from './catalog/saved-workflows'
@@ -62,13 +61,17 @@ export {
   type ClaudeSettingsInput,
   type Settings,
 } from './settings/read'
-export { isFileScope } from '@rsaryev/llx-plugin/settings'
-export { managedSettingsDir, type ManagedSettingsSource } from './settings/managed'
+export { isFileScope } from '@localix-ai/agent-plugins/settings'
+export {
+  hasManagedMcpFile,
+  managedSettingsDir,
+  type ManagedSettingsSource,
+} from './settings/managed'
 export { claudeCodeTrust, claudeCodeTrusts } from './settings/trust'
 export { claudeCodeSettingsEnv, settingsEnvOf } from './settings/env'
 export { installKitPorts } from './install-ports'
 export { mcpServerShape } from './settings/mcp-record'
-export { settingsCommandLine } from './settings/hooks'
+export { settingsStatusLine } from './settings/hooks'
 export { outputStyleSetting, settingsModes } from './settings/values'
 export {
   describeClaudeCodePermissions,
@@ -98,7 +101,7 @@ export {
   touchSessionFiles,
   typedSkills,
 } from './skill-catalog'
-export { skillKeywords, skillPlugin } from '@rsaryev/llx-plugin'
+export { skillKeywords, skillPlugin } from '@localix-ai/agent-plugins'
 export { preloadedSkillTexts, skillTexts, type SkillText } from './skill-texts'
 export { scopeSkills, type ScopeSkills } from './scope-skills'
 export {
@@ -162,6 +165,7 @@ export {
   parseMarketplaceAdd,
   sameMarketplaceSource,
 } from './marketplace/sources'
+export { gitRemoteEnvironment, readGitRemoteEnvironment } from './marketplace/git-environment'
 export {
   assertMarketplaceAllowed,
   assertPluginAllowed,
@@ -190,9 +194,10 @@ export {
   ARCHIVE_LIMITS,
   DEFAULT_MARKETPLACE_PATH,
   installsAt,
+  invalidEntryMessage,
   marketplaceAutoUpdate,
   parseInstalledPlugins,
-} from '@rsaryev/llx-plugin/marketplace'
+} from '@localix-ai/agent-plugins/marketplace'
 export { hostPlatform } from './ports/host-io'
 export {
   clampReason,
@@ -231,15 +236,11 @@ export {
 export { createEndpoint, type Endpoint, type Handler } from './mods/guest/endpoint'
 export type { ApiShape, CallMeta, CallReply } from './mods/guest/call-protocol'
 export { loadModRuntime } from './mods/guest/runtime-file'
-export { defaultElementTable, describeApi, isHookBody } from '@rsaryev/llx-plugin/mods'
+export { defaultElementTable, describeApi, isHookBody } from '@localix-ai/agent-plugins/mods'
 export { diskFiles, type DiskFiles } from './ports/files'
 export { copyPluginTree } from './ports/tree-copy'
-export { createModsHost } from '@rsaryev/llx-plugin/mods'
+export { createModsHost } from '@localix-ai/agent-plugins/mods'
 export { hostCommandRunner } from './ports/command-runner'
 export { sessionEnvScripts } from './ports/session-files'
 export { hostLocations, pluginDataDir, processEnvironment, systemClock } from './ports/host-io'
-export {
-  runSubagentStatusLine as runKitSubagentStatusLine,
-  subagentStatusLineInput,
-} from '@rsaryev/llx-plugin/settings'
 export { claudeCodeToolResponse, singleCalls } from './tools/cc-tool-shapes'

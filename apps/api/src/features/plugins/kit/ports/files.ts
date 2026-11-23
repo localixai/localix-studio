@@ -1,6 +1,6 @@
 import { promises as fs } from 'node:fs'
 import { dirname, join, relative, resolve, sep } from 'node:path'
-import type { DirectoryEntry, FileStat, PluginFiles } from '@rsaryev/llx-plugin'
+import type { DirectoryEntry, FileStat, PluginFiles } from '@localix-ai/agent-plugins'
 import { isPathWithin } from '../../../../lib/path-containment'
 
 /**
@@ -11,7 +11,10 @@ import { isPathWithin } from '../../../../lib/path-containment'
  * absolute host path when not), so the kit can judge the escape. A directory's size is 0, as the
  * kit's reference fake has it. A scope folder (`~`, the project) is opened with `linksLeave`: its
  * links are followed wherever they lead, as a person links skills in from a dotfiles checkout.
- * Nothing here throws for an absent path: it is `undefined`.
+ * Nothing here throws for an absent path: it is `undefined`. A path the system could not check for
+ * another reason (`EACCES` on a folder above it, `ELOOP`, `EIO`) is a stat with `checkFailed`, the
+ * port's one error channel: the kit refuses what it names rather than take it for absent, so a
+ * plugin whose manifest could not be read never loads as a folder without one.
  */
 export interface DiskFiles extends PluginFiles {
   /** The folder, as it was given. */
@@ -24,6 +27,28 @@ const posix = (path: string): string => path.split(sep).join('/')
 const escapes = (path: string): boolean =>
   path.startsWith('/') || path.split('/').includes('..') || /^[A-Za-z]:/.test(path)
 const quiet = <T>(work: Promise<T>): Promise<T | undefined> => work.catch(() => undefined)
+
+/** The codes that mean the path is not there; any other failure is a check that failed. */
+const ABSENT: ReadonlySet<string> = new Set(['ENOENT', 'ENOTDIR'])
+
+/** What `stat` answers for a path whose check failed: nothing is there to read. */
+const failedStat = (code: string): FileStat => ({
+  isFile: false,
+  isDirectory: false,
+  isSymlink: false,
+  size: 0,
+  checkFailed: code,
+})
+
+/** The path's own entry, `undefined` when absent, or the code of a check that failed. */
+async function lstatOf(path: string) {
+  try {
+    return await fs.lstat(path)
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code
+    return code === undefined || ABSENT.has(code) ? undefined : code
+  }
+}
 
 export interface DiskFilesOptions {
   /** Follow links that lead out of the folder (a scope folder), not only those inside it (a plugin). */
@@ -53,8 +78,9 @@ export function diskFiles(root: string, options: DiskFilesOptions = {}): DiskFil
 
   const stat = async (path: string): Promise<FileStat | undefined> => {
     if (escapes(path)) return undefined
-    const own = await quiet(fs.lstat(hostPath(path)))
+    const own = await lstatOf(hostPath(path))
     if (own === undefined) return undefined
+    if (typeof own === 'string') return failedStat(own)
     if (!own.isSymbolicLink())
       return {
         isFile: own.isFile(),
@@ -108,7 +134,10 @@ export function diskFiles(root: string, options: DiskFilesOptions = {}): DiskFil
     hostPath,
     stat,
     list,
-    exists: async (path) => (await stat(path)) !== undefined,
+    exists: async (path) => {
+      const found = await stat(path)
+      return found !== undefined && found.checkFailed === undefined
+    },
     readText: async (path) => {
       const real = await regularFile(path)
       return real === undefined ? undefined : quiet(fs.readFile(real, 'utf8'))

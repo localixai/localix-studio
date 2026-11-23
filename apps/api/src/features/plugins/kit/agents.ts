@@ -1,10 +1,10 @@
-import type { PluginIssue, PluginSession } from '@rsaryev/llx-plugin'
+import type { PluginIssue, PluginSession } from '@localix-ai/agent-plugins'
 import {
   agentMentions,
   selectSessionAgent,
   type AgentCatalog,
   type CatalogAgent,
-} from '@rsaryev/llx-plugin/agents'
+} from '@localix-ai/agent-plugins/agents'
 import type { LocalixPluginHost } from './host'
 import { openScopeSession, type PluginScope } from './scope-session'
 

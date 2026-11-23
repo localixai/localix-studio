@@ -1,8 +1,9 @@
 /**
  * A packaged MCP server (`.mcpb`, or the older `.dxt`) in a plugin's `mcpServers` (plugins/components,
- * "Include a packaged MCPB server"): it is extracted into `.mcpb-cache/` under the plugin root, the
- * server takes its name and config from the bundle's manifest, and a bundle setting that is
- * required and has no saved value keeps the server from starting.
+ * "Include a packaged MCPB server"): it is extracted into `mcpb/` under the plugin root (from Claude
+ * Code 2.1.324; `.mcpb-cache/` before), the server takes its name and config from the bundle's
+ * manifest, and a bundle setting that is required and has no saved value keeps the server from
+ * starting.
  */
 import { afterEach, describe, expect, test } from 'bun:test'
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
@@ -71,13 +72,13 @@ const warnings: string[] = []
 const logger = { warn: (message: string) => warnings.push(message) }
 
 describe('a packaged MCP server in a plugin', () => {
-  test('runs from .mcpb-cache under its own name, once its required setting is saved', async () => {
+  test('runs from mcpb/ under its own name, once its required setting is saved', async () => {
     const root = plugin('./servers/db.mcpb')
     makeBundle(join(root, 'servers', 'db.mcpb'))
     const discovered = await loadManifest(root, 'global', '')
 
     const server = discovered.entrypoints.mcpServers['db-server'] as { args: string[] }
-    expect(server.args[0]).toStartWith(join(root, '.mcpb-cache'))
+    expect(server.args[0]).toStartWith(join(root, 'mcpb'))
     expect(readFileSync(server.args[0]!, 'utf8')).toContain('hi')
     expect(discovered.manifest.config?.['db-server.token']).toMatchObject({
       required: true,
@@ -91,7 +92,7 @@ describe('a packaged MCP server in a plugin', () => {
     expect((record!.config as { env: Record<string, string> }).env.DB_TOKEN).toBe('abc')
   })
 
-  test('downloads a bundle named by an https URL into .mcpb-cache', async () => {
+  test('downloads a bundle named by an https URL into mcpb/', async () => {
     const zip = join(dir(), 'remote.mcpb')
     makeBundle(zip)
     const bytes = readFileSync(zip)
@@ -105,7 +106,7 @@ describe('a packaged MCP server in a plugin', () => {
 
     expect(asked).toEqual(['https://example.com/db.mcpb'])
     const server = discovered.entrypoints.mcpServers['db-server'] as { args: string[] }
-    expect(server.args[0]).toStartWith(join(root, '.mcpb-cache'))
+    expect(server.args[0]).toStartWith(join(root, 'mcpb'))
   })
 
   test('a bundle with a link out of its folder is refused and nothing of it is unpacked', async () => {
@@ -116,16 +117,16 @@ describe('a packaged MCP server in a plugin', () => {
     const discovered = await loadManifest(root, 'global', '')
 
     expect(discovered.entrypoints.mcpServers['db-server']).toBeUndefined()
-    const cache = join(root, '.mcpb-cache')
+    const cache = join(root, 'mcpb')
     const unpacked = existsSync(cache)
       ? readdirSync(cache).filter((name) => !name.endsWith('.mcpb'))
       : []
     expect(unpacked).toEqual([])
   })
 
-  /** What sits in `.mcpb-cache` besides the bundle's own folder: anything else was planted. */
+  /** What sits in `mcpb/` besides the bundle's own folder: anything else was planted. */
   function plantedBeside(root: string) {
-    const cache = join(root, '.mcpb-cache')
+    const cache = join(root, 'mcpb')
     if (!existsSync(cache)) return []
     return readdirSync(cache).filter((name) => !name.startsWith('db-'))
   }
@@ -138,8 +139,9 @@ describe('a packaged MCP server in a plugin', () => {
     ])
     await loadManifest(root, 'global', '')
 
+    // Nothing is extracted for such a bundle; the plugin root is where `plugin/skills/x.md` aims.
     expect(plantedBeside(root)).toEqual([])
-    const besidePlugin = readdirSync(root).filter((name) => name !== '.mcpb-cache')
+    const besidePlugin = readdirSync(root).filter((name) => name !== 'mcpb')
     expect(besidePlugin.toSorted()).toEqual(['.claude-plugin', 'servers'])
   })
 

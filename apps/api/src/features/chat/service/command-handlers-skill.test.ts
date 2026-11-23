@@ -158,6 +158,7 @@ describe('a typed skill', () => {
     expect(forks[0]).toMatchObject({
       agent: 'reviewer',
       hooks,
+      hooksOrigin: 'plugin',
       hooksPlugin: { id: 'cc@test', name: 'cc' },
     })
   })

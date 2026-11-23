@@ -1,9 +1,10 @@
 import { basename } from 'node:path'
-import { readCatalog } from '@rsaryev/llx-plugin'
-import { loadPlugin, type Plugin } from '@rsaryev/llx-plugin/loading'
-import type { PluginIssue } from '@rsaryev/llx-plugin/format'
-import type { MarketplaceEntry } from '@rsaryev/llx-plugin/marketplace'
+import { readCatalog } from '@localix-ai/agent-plugins'
+import { loadPlugin, type Plugin } from '@localix-ai/agent-plugins/loading'
+import type { PluginIssue } from '@localix-ai/agent-plugins/format'
+import type { MarketplaceEntry } from '@localix-ai/agent-plugins/marketplace'
 import { CC_INERT_HOOK_EVENTS, isInertCcHookEvent } from '../../../cc-hooks/contracts'
+import { CLAUDE_CODE_BASE_VERSION } from '../../../cc-settings/claude-code-version'
 import type { DiscoveredPlugin } from '../../discovery-types'
 import { MINI_APP_FILE } from '../../layout/read'
 import { diskFiles } from '../ports/files'
@@ -26,6 +27,12 @@ export interface FolderSource {
   readonly entry?: MarketplaceEntry
   /** The name of a plugin with neither a manifest nor an entry; the folder's name otherwise. */
   readonly name?: string
+  /**
+   * Read in place from a folder the person keeps (a plugins folder, an in-place install), as
+   * Claude Code reads a `--plugin-dir` or local-path plugin: one outside its `engines` range loads
+   * anyway. A marketplace copy outside its range does not load.
+   */
+  readonly localFolder?: boolean
 }
 
 export type CatalogPlugin = Omit<DiscoveredPlugin, 'scope' | 'projectId'>
@@ -117,6 +124,9 @@ export async function readPluginFolder(
     fallbackName,
     // A packaged server (`.mcpb`) is unpacked under the plugin; the kit reads what it declares.
     bundles: mcpBundleReader(dir),
+    // `engines["claude-code"]` is checked against the release Localix follows.
+    clientVersion: CLAUDE_CODE_BASE_VERSION,
+    localFolder: from.localFolder === true,
     ...(entry ? { entry } : {}),
   })
   const issues = loaded.issues

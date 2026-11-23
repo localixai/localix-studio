@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import { join, resolve } from 'node:path'
 
-import { configDirectoryOf, globalConfigFileOf } from '@rsaryev/llx-plugin/settings'
+import { configDirectoryOf, globalConfigFileOf } from '@localix-ai/agent-plugins/settings'
 
 import { claudeConfigDir, claudeStateFile } from '../../../cc-settings/config-dir'
 

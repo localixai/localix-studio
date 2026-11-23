@@ -1,4 +1,4 @@
-import type { PluginSession } from '@rsaryev/llx-plugin'
+import type { PluginSession } from '@localix-ai/agent-plugins'
 import { issueLine } from './catalog/issue-line'
 
 /**

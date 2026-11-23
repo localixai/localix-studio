@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
-import type { HookReport, PaneInfo } from '@rsaryev/llx-plugin/mods'
-import type { ModsHost as KitModsHost } from '@rsaryev/llx-plugin/mods'
+import type { HookReport, PaneInfo } from '@localix-ai/agent-plugins/mods'
+import type { ModsHost as KitModsHost } from '@localix-ai/agent-plugins/mods'
 import { MOD_LIMITS } from '../plugins/kit'
 import { plainDataProblem } from '../plugins/kit/mods'
 import { UnprocessableError } from '../../lib/domain-errors'

@@ -1,5 +1,6 @@
-import type { DenyRuleChecker, ModsPolicyInput } from '@rsaryev/llx-plugin/mods'
+import type { DenyRuleChecker, ModsPolicyInput } from '@localix-ai/agent-plugins/mods'
 import {
+  hasManagedMcpFile,
   hostPlatform,
   localToolName,
   mergedSettings,
@@ -16,8 +17,8 @@ import type { ModSource } from '../contracts'
  * What the kit's mods host decides a conversation's mods by, from the Claude Code settings Localix
  * runs under in that folder: the load policy (managed settings, the user's, each plugin's saved
  * options) and the permission rules the kit's guard checks a user's mod's approval against. With
- * managed settings on the machine the guard loads, and a mod that answers `allow` at `tool.check`
- * for a call those rules deny or ask about is refused, as in Claude Code.
+ * managed settings or a `managed-mcp.json` on the machine the guard loads, and a mod that answers
+ * `allow` at `tool.check` for a call those rules deny or ask about is refused, as in Claude Code.
  */
 
 /** A Localix plugin as the kit's host names it: the name, loaded from where Localix installed it. */
@@ -40,8 +41,11 @@ export function sessionPolicy(
   const managed = settings.managed?.hasManagedSettings
     ? mergedSettings(settings, 'managed')
     : undefined
+  // A `managed-mcp.json` alone loads the guard too, and closes the user's `prependPlugins`.
+  const managedMcp = hasManagedMcpFile(settings.input.managed, settings.input.platform)
   return {
     ...(managed ? { managed } : {}),
+    ...(managedMcp ? { managedMcp } : {}),
     user: { ...user, pluginConfigs },
     credential: 'api-key',
     env,

@@ -124,7 +124,7 @@ describe('Claude Code catalogs through the registry', () => {
 
     await expect(
       resolveMarketplaceInstall({ plugin: 'local-one', marketplace: 'acme-tools' }, deps),
-    ).rejects.toThrow('cannot resolve')
+    ).rejects.toThrow('does not stay inside the marketplace directory')
     const res = await resolveMarketplaceInstall({ plugin: 'mono', marketplace: 'acme-tools' }, deps)
     expect(clones).toEqual([
       { url: 'https://github.com/acme/monorepo.git', ref: 'a'.repeat(40), sparse: 'tools/mono' },

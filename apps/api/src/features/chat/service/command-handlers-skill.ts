@@ -3,7 +3,7 @@ import { recordSkillUse } from '../../agent-core/skill-usage-recorder'
 import { announceSessionActive } from '../../agent-core/session-activity'
 import { resolveDeclaredReasoningEffort } from '../../../db/types'
 import type { MessageBinding } from '@localixai/agent'
-import type { SessionSkill } from '@rsaryev/llx-plugin'
+import type { SessionSkill } from '@localix-ai/agent-plugins'
 import {
   invokeTypedSkills,
   isPluginCommand,
@@ -113,12 +113,14 @@ export async function handleSkillCommand(
   // CC `context: fork` — run the skill in a child session, started as the invoking agent and run
   // as the agent the expansion names.
   if (first.fork && spawnForkSkill) {
-    const { hooks } = skill.invocable
+    // The hooks the kit let register (the managed locks applied), with where the skill came from.
+    const { hooks } = first
+    const origin = skill.invocable.origin.kind
     const childId = await spawnForkSkill(userId, sessionId, instruction, {
       agent: first.fork.agent,
       title: `/${name}${arg ? ' ' + arg : ''}`,
       // CC skill frontmatter `hooks` — activated for the forked sub-agent run.
-      ...(hooks ? { hooks, ...(plugin ? { hooksPlugin: plugin } : {}) } : {}),
+      ...(hooks ? { hooks, hooksOrigin: origin, ...(plugin ? { hooksPlugin: plugin } : {}) } : {}),
     })
     return insertDirectReply(
       userId,

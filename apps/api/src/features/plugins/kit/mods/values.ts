@@ -15,4 +15,4 @@ export {
   unansweredCommandReply,
   withheldResultText,
   type ToolCallEnd,
-} from '@rsaryev/llx-plugin/mods'
+} from '@localix-ai/agent-plugins/mods'

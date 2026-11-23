@@ -1,11 +1,11 @@
-import { startUninstall } from '@rsaryev/llx-plugin/cli'
+import { startUninstall } from '@localix-ai/agent-plugins/cli'
 import {
   disableDecision,
   enablePlan,
   normalizeDependency,
   type GraphFacts,
   type NormalizedDependency,
-} from '@rsaryev/llx-plugin/marketplace'
+} from '@localix-ai/agent-plugins/marketplace'
 
 /**
  * Enable and disable over the plugin dependency graph, judged by the kit (`enablePlan`,

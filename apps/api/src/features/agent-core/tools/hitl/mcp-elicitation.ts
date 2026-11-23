@@ -1,5 +1,5 @@
 import type { HumanInLoopRequestBase, HumanInLoopResponseBase } from '@localixai/agent/agents'
-import type { ElicitationRequest, ElicitationResult } from '@rsaryev/llx-plugin'
+import type { ElicitationRequest, ElicitationResult } from '@localix-ai/agent-plugins'
 
 /**
  * The `mcp_elicitation` HITL contract: an MCP server asks the person for input in the middle of

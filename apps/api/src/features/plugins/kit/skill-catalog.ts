@@ -5,8 +5,8 @@ import {
   type PluginSession,
   type SessionSkill,
   type SkillScope,
-} from '@rsaryev/llx-plugin'
-import { skillLookup } from '@rsaryev/llx-plugin/skills'
+} from '@localix-ai/agent-plugins'
+import { skillLookup } from '@localix-ai/agent-plugins/skills'
 
 const PROJECT_SCOPES: ReadonlySet<SkillScope> = new Set(['project', 'nested', 'additional'])
 

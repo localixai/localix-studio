@@ -1,6 +1,6 @@
 import { promises as fs } from 'node:fs'
 import { dirname, join, relative, resolve, sep } from 'node:path'
-import type { FolderScan, RepositoryChain, ScanFolder } from '@rsaryev/llx-plugin'
+import type { FolderScan, RepositoryChain, ScanFolder } from '@localix-ai/agent-plugins'
 import { isPathBelow } from '../../../../lib/path-containment'
 import { folderRepository } from '../settings/repository'
 import { diskFiles } from './files'

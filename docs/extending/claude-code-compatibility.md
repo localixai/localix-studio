@@ -45,9 +45,9 @@ Where Localix has no equivalent, the feature is not offered:
 - **Sandbox.** `sandbox.*` settings are not applied: Localix has no operating-system sandbox.
 - **Terminal-only output.** `terminalSequence`, the `Raster` and `Image` elements, and
   `session_title` and `scratchpad_dir` in hook input have nothing to write to.
-- **Mods.** The render sites other than `Pane` and `AbovePrompt`, `classic.*` events, the message
-  box's own events and the `claude-code/testing` kit are not part of Localix yet; the full list is
-  in [Not yet in Localix](claude-code-mods.md#not-yet-in-localix).
+- **Mods.** The render sites other than `Pane`, `AbovePrompt` and `AbovePromptList`, `classic.*`
+  events, the message box's own events and the `claude-code/testing` kit are not part of Localix
+  yet; the full list is in [Not yet in Localix](claude-code-mods.md#not-yet-in-localix).
 - **Plugins.** Two plugins of the same name from different marketplaces cannot both be installed,
   and a `command` plugin source is refused.
 - **Agents.** A delegated agent cannot delegate again, so an `Agent(worker, researcher)` list in

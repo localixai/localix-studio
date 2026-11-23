@@ -27,9 +27,6 @@ export const REALTIME_RESOURCES = [
   'semantic',
   // What loaded mods put on screen: their panes and what is drawn in them.
   'mods',
-  // What a plugin's `subagentStatusLine` drew in a conversation's subagent rows, as the server
-  // redraws it (`chat/service/subagent-rows-live.ts`).
-  'subagent-rows',
 ] as const
 
 export type RealtimeResource = (typeof REALTIME_RESOURCES)[number]

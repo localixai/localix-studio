@@ -1,5 +1,5 @@
-import { classifyPluginFolder } from '@rsaryev/llx-plugin'
-import { STANDARD_LAYOUT } from '@rsaryev/llx-plugin/layout'
+import { classifyPluginFolder } from '@localix-ai/agent-plugins'
+import { STANDARD_LAYOUT } from '@localix-ai/agent-plugins/layout'
 import { diskFiles } from '../ports/files'
 
 /** A plugin's manifest, relative to its root: `.claude-plugin/plugin.json`. */

@@ -9,8 +9,9 @@ import type {
   PluginFiles,
   PluginSession,
   SessionSkill,
-} from '@rsaryev/llx-plugin'
-import type { PluginStateStore, StagedDirectory } from '@rsaryev/llx-plugin/marketplace'
+} from '@localix-ai/agent-plugins'
+import type { PluginStateStore, StagedDirectory } from '@localix-ai/agent-plugins/marketplace'
+import type { TrustSituation } from '@localix-ai/agent-plugins/loading'
 import {
   fakeEnvironment,
   fakeMcp,
@@ -23,7 +24,7 @@ import {
   scriptedRunner,
   catalogAgentFixture,
   sessionSkillFixture,
-} from '@rsaryev/llx-plugin/testing'
+} from '@localix-ai/agent-plugins/testing'
 import type { ScopeAgent } from './agents'
 import { createLocalixPluginHost, type LocalixPluginHost } from './host'
 import { createKitHooksRuntime } from './hooks/runtime'
@@ -35,7 +36,7 @@ import type { LocalixKitPorts } from './ports/host-ports'
 
 /**
  * The plugin kit boundary in memory, for other features' tests: every port of `createHostPorts`
- * built from the kit's own fakes (`@rsaryev/llx-plugin/testing`), so a test runs no process, no
+ * built from the kit's own fakes (`@localix-ai/agent-plugins/testing`), so a test runs no process, no
  * network and no disk. Give the parts a test cares about; the rest answer nothing (a spent
  * script throws, as the kit's fakes do).
  */
@@ -123,14 +124,19 @@ export function diskPluginHost(
   })
 }
 
-/** A chat's kit session whose user settings hold `hooks`, in the trusted folder `cwd`. */
-export function hookTestSession(homeDir: string, cwd: string, hooks: HooksSettings): PluginSession {
+/** A chat's kit session whose user settings hold `hooks`, in `cwd`, trusted unless `trust` says. */
+export function hookTestSession(
+  homeDir: string,
+  cwd: string,
+  hooks: HooksSettings,
+  trust: TrustSituation = 'trusted',
+): PluginSession {
   return createChatPluginSessions(diskPluginHost(homeDir)).forRun({
     chatId: 'chat-1',
     cwd,
     transcriptPath: join(homeDir, 'chat-1.jsonl'),
     permissionMode: 'default',
-    trust: 'trusted',
+    trust,
     layers: [{ scope: 'user', settings: { hooks } }],
     plugins: [],
   })
@@ -271,4 +277,4 @@ export function testSessionSkill(
 export { kitEntry, kitMarketplace, npmPlan } from './marketplace/testing'
 
 /** The kit's mods test kit: fake ports and interface a mods host is built over in a test. */
-export { modsTesting } from '@rsaryev/llx-plugin/mods'
+export { modsTesting } from '@localix-ai/agent-plugins/mods'

@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises'
-import { parseFrontmatter } from '@rsaryev/llx-plugin/format'
-import { skillPromptEvent, type SkillPromptEvent } from '@rsaryev/llx-plugin/mods'
+import { parseFrontmatter } from '@localix-ai/agent-plugins/format'
+import { skillPromptEvent, type SkillPromptEvent } from '@localix-ai/agent-plugins/mods'
 
 /** Where a skill Localix expands comes from: its file, whose skill it is, and its plugin. */
 export interface SkillOrigin {

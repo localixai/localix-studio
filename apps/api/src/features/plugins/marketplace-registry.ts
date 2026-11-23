@@ -11,10 +11,10 @@ import {
   readMarketplace,
   writeKnownMarketplaces,
 } from './kit'
-import type { Marketplace, MarketplaceSource } from '@rsaryev/llx-plugin/marketplace'
+import type { Marketplace, MarketplaceSource } from '@localix-ai/agent-plugins/marketplace'
 import { rmrf } from '../ext/install-tree'
 import { hashString, marketplacesRoot } from './marketplace-source'
-import type { ArchiveFetchPlan, NpmFetchPlan } from '@rsaryev/llx-plugin/marketplace'
+import type { ArchiveFetchPlan, NpmFetchPlan } from '@localix-ai/agent-plugins/marketplace'
 import { materializeMarketplace } from './marketplace-materialize'
 import {
   addMarketplaceInPlace,

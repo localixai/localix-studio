@@ -188,3 +188,41 @@ test('a frame nested in a pane is a card of the app’s, not a coloured outline'
   expect(card.style.borderColor).toBe('')
   await done()
 })
+
+// reference.md, "Elements" (2.1.330): `Progress` is how far along a task is, `value` from 0 to
+// `max` (default 1), and with no `value` a task with no known end.
+test('a Progress element is a progress bar named by its label', async () => {
+  const { act } = await import('react')
+  const { createRoot } = await import('react-dom/client')
+  const { ModTree } = await import('./ModTree')
+  const host = document.createElement('div')
+  document.body.append(host)
+  const root = createRoot(host)
+  const progress = (props: Record<string, unknown>): ModElement => ({
+    type: 'Progress',
+    props,
+    children: [],
+  })
+  await act(async () =>
+    root.render(
+      <ModTree
+        nodes={[
+          progress({ label: 'Indexing', value: 0.25 }),
+          progress({ label: 'Upload', value: 3, max: 4, valueText: '3 of 4 files' }),
+          progress({ label: 'Waiting' }),
+        ]}
+        act={() => {}}
+      />,
+    ),
+  )
+  const bars = [...host.querySelectorAll('[role="progressbar"]')]
+  expect(bars.map((bar) => bar.getAttribute('aria-label'))).toEqual([
+    'Indexing',
+    'Upload',
+    'Waiting',
+  ])
+  expect(bars.map((bar) => bar.getAttribute('aria-valuenow'))).toEqual(['25', '75', null])
+  expect(bars[1]!.getAttribute('aria-valuetext')).toBe('3 of 4 files')
+  await act(async () => root.unmount())
+  host.remove()
+})

@@ -11,11 +11,13 @@ import {
   resolveSubagentPermissionMode,
   type CatalogAgent,
   type CatalogSource,
+  type Connection,
   type MemoryPlan,
   type ModelAlias,
-} from '@rsaryev/llx-plugin/agents'
-import type { AgentMemoryScope, AgentSource } from '@rsaryev/llx-plugin/format'
-import type { TrustSituation } from '@rsaryev/llx-plugin/loading'
+} from '@localix-ai/agent-plugins/agents'
+import type { AgentMemoryScope, AgentSource } from '@localix-ai/agent-plugins/format'
+import type { TrustSituation } from '@localix-ai/agent-plugins/loading'
+import { envFlag } from '../../../lib/env'
 import { bestModelForFamily } from './model-alias'
 import { readServerShape, type McpServerShape } from './settings/mcp-record'
 import { contentApplies } from './settings/trust'
@@ -202,7 +204,17 @@ export interface SubagentModelContext {
 export interface SubagentModelAsk {
   definition?: string
   invocation?: string
+  /** The built-in subagent the child is (`Explore`, `Plan`), not a file of the same name. */
+  builtin?: string
 }
+
+/**
+ * How the kit is told a built-in's connection. Claude Code moves Explore to `opus` on a Fable
+ * conversation over its own Anthropic sign-ins; Localix reaches every model through the person's
+ * providers, so the built-in stays on the conversation's model, as the docs say it does behind a
+ * gateway. A deliberate difference from Claude Code's rule, not a guess at the person's sign-in.
+ */
+const BUILTIN_CONNECTION: Connection = 'claude-apps-gateway'
 
 /** The environment's say (sub-agents.md, "Choose a model"): `CLAUDE_CODE_SUBAGENT_MODEL`, and `_FORCE`. */
 type ModelEnv = Readonly<Record<string, string | undefined>>
@@ -210,8 +222,9 @@ type ModelEnv = Readonly<Record<string, string | undefined>>
 /**
  * The route a child the person chose no model for takes (sub-agents.md, "Choose a model"): the
  * `Agent` call's alias, its agent file's `model`, then `CLAUDE_CODE_SUBAGENT_MODEL` (alone under
- * `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1`), as the kit resolves them (`resolveSubagentModel`) and
- * Localix's providers carry them: the main model (`inherit`, or an alias of its family) is no route, so the child keeps its
+ * `CLAUDE_CODE_SUBAGENT_MODEL_FORCE`; without it the variable leaves the built-in Explore and
+ * Plan), as the kit resolves them (`resolveSubagentModel`) and Localix's providers carry them: the
+ * main model (`inherit`, or an alias of its family) is no route, so the child keeps its
  * session's; another alias is the newest model of that family the providers offer; a full id is
  * that model when they offer it. Anything they do not offer leaves the session's model.
  */
@@ -225,8 +238,10 @@ export function subagentModelRoute(
     definition: ask.definition,
     invocation: ask.invocation,
     envModel: env.CLAUDE_CODE_SUBAGENT_MODEL,
-    force: env.CLAUDE_CODE_SUBAGENT_MODEL_FORCE === '1',
+    // An on/off variable: any on spelling (env-vars.md, "Variables").
+    force: envFlag('CLAUDE_CODE_SUBAGENT_MODEL_FORCE', false, env),
     mainModel: context.mainModel,
+    ...(ask.builtin ? { builtin: { name: ask.builtin, connection: BUILTIN_CONNECTION } } : {}),
     ...(family ? { mainFamily: family } : {}),
   })
   const routed =

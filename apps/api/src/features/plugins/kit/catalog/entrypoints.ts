@@ -1,6 +1,6 @@
 import { join } from 'node:path'
-import type { Plugin } from '@rsaryev/llx-plugin/loading'
-import { readHooksJsonModules, resolveTypesPath } from '@rsaryev/llx-plugin/format'
+import type { Plugin } from '@localix-ai/agent-plugins/loading'
+import { readHooksJsonModules, resolveTypesPath } from '@localix-ai/agent-plugins/format'
 import { readJsonFile } from '../../../../lib/json'
 import { readComponents, type PluginCcComponents } from './components'
 

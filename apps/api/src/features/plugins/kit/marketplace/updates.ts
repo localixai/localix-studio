@@ -5,7 +5,7 @@ import {
   toggleDecision,
   type MarketplaceEntry,
   type SkippedBy,
-} from '@rsaryev/llx-plugin/marketplace'
+} from '@localix-ai/agent-plugins/marketplace'
 import { processEnvironment } from '../ports/host-io'
 
 /**

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import type { HttpRequest } from '@rsaryev/llx-plugin'
+import type { HttpRequest } from '@localix-ai/agent-plugins'
 import { fetchBody, fetchUrl, stubFetch } from '../../../../testing/fetch-stub'
 import { fetchHttpClient } from './http-client'
 

@@ -1,4 +1,4 @@
-import { modelFamily, modelValueKind, type ModelAlias } from '@rsaryev/llx-plugin/agents'
+import { modelFamily, modelValueKind, type ModelAlias } from '@localix-ai/agent-plugins/agents'
 
 /**
  * An agent or skill `model:` value read as Claude Code reads it (sub-agents.md, "Choose a model"),

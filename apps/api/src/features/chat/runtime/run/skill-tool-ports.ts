@@ -11,7 +11,7 @@ import {
   typedSkills,
   type SkillShellAnswer,
 } from '../../../plugins/kit'
-import type { PluginSession as KitSession, SessionSkill } from '@rsaryev/llx-plugin'
+import type { PluginSession as KitSession, SessionSkill } from '@localix-ai/agent-plugins'
 import type { SessionRecord } from '../../repository'
 import { claudeCodeHome } from '../../../cc-settings/config-dir'
 import { runOuterRules } from './claude-code-permissions'

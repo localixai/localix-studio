@@ -32,9 +32,10 @@ describe('a marketplace read before it is added', () => {
       kind: 'plugin',
       id: 'acme',
       label: 'acme',
-      // The kit leaves out an entry whose author is a string (its schema takes { name }).
+      // An author written as a string is ignored, not the entry (Claude Code 2.1.330, J2.6): `fmt`
+      // is still listed, and installing it is refused (J15.15).
       publishers: ['Ada', 'Acme'],
-      count: 2,
+      count: 3,
       icons: [],
       verified: false,
       added: false,

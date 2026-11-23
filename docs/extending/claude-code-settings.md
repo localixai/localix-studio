@@ -16,7 +16,7 @@ writes these files.
 | Stop skills from running shell commands           | `disableSkillShellExecution` — see [Keys that lock things down](#keys-that-lock-things-down)                                                       |
 | Load skills, agents, hooks, MCP from plugins only | `strictPluginOnlyCustomization` (managed) — see [Keys that lock things down](#keys-that-lock-things-down)                                          |
 | Give shell commands, hooks and servers your `env` | `env`                                                                                                                                              |
-| See your status line under the message box        | `statusLine`, `subagentStatusLine`                                                                                                                 |
+| See your status line under the message box        | `statusLine`                                                                                                                                       |
 | Use your output styles                            | `outputStyle`, `.claude/output-styles/`                                                                                                            |
 | Load the plugins you installed in Claude Code     | `enabledPlugins`, `pluginConfigs` — see [Claude Code plugins](claude-code-plugins.md)                                                              |
 
@@ -49,8 +49,8 @@ which beats an allow.
 
 What a repository grants applies once you trusted the folder in Claude Code
 (`hasTrustDialogAccepted` for the folder in `~/.claude.json`). Rules that only restrict, `deny` and
-`ask`, apply at once. The `statusLine` and `subagentStatusLine` commands, from any file and from a
-plugin's defaults, also wait for the folder's trust, as in Claude Code.
+`ask`, apply at once. The `statusLine` command, from any file, also waits for the folder's trust, as
+in Claude Code.
 
 Outside a git repository, trusting a folder above it also counts, but only for part of what the
 repository grants, as in Claude Code. Inside a repository, the trust is the repository root's.
@@ -128,8 +128,8 @@ after the last change, so a burst is one run), at once when you change `command`
 and every `refreshInterval` seconds (at least 1) while you look at the conversation. A newer run
 cancels one still going. `padding` indents every row. A command that fails or prints nothing clears
 the line. `COLUMNS` is 120 and `LINES` is 1; the area is not a terminal of its own, so a script
-cannot measure it. A `subagentStatusLine` in your own settings rewrites the subagent rows, over a
-plugin's; those rows are drawn as plain text, without colors or links.
+cannot measure it. Claude Code 2.1.323 dropped `subagentStatusLine`; a settings file that still
+holds it loads as before, and the key changes nothing.
 
 ![A statusLine command's two colored rows and a link, under the message box](../assets/screenshots/composer/status-line--2026-10-27.png)
 

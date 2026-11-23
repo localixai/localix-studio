@@ -1,4 +1,4 @@
-import type { ModsHost as KitModsHost } from '@rsaryev/llx-plugin/mods'
+import type { ModsHost as KitModsHost } from '@localix-ai/agent-plugins/mods'
 import type { ModScene } from './contracts'
 import type { ModsHost } from './host'
 import { answerKey } from './answer-cache'

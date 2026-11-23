@@ -1,4 +1,4 @@
-import { elementFn, elementNameOf } from '@rsaryev/llx-plugin/mods/isolate'
+import { elementFn, elementNameOf } from '@localix-ai/agent-plugins/mods/isolate'
 import { TAG_KEYS, tag, untag, type DataTag } from './wire-values'
 
 /**

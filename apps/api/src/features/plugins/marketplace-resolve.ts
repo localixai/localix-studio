@@ -5,13 +5,14 @@ import {
   assertMarketplaceAllowed,
   assertPluginAllowed,
   catalogAt,
+  invalidEntryMessage,
   readKnownMarketplaces,
   readMarketplace,
   resolveEntryName,
   entryFetchPlan,
   localEntryDir,
 } from './kit'
-import type { MarketplaceEntry } from '@rsaryev/llx-plugin/marketplace'
+import type { MarketplaceEntry } from '@localix-ai/agent-plugins/marketplace'
 import { hashString, marketplacesRoot, sourceMatchesRef } from './marketplace-source'
 import { fetchEntryPlugin, type RemotePlan } from './marketplace-materialize'
 import { readsInPlace } from './marketplace-in-place'
@@ -94,6 +95,9 @@ export async function resolveMarketplaceInstall(
   if (!entry)
     throw new Error(`Plugin "${requested.name}" not found in marketplace "${ref.marketplace}"`)
   await assertPluginAllowed(`${entry.name}@${ref.marketplace}`, deps.managedSettingsDir)
+  // An entry with a display field of the wrong type stays listed; installing it fetches nothing.
+  const invalid = invalidEntryMessage(entry)
+  if (invalid) throw new Error(invalid)
 
   // The kit resolves a bare name under `metadata.pluginRoot`, and refuses a relative source of a
   // marketplace that brought only its marketplace.json (one added by URL or from settings).

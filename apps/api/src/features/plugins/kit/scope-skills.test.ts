@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import { join } from 'node:path'
 import { tempDirPerTest, writeTree } from '@localixai/testing'
 import { scopeSkills } from './scope-skills'
-import { skillPlugin } from '@rsaryev/llx-plugin'
+import { skillPlugin } from '@localix-ai/agent-plugins'
 import { projectOrGlobal } from './skill-catalog'
 import { diskPluginHost, writeTestPlugin } from './testing'
 

@@ -72,7 +72,6 @@ export function createStartPostListen(input: StartPostListenInput) {
             backendHost.refresh()
             channelHost.refresh()
           },
-          subagentRows: chatService.subagentRowsLive,
           statusLine: chatService.statusLine,
           pluginMonitors: input.pluginMonitors,
           publish: invalidateStoreOn(storeService, (userId, resources) =>

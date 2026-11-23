@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import type { JsonObject, ModSessionPorts, SessionEntry } from '@rsaryev/llx-plugin/mods'
+import type { JsonObject, ModSessionPorts, SessionEntry } from '@localix-ai/agent-plugins/mods'
 import { contextUsage, readClaudeSettings } from '../../plugins/kit'
 import { mergeModSettingsLayers, settingsLayersForMods } from '../../plugins/kit/mods'
 import { CLAUDE_CODE_BASE_VERSION } from '../../cc-settings/claude-code-version'

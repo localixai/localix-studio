@@ -6,7 +6,7 @@ import {
   type AgentToolRun,
   type NamedTool,
 } from '../../../plugins/kit'
-import type { CatalogAgent } from '@rsaryev/llx-plugin/agents'
+import type { CatalogAgent } from '@localix-ai/agent-plugins/agents'
 
 /** Whose `tools` and `disallowedTools` narrow the run (`plugin-main-agent.ts` `runToolsAgent`). */
 export interface RunToolsAgent {

@@ -8,7 +8,7 @@ import { envFlag } from '../../lib/env'
 import { errorMessage } from '../../lib/errors'
 import { isRecord } from '../../lib/record'
 import { DEFAULT_MARKETPLACE_PATH, readKnownMarketplaces, sameMarketplaceSource } from './kit'
-import type { MarketplaceSource } from '@rsaryev/llx-plugin/marketplace'
+import type { MarketplaceSource } from '@localix-ai/agent-plugins/marketplace'
 
 /**
  * THE DEFAULT MARKETPLACES (`docs/internals/store-scale.md`, "Default sources"): the Store's

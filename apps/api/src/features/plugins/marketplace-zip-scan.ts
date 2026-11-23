@@ -1,4 +1,4 @@
-import type { ArchiveLimits } from '@rsaryev/llx-plugin/marketplace'
+import type { ArchiveLimits } from '@localix-ai/agent-plugins/marketplace'
 import { UnprocessableError } from '../../lib/domain-errors'
 import { ARCHIVE_LIMITS } from './kit'
 

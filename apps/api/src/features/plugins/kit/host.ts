@@ -4,7 +4,7 @@ import {
   type HostedPlugin,
   type Plugin,
   type PluginHost,
-} from '@rsaryev/llx-plugin'
+} from '@localix-ai/agent-plugins'
 import { createHostPorts, type HostPortsDeps, type LocalixKitPorts } from './ports/host-ports'
 
 /**
@@ -75,6 +75,10 @@ export function createLocalixPluginHost(deps: PluginHostDeps): LocalixPluginHost
     extraScopeFolders: ['.agents'],
     // An argument the person or the model typed reaches a `!` command as data, never as shell.
     shellArguments: 'environment-reference',
+    // A path (a project folder, a plugin root) reaches every string a shell parses as a `${NAME}`
+    // reference with its value in the environment, so a folder named `x$(...)` is never run. The
+    // kit's default for a monitor `command` pastes the path, as Claude Code does; Localix opts out.
+    shellPaths: 'environment-reference',
   })
   return {
     kit,

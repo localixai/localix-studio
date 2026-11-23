@@ -4,7 +4,7 @@ import { isPathWithin } from '../../lib/path-containment'
 import { stripHtmlBlockComments } from './context-comments'
 import { expandImports } from './context-imports'
 import { readCappedFile } from './context-read'
-import type { MemoryRuleScope } from '@rsaryev/llx-plugin/format'
+import type { MemoryRuleScope } from '@localix-ai/agent-plugins/format'
 import { discoverRules, type RuleScope } from './context-rules'
 
 /**

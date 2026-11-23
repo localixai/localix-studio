@@ -1,5 +1,5 @@
 import { NotFoundError } from '../../lib/domain-errors'
-import type { MarketplaceEntry } from '@rsaryev/llx-plugin/marketplace'
+import type { MarketplaceEntry } from '@localix-ai/agent-plugins/marketplace'
 import { catalogAt, entryFolder } from './kit'
 import { parseMarketplaceRef } from './marketplace-source'
 import { scanPluginContents, type PluginContents } from './store-contents'

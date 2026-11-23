@@ -10,7 +10,7 @@ import {
   rememberDefaultMarketplaceRemoval,
 } from './default-marketplaces'
 import { type KnownMarketplace, readKnownMarketplaces, writeKnownMarketplaces } from './kit'
-import type { MarketplaceSource } from '@rsaryev/llx-plugin/marketplace'
+import type { MarketplaceSource } from '@localix-ai/agent-plugins/marketplace'
 
 const dir = tempDirPerTest('default-marketplaces-')
 const CATALOG = '.claude-plugin/marketplace.json'

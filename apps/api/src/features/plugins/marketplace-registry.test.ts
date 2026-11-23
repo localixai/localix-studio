@@ -308,6 +308,15 @@ describe('marketplace registry (add / list / resolve / remove)', () => {
     expect(resolved.entry.defaultEnabled).toBeUndefined()
   })
 
+  // marketplace-reference.md, "Display fields": an entry with a display field of the wrong type
+  // stays listed, and installing it fails naming the field.
+  it('an entry with a malformed display field is refused, naming the field', async () => {
+    await addAcmeEntry({ homepage: 'not a url' })
+    await expect(
+      resolveMarketplaceInstall({ plugin: 'cool', marketplace: 'acme' }, deps),
+    ).rejects.toThrow(/^This plugin's marketplace entry is invalid: homepage: /)
+  })
+
   describe('renames (CC 2.1.193+)', () => {
     /** Rewrite the acme upstream with a renames map, then register it. */
     async function addAcmeWithRenames(renames: Record<string, string | null>): Promise<void> {

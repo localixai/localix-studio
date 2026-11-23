@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'bun:test'
 import { mkdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import type { HooksSettings } from '@rsaryev/llx-plugin'
+import type { HooksSettings } from '@localix-ai/agent-plugins'
 import { tempDirPerTest } from '@localixai/testing'
 import type { McpElicitationHookRequest } from '../../../agent-core/tools/hitl/mcp-elicitation'
 import { hookTestSession } from '../testing'

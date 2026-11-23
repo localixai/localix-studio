@@ -1,5 +1,5 @@
-import type { EnvFileStore, HostPorts } from '@rsaryev/llx-plugin'
-import type { McpBundleReader, WorkspaceTrust } from '@rsaryev/llx-plugin/loading'
+import type { EnvFileStore, HostPorts } from '@localix-ai/agent-plugins'
+import type { McpBundleReader, WorkspaceTrust } from '@localix-ai/agent-plugins/loading'
 import type {
   ArchiveReader,
   GitTags,
@@ -7,8 +7,8 @@ import type {
   PluginStateStore,
   Sha256,
   StagedDirectory,
-} from '@rsaryev/llx-plugin/marketplace'
-import type { PathResolver, PermissionClassifier } from '@rsaryev/llx-plugin/rules'
+} from '@localix-ai/agent-plugins/marketplace'
+import type { PathResolver, PermissionClassifier } from '@localix-ai/agent-plugins/rules'
 import { lsRemoteTags } from '../../dependency-tags'
 import { hostCommandRunner } from './command-runner'
 import { diskFolderScan } from './folder-scan'
@@ -32,7 +32,7 @@ import {
 import { diskStagedDirectory } from './staged-directory'
 
 /**
- * Every port Localix gives `@rsaryev/llx-plugin`, each a thin adapter over what Localix already has.
+ * Every port Localix gives `@localix-ai/agent-plugins`, each a thin adapter over what Localix already has.
  * Engines that bootstrap brings up later (MCP clients, the models) and what belongs to the session
  * at hand (its project, its env-file folder) are read through the getters at call time.
  */

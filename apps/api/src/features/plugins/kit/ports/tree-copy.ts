@@ -5,7 +5,7 @@ import {
   pluginRootIssue,
   type Dereference,
   type TreeEntry,
-} from '@rsaryev/llx-plugin/marketplace'
+} from '@localix-ai/agent-plugins/marketplace'
 import { UnprocessableError } from '../../../../lib/domain-errors'
 
 /**

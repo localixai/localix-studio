@@ -40,7 +40,11 @@ export interface AgentLaunchPorts {
   /** A fresh worktree of the chat's repository, for `isolation: worktree`. */
   isolate?: (name: string) => Promise<AgentWorktree>
   /** The route an agent file's `model` gives a child the person chose no model for. */
-  subagentRoute?: (ask: { definition?: string; invocation?: string }) => AgentRoute
+  subagentRoute?: (ask: {
+    definition?: string
+    invocation?: string
+    builtin?: string
+  }) => AgentRoute
   /** Claude Code's refusal of an agent type whose `tools` resolve to nothing here, else none. */
   toolsRefusal?: (type: TaskAgentType) => string | undefined
 }
@@ -145,6 +149,8 @@ export async function prepareAgentChild(
   const ask = {
     ...(type?.definition.model ? { definition: type.definition.model } : {}),
     ...(call.model ? { invocation: call.model } : {}),
+    // A built-in (`Explore`, `Plan`) has a model order of its own; a file of its name does not.
+    ...(type?.source.kind === 'builtin' ? { builtin: type.name } : {}),
   }
   const fromFile = call.agentId && !choice.modelId ? (ports?.subagentRoute?.(ask) ?? {}) : {}
   const chosen: AgentRoute = { ...fromFile, ...choice }

@@ -17,7 +17,7 @@ export async function buildModRuntime(): Promise<string> {
     entrypoints: [fileURLToPath(new URL('./main.ts', import.meta.url))],
     target: 'browser',
     // The kit's own source, as this tree type-checks it, not a build of it that may lag.
-    conditions: ['llx-plugin-source'],
+    conditions: ['agent-plugins-source'],
     format: 'iife',
     // Identifiers stay, so a stack trace from inside the VM names the runtime's own functions.
     minify: { syntax: true, whitespace: true, identifiers: false },

@@ -72,7 +72,7 @@ describe('the ports Localix gives the plugin kit', () => {
       join(dir(), 'sessions/s1/cwd-env.sh'),
     )
     expect(
-      await ports.bundles(join(dir(), 'p')).open({ kind: 'path', path: 'x.mcpb' }, '.mcpb-cache'),
+      await ports.bundles(join(dir(), 'p')).open({ kind: 'path', path: 'x.mcpb' }, 'mcpb'),
     ).toBeUndefined()
     expect(await ports.trust.isFolderTrusted('/nowhere')).toBe(false)
   })

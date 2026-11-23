@@ -128,6 +128,22 @@ describe('spawnForkSkill — a fork of the invoking agent', () => {
       { raw: hooks, source: 'skill', asSubagent: true, agentType: 'general-purpose', plugin },
     ])
   })
+
+  // hooks.md, "Hooks in skills and agents": a project skill's hooks wait for workspace trust.
+  it("a project skill's hooks reach the child with where the skill came from", async () => {
+    const { deps, getRunOptions } = makeDeps(parentSession())
+    const hooks = { Stop: [{ hooks: [{ type: 'command', command: 'x' }] }] }
+    await createSpawnForkSkill(deps)('u1', 'parent', 'work', { hooks, hooksOrigin: 'project' })
+    expect(getRunOptions()?.ccScopedHooks).toEqual([
+      {
+        raw: hooks,
+        source: 'skill',
+        asSubagent: true,
+        agentType: 'general-purpose',
+        origin: 'project',
+      },
+    ])
+  })
 })
 
 describe('the model and effort of a skill fork follow the rule of every subagent', () => {

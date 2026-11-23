@@ -1,6 +1,6 @@
 import { promises as fs } from 'node:fs'
 import { join } from 'node:path'
-import { readManifest, type PluginManifest } from '@rsaryev/llx-plugin/format'
+import { readManifest, type PluginManifest } from '@localix-ai/agent-plugins/format'
 import {
   catalogDependencies,
   installClosure,
@@ -12,7 +12,7 @@ import {
   type InstalledRecord,
   type MarketplaceEntry,
   type NormalizedDependency,
-} from '@rsaryev/llx-plugin/marketplace'
+} from '@localix-ai/agent-plugins/marketplace'
 import { PLUGIN_MANIFEST } from '../catalog/plugin-folder'
 
 /**

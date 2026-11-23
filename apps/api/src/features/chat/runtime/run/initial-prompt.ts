@@ -1,4 +1,4 @@
-import type { CatalogAgent } from '@rsaryev/llx-plugin/agents'
+import type { CatalogAgent } from '@localix-ai/agent-plugins/agents'
 import type { RuntimeSection } from '../../../agent-core/prompt/runtime-sections'
 import type { PersistedMessage } from '../../contracts'
 

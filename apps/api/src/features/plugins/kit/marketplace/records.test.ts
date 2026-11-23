@@ -3,7 +3,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { tempDirPerTest, writeTree } from '@localixai/testing'
-import { parseKnownMarketplaces } from '@rsaryev/llx-plugin/marketplace'
+import { parseKnownMarketplaces } from '@localix-ai/agent-plugins/marketplace'
 
 import { asRecorded, catalogAt, readKnownMarketplaces, writeKnownMarketplaces } from './records'
 import { parseDeclaredSource } from './sources'

@@ -9,8 +9,8 @@ import {
   type PermissionRule,
   type RuleSource,
   type ToolCall,
-} from '@rsaryev/llx-plugin/rules'
-import type { PolicyScope } from '@rsaryev/llx-plugin/settings'
+} from '@localix-ai/agent-plugins/rules'
+import type { PolicyScope } from '@localix-ai/agent-plugins/settings'
 import { singleCalls } from './tools/cc-tool-shapes'
 import { claudeCodeHookCall } from './tool-calls'
 import { claudeCodeToolNames, LOCALIX_TOOL_NAMES, type NamedTool } from './tool-names'

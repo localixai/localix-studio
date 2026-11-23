@@ -1,5 +1,5 @@
 import { basename } from 'node:path'
-import type { InstallStep } from '@rsaryev/llx-plugin/marketplace'
+import type { InstallStep } from '@localix-ai/agent-plugins/marketplace'
 import { InvalidRequestError } from '../../lib/domain-errors'
 import type { CapabilitySourceRepository } from '../capabilities/source-repository'
 import type { ExtensionTreeInput } from './publish-trees'

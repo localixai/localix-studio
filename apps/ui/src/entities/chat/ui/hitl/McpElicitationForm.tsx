@@ -5,7 +5,7 @@ import {
   elicitationFormFields,
   type ElicitationField,
   type ElicitationValue,
-} from '@rsaryev/llx-plugin/elicitation'
+} from '@localix-ai/agent-plugins/elicitation'
 import { Checkbox } from '@localixai/kit/checkbox'
 import { Field } from '@localixai/kit/field'
 import { Input } from '@localixai/kit/input'

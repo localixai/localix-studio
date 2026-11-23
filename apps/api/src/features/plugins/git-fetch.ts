@@ -8,6 +8,7 @@ import { errorMessage } from '../../lib/errors'
 import { childEnvNonInteractive } from '../../lib/login-shell-env'
 import { rmrf } from '../ext/install-tree'
 import { withoutRepoLocation } from '../../lib/git-in'
+import { readGitRemoteEnvironment } from './kit'
 
 const execFileAsync = promisify(execFile)
 
@@ -24,10 +25,12 @@ export interface GitCheckoutTarget {
 
 const GIT_TIMEOUT_MS = 120_000
 
-async function git(args: string[], cwd?: string): Promise<string> {
+/** The person's environment without the variables that point git at another repository. */
+const localGitEnv = () => withoutRepoLocation(childEnvNonInteractive())
+
+async function git(args: string[], cwd?: string, env = localGitEnv()): Promise<string> {
   // Never prompt: a host without stored credentials fails instead of waiting for a password.
   // The fetch owns `dest`: nothing a hook exported may point it at another repository.
-  const env = withoutRepoLocation(childEnvNonInteractive())
   const { stdout } = await execFileAsync('git', args, {
     cwd,
     timeout: GIT_TIMEOUT_MS,
@@ -64,6 +67,8 @@ export async function fetchGitTree(
   target: GitCheckoutTarget = {},
 ): Promise<void> {
   try {
+    // The remote is reached as the kit plans a clone: no prompt, and an unknown SSH host refused.
+    const remote = await readGitRemoteEnvironment(localGitEnv())
     await rmrf(dest)
     await fs.mkdir(dest, { recursive: true })
     await git(['init', '--quiet', dest])
@@ -77,8 +82,8 @@ export async function fetchGitTree(
     }
     const want = target.ref ?? 'HEAD'
     try {
-      await git(['fetch', '--quiet', '--depth', '1', ...filter, 'origin', want], dest)
-      await git(['checkout', '--quiet', 'FETCH_HEAD'], dest)
+      await git(['fetch', '--quiet', '--depth', '1', ...filter, 'origin', want], dest, remote)
+      await git(['checkout', '--quiet', 'FETCH_HEAD'], dest, remote)
     } catch (shallow) {
       if (!target.ref) throw shallow
       await git(
@@ -91,8 +96,9 @@ export async function fetchGitTree(
           '+refs/tags/*:refs/tags/*',
         ],
         dest,
+        remote,
       )
-      await git(['checkout', '--quiet', target.ref], dest)
+      await git(['checkout', '--quiet', target.ref], dest, remote)
     }
   } catch (err) {
     await rmrf(dest)

@@ -19,7 +19,7 @@ import {
   type KnownMarketplace,
   parseMarketplace,
 } from './kit'
-import type { Marketplace, MarketplaceEntry } from '@rsaryev/llx-plugin/marketplace'
+import type { Marketplace, MarketplaceEntry } from '@localix-ai/agent-plugins/marketplace'
 import type { PluginContents } from './store-contents'
 import { entryCuration } from './store-editorial'
 

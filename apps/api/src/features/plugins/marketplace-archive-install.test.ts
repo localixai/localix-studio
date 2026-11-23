@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto'
 import { join } from 'node:path'
 
 import { tempDirPerTest } from '@localixai/testing'
-import type { ArchiveFetchPlan } from '@rsaryev/llx-plugin/marketplace'
+import type { ArchiveFetchPlan } from '@localix-ai/agent-plugins/marketplace'
 
 import { stubFetch } from '../../testing/fetch-stub'
 import { makeZip, type ZipFixtureEntry } from '../../testing/zip-fixture'

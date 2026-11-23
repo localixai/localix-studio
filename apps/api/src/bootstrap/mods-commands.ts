@@ -1,5 +1,5 @@
-import type { SessionSkill } from '@rsaryev/llx-plugin'
-import type { CommandListing } from '@rsaryev/llx-plugin/mods'
+import type { SessionSkill } from '@localix-ai/agent-plugins'
+import type { CommandListing } from '@localix-ai/agent-plugins/mods'
 import { skillPlugin } from '../features/plugins/kit'
 
 /**

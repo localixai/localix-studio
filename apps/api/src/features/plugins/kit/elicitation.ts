@@ -4,8 +4,8 @@ import {
   elicitationHookFacts,
   overrideElicitationResult,
   type ElicitationAnswer,
-} from '@rsaryev/llx-plugin/elicitation'
-import type { ElicitationRequest, HookOutcome } from '@rsaryev/llx-plugin'
+} from '@localix-ai/agent-plugins/elicitation'
+import type { ElicitationRequest, HookOutcome } from '@localix-ai/agent-plugins'
 import type {
   McpElicitationAnswer,
   McpElicitationHookRequest,

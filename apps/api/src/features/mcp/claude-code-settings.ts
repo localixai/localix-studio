@@ -1,6 +1,6 @@
 import type { FetchLike } from '@modelcontextprotocol/sdk/shared/transport.js'
-import type { McpTimeouts } from '@rsaryev/llx-plugin/format'
-import type { ElicitationAnswer } from '@rsaryev/llx-plugin/elicitation'
+import type { McpTimeouts } from '@localix-ai/agent-plugins/format'
+import type { ElicitationAnswer } from '@localix-ai/agent-plugins/elicitation'
 import type {
   McpElicitationAnswer,
   McpElicitationHookRequest,

@@ -46,9 +46,10 @@ export async function scanDirs(
         names.map(async (name) => {
           const dir = join(root, name)
           const valid = await isPluginDir(dir)
+          // A folder the person keeps here is read in place, as Claude Code reads a local one.
           return valid
             ? // A plugin's workflows run as its commands (`workflow-commands.ts`).
-              withWorkflowCommands(await loadManifest(dir, scope, projectId))
+              withWorkflowCommands(await loadManifest(dir, scope, projectId, { localFolder: true }))
             : null
         }),
       )

@@ -12,4 +12,4 @@ export {
   STATE_LIBRARY_SOURCE,
   type StateRef,
   type StateStore,
-} from '@rsaryev/llx-plugin/mods'
+} from '@localix-ai/agent-plugins/mods'

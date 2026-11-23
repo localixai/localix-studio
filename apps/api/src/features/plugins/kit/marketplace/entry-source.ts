@@ -4,7 +4,7 @@ import {
   type FetchPlan,
   type MarketplaceEntry,
   type MarketplaceSource,
-} from '@rsaryev/llx-plugin/marketplace'
+} from '@localix-ai/agent-plugins/marketplace'
 import { isPathWithin } from '../../../../lib/path-containment'
 import { issueLine } from '../catalog/issue-line'
 import { hostPlatform } from '../ports/host-io'

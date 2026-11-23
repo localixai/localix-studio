@@ -9,7 +9,7 @@ import { pathExists } from '../ext/fs-discovery'
 import { entrySource } from './claude-code-installs'
 import type { DiscoveredPlugin } from './discovery-types'
 import { loadManifest } from './manifest-load'
-import type { MarketplaceEntry } from '@rsaryev/llx-plugin/marketplace'
+import type { MarketplaceEntry } from '@localix-ai/agent-plugins/marketplace'
 import { listedEntry } from './marketplace-copy'
 import { withWorkflowCommands } from './workflow-commands'
 
@@ -91,7 +91,10 @@ export async function loadInPlacePlugin(
   entry: MarketplaceEntry | undefined,
   projectId: string,
 ): Promise<DiscoveredPlugin> {
-  const plugin = await loadManifest(record.dir, 'global', projectId, entrySource(record.id, entry))
+  const plugin = await loadManifest(record.dir, 'global', projectId, {
+    ...entrySource(record.id, entry),
+    localFolder: true,
+  })
   return { ...plugin, inPlaceInstall: record.id }
 }
 

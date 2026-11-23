@@ -1,6 +1,9 @@
 import { promises as fs } from 'node:fs'
 import { join } from 'node:path'
-import { mergeEntryWithManifest, type MarketplaceEntry } from '@rsaryev/llx-plugin/marketplace'
+import {
+  mergeEntryWithManifest,
+  type MarketplaceEntry,
+} from '@localix-ai/agent-plugins/marketplace'
 import { PLUGIN_MANIFEST } from './plugin-folder'
 
 /**

@@ -1,4 +1,4 @@
-import { readScriptHead } from '@rsaryev/llx-plugin/agents'
+import { readScriptHead } from '@localix-ai/agent-plugins/agents'
 
 /**
  * A workflow script split as the kit reads it (`readScriptHead`; workflows.md, "What the saved

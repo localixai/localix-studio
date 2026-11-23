@@ -2,8 +2,8 @@ import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 
 import { childEnvNonInteractive } from '../../lib/login-shell-env'
-import { cloneUrl, entryFetchPlan } from './kit'
-import type { MarketplaceEntry, MarketplaceSource } from '@rsaryev/llx-plugin/marketplace'
+import { cloneUrl, entryFetchPlan, readGitRemoteEnvironment } from './kit'
+import type { MarketplaceEntry, MarketplaceSource } from '@localix-ai/agent-plugins/marketplace'
 import type { MarketplaceRegistryDeps } from './marketplace-registry'
 
 const execFileAsync = promisify(execFile)
@@ -18,7 +18,8 @@ const execFileAsync = promisify(execFile)
 export async function lsRemoteTags(url: string): Promise<string[]> {
   const { stdout } = await execFileAsync('git', ['ls-remote', '--tags', '--refs', '--', url], {
     timeout: 60_000,
-    env: childEnvNonInteractive(),
+    // Reached as the kit plans a clone: no prompt, and an unknown SSH host refused.
+    env: await readGitRemoteEnvironment(childEnvNonInteractive()),
     windowsHide: true,
   })
   return stdout

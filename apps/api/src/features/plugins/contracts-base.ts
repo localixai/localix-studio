@@ -1,4 +1,4 @@
-import type { UserConfigOption } from '@rsaryev/llx-plugin/format'
+import type { UserConfigOption } from '@localix-ai/agent-plugins/format'
 
 /**
  * The plugin feature's own primitives: the qualified name a command goes by, an option as a

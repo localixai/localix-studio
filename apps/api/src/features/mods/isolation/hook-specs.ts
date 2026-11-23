@@ -1,4 +1,4 @@
-import type { ModMatcher } from '@rsaryev/llx-plugin/mods'
+import type { ModMatcher } from '@localix-ai/agent-plugins/mods'
 
 /**
  * The hooks a VM says its module registered, read on the host as untrusted data: each becomes

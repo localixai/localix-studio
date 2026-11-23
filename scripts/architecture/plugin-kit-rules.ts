@@ -2,10 +2,10 @@ import { importsOf, isTest, type Rule } from './kit'
 
 /**
  * X6 and X7 (`docs/internals/plugins-and-mini-apps.md`): what a Claude Code plugin means comes
- * from `@rsaryev/llx-plugin`, and only through one folder of the API.
+ * from `@localix-ai/agent-plugins`, and only through one folder of the API.
  */
 const BOUNDARY = 'apps/api/src/features/plugins/kit/'
-const KIT = '@rsaryev/llx-plugin'
+const KIT = '@localix-ai/agent-plugins'
 
 /**
  * X6: a source file that spells one of these markers in code (strings included, comments not)

@@ -1,4 +1,4 @@
-import type { SessionSkill } from '@rsaryev/llx-plugin'
+import type { SessionSkill } from '@localix-ai/agent-plugins'
 import { projectOrGlobal } from '../../plugins/kit'
 import type { SkillCatalogEntry } from '../contracts/skills'
 

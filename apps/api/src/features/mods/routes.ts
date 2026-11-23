@@ -41,8 +41,6 @@ const screenPane = z.object({
 })
 /** Which pane tabs the screen shows, and the one in the group holding the keyboard. */
 const screenBody = z.object({ shown: z.array(screenPane).max(50), focused: screenPane.nullable() })
-/** A band's control names its page: each page is its own drawing (`band-pages.ts`). */
-const bandActionBody = actionBody.extend({ page: z.number().int().min(0).max(16).optional() })
 
 export function createModRoutes(
   host: ModsHost,
@@ -80,7 +78,7 @@ export function createModRoutes(
           }),
         )
       })
-      .post('/sessions/:sessionId/band/actions', zValidator('json', bandActionBody), async (c) => {
+      .post('/sessions/:sessionId/band/actions', zValidator('json', actionBody), async (c) => {
         const handled = await host.band.interact(c.req.param('sessionId'), c.req.valid('json'))
         if (!handled) throw new NotFoundError('mod_control_gone', 'That control is no longer drawn')
         return c.json({ ok: true })

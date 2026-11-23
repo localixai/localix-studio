@@ -6,16 +6,15 @@ import { childEnv } from '../../../lib/login-shell-env'
 import {
   readClaudeSettingsSync,
   settingsAdditionalDirectories,
-  settingsCommandLine,
+  settingsStatusLine,
   settingsEnvOf,
 } from '../../plugins/kit'
 import { runHookCommand } from '../../lifecycle-hooks/command'
-import type { StatusLineDeps } from './status-line-deps'
+import type { StatusLineDeps, Timers } from './status-line-deps'
 import { statusLineInput } from './status-line-input'
 import { statusLineRows } from './status-line-output'
 import { watchSettingsDirs } from './status-line-watch'
 import { readStatusLineWorkspace } from './status-line-workspace'
-import type { Timers } from './subagent-rows-live'
 
 export type { StatusLineDeps } from './status-line-deps'
 export type { StatusLineUsage } from './status-line-usage'
@@ -91,7 +90,7 @@ export function createStatusLine(deps: StatusLineDeps) {
       ...(deps.managed !== undefined ? { managed: deps.managed } : {}),
     }
     const settings = readClaudeSettingsSync(settingsInput)
-    return { session, cwd, settings, line: settingsCommandLine(settings, 'statusLine') }
+    return { session, cwd, settings, line: settingsStatusLine(settings) }
   }
 
   /** The folders whose settings files may set the line: a change in one is a trigger. */
